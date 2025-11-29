@@ -1,0 +1,198 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { isAdmin, getUsers, type User } from "@/lib/auth";
+import { 
+  Users, 
+  Trash2,
+  Search,
+  ArrowLeft,
+  Shield,
+  Mail,
+  Calendar,
+  Key
+} from "lucide-react";
+
+export default function AdminUsersPage() {
+  const router = useRouter();
+  const [users, setUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const allUsers = getUsers();
+    setUsers(allUsers);
+    setFilteredUsers(allUsers);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredUsers(users);
+    } else {
+      const filtered = users.filter(user => 
+        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredUsers(filtered);
+    }
+  }, [searchQuery, users]);
+
+  const handleDeleteUser = (userId: string) => {
+    if (confirm("Bu foydalanuvchini o'chirmoqchimisiz?")) {
+      const updatedUsers = users.filter(u => u.id !== userId);
+      localStorage.setItem('halloff_users', JSON.stringify(updatedUsers));
+      setUsers(updatedUsers);
+      setFilteredUsers(updatedUsers);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Yuklanmoqda...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-8">
+        {/* Search */}
+        <div className="mb-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <input
+              type="text"
+              placeholder="Ism yoki email bo'yicha qidirish..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-[#161b22] border border-[#30363d] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition"
+            />
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-4">
+            <div className="flex items-center gap-3">
+              <Users className="w-8 h-8 text-blue-400" />
+              <div>
+                <p className="text-2xl font-bold text-white">{users.length}</p>
+                <p className="text-sm text-gray-400">Jami</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-4">
+            <div className="flex items-center gap-3">
+              <Shield className="w-8 h-8 text-purple-400" />
+              <div>
+                <p className="text-2xl font-bold text-white">{users.filter(u => u.role === 'admin').length}</p>
+                <p className="text-sm text-gray-400">Adminlar</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-4">
+            <div className="flex items-center gap-3">
+              <Users className="w-8 h-8 text-green-400" />
+              <div>
+                <p className="text-2xl font-bold text-white">{users.filter(u => u.role === 'user').length}</p>
+                <p className="text-sm text-gray-400">Foydalanuvchilar</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Users Table */}
+        <div className="bg-[#161b22] border border-[#30363d] rounded-xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-[#0f0f0f]">
+                <tr>
+                  <th className="text-left py-4 px-6 text-sm font-semibold text-gray-400">ID</th>
+                  <th className="text-left py-4 px-6 text-sm font-semibold text-gray-400">Ism</th>
+                  <th className="text-left py-4 px-6 text-sm font-semibold text-gray-400">Email</th>
+                  <th className="text-left py-4 px-6 text-sm font-semibold text-gray-400">Parol</th>
+                  <th className="text-left py-4 px-6 text-sm font-semibold text-gray-400">Rol</th>
+                  <th className="text-left py-4 px-6 text-sm font-semibold text-gray-400">Ro'yxatdan o'tgan</th>
+                  <th className="text-right py-4 px-6 text-sm font-semibold text-gray-400">Amallar</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredUsers.map((user, index) => (
+                  <tr key={user.id} className="border-t border-[#30363d] hover:bg-[#0f0f0f] transition">
+                    <td className="py-4 px-6 text-gray-400 text-sm">#{index + 1}</td>
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                          <span className="text-blue-400 font-semibold text-sm">
+                            {user.name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <span className="text-white font-medium">{user.name}</span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-2 text-gray-400">
+                        <Mail className="w-4 h-4" />
+                        <span className="text-sm">{user.email}</span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-2 text-gray-400">
+                        <Key className="w-4 h-4" />
+                        <span className="text-sm font-mono">{user.password}</span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        user.role === 'admin' 
+                          ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' 
+                          : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                      }`}>
+                        {user.role === 'admin' ? 'Admin' : 'User'}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-2 text-gray-400">
+                        <Calendar className="w-4 h-4" />
+                        <span className="text-sm">
+                          {new Date(user.createdAt).toLocaleDateString('uz-UZ', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-6 text-right">
+                      <button
+                        onClick={() => handleDeleteUser(user.id)}
+                        disabled={user.role === 'admin'}
+                        className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        title={user.role === 'admin' ? "Adminni o'chirish mumkin emas" : "O'chirish"}
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {filteredUsers.length === 0 && (
+            <div className="py-12 text-center">
+              <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+              <p className="text-gray-400">Foydalanuvchilar topilmadi</p>
+            </div>
+          )}
+      </div>
+    </div>
+  );
+}

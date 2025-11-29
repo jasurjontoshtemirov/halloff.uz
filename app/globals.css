@@ -1,0 +1,503 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #000000;
+  color: #d1d5db;
+}
+
+/* Monospace font for code */
+code, pre, .font-mono {
+  font-family: 'Fira Code', 'Monaco', 'Cascadia Code', 'Roboto Mono', 
+    'Courier New', monospace;
+}
+
+code, pre {
+  font-family: var(--font-fira-code), 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-feature-settings: 'liga' 1, 'calt' 1; /* Enable ligatures */
+}
+
+/* Prose styles for documentation */
+.prose {
+  color: #374151;
+  max-width: 65ch;
+}
+
+.prose h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.prose h2 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.prose h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #111827;
+}
+
+.prose h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #111827;
+}
+
+.prose p {
+  margin-bottom: 1rem;
+  line-height: 1.75;
+}
+
+.prose a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.prose a:hover {
+  color: #1d4ed8;
+}
+
+.prose ul,
+.prose ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.prose ol {
+  list-style-type: decimal;
+}
+
+.prose ul {
+  list-style-type: disc;
+}
+
+.prose li {
+  margin-bottom: 0.5rem;
+}
+
+.prose li::marker {
+  color: #6b7280;
+}
+
+.prose strong {
+  font-weight: 600;
+  color: #111827;
+}
+
+.prose code {
+  background-color: #f3f4f6;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-family: 'Courier New', Consolas, Monaco, monospace;
+  color: #1f2937;
+}
+
+.prose pre {
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  background-color: #1f2937;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.prose pre code {
+  background-color: transparent;
+  padding: 0;
+  color: #f9fafb;
+  font-size: 0.875rem;
+}
+
+.prose blockquote {
+  border-left: 4px solid #e5e7eb;
+  padding-left: 1rem;
+  font-style: italic;
+  color: #6b7280;
+  margin: 1.5rem 0;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.prose th {
+  background-color: #f9fafb;
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.prose td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+
+/* Dark theme prose styles */
+.prose-dark {
+  color: #d1d5db;
+  max-width: none;
+}
+
+.prose-dark h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.prose-dark h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  color: #ffffff;
+  line-height: 1.3;
+}
+
+.prose-dark h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: #ffffff;
+}
+
+.prose-dark h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+}
+
+.prose-dark p {
+  margin-bottom: 1.25rem;
+  line-height: 1.8;
+  color: #d1d5db;
+}
+
+.prose-dark a {
+  color: #60a5fa;
+  text-decoration: underline;
+  text-decoration-color: rgba(96, 165, 250, 0.3);
+}
+
+.prose-dark a:hover {
+  color: #93c5fd;
+  text-decoration-color: rgba(147, 197, 253, 0.5);
+}
+
+.prose-dark strong {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.prose-dark code {
+  background-color: rgba(110, 118, 129, 0.2);
+  /* color: #e96900; */
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-family: var(--font-fira-code), 'Fira Code', 'Consolas', Monaco, monospace;
+  border: 1px solid rgba(110, 118, 129, 0.3);
+}
+
+.prose-dark pre {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  line-height: 1.7;
+}
+
+.prose-dark pre code {
+  background-color: transparent;
+  border: none;
+  padding: 1.5rem;
+  padding-top: 3.5rem;
+  display: block;
+  color: #d4d4d4;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  min-height: 100px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* Syntax highlighting colors - matching the reference image */
+.syntax-keyword {
+  color: #c586c0; /* purple - keywords like function, return, new */
+}
+
+.syntax-function {
+  color: #dcdcaa; /* yellow - function names */
+}
+
+.syntax-string {
+  color: #ce9178; /* orange - strings */
+}
+
+.syntax-comment {
+  color: #6a9955; /* green - comments */
+  font-style: italic;
+}
+
+.syntax-number {
+  color: #b5cea8; /* light green - numbers */
+}
+
+.syntax-variable {
+  color: #9cdcfe; /* light blue - variables and parameters */
+}
+
+.syntax-property {
+  color: #9cdcfe; /* light blue - properties */
+}
+
+.syntax-operator {
+  color: #d4d4d4; /* white - operators */
+}
+
+.syntax-punctuation {
+  color: #d4d4d4; /* white - punctuation */
+}
+
+.prose-dark ul,
+.prose-dark ol {
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
+  color: #d1d5db;
+}
+
+.prose-dark li {
+  margin-bottom: 0.5rem;
+}
+
+.prose-dark li::marker {
+  color: #9ca3af;
+}
+
+/* Dark scrollbar */
+.prose-dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.prose-dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+.prose-dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+.prose-dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+
+/* Code block wrapper */
+.code-block-wrapper {
+  position: relative;
+  margin: 1.5rem 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: #1e1e1e;
+  border: 1px solid #2d2d2d;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.code-block-wrapper:hover {
+  border-color: #3d3d3d;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+}
+
+.code-block-wrapper:hover .copy-button {
+  opacity: 1;
+}
+
+/* Copy button */
+.copy-button {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.375rem;
+  color: #8b949e;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 500;
+  opacity: 0.6;
+  z-index: 10;
+}
+
+.copy-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #c9d1d9;
+  transform: translateY(-1px);
+  opacity: 1;
+}
+
+.copy-button:active {
+  transform: translateY(0);
+}
+
+.copy-button svg {
+  opacity: 0.8;
+}
+
+.copy-button:hover svg {
+  opacity: 1;
+}
+
+/* Inline code styling */
+.prose-dark code {
+  background: linear-gradient(135deg, #18181A 0%, #18181A 100%);
+  color: #ff9d5c;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.3rem;
+  font-size: 0.875rem;
+  font-family: var(--font-fira-code), 'Fira Code', 'Consolas', Monaco, monospace;
+  border: none;
+  font-weight: 500;
+}
+
+.prose-dark a code {
+  color: #58a6ff;
+  background: linear-gradient(135deg, #18181A 0%, #18181A 100%);
+  border: none;
+
+}
+
+/* Rich Text Editor Styles */
+.prose {
+  color: #d1d5db;
+}
+
+.prose h1 {
+  @apply text-3xl font-bold text-white mb-4;
+}
+
+.prose h2 {
+  @apply text-2xl font-semibold text-white mb-3;
+}
+
+.prose h3 {
+  @apply text-xl font-medium text-white mb-2;
+}
+
+.prose p {
+  @apply text-gray-300 mb-3 leading-relaxed;
+}
+
+.prose ul {
+  @apply list-disc list-inside text-gray-300 mb-3 space-y-1;
+}
+
+.prose ol {
+  @apply list-decimal list-inside text-gray-300 mb-3 space-y-1;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-blue-500 pl-4 py-2 my-4 text-gray-300 italic bg-blue-500/5;
+}
+
+.prose code {
+  @apply bg-gray-800 px-2 py-1 rounded text-yellow-400 font-mono text-sm;
+}
+
+.prose pre {
+  @apply bg-gray-900 rounded-lg p-4 my-4 overflow-x-auto;
+}
+
+.prose pre code {
+  @apply bg-transparent px-0 py-0 text-gray-300;
+}
+
+.prose a {
+  @apply text-blue-400 hover:text-blue-300 underline;
+}
+
+.prose img {
+  @apply max-w-full h-auto rounded-lg my-4;
+}
+
+.prose strong {
+  @apply font-bold text-white;
+}
+
+.prose em {
+  @apply italic;
+}
+
+/* Editor specific styles */
+[contenteditable="true"]:focus {
+  outline: none;
+}
+
+[contenteditable="true"] {
+  caret-color: #60a5fa;
+}
