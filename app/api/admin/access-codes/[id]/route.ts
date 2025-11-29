@@ -4,10 +4,10 @@ import { getPool } from "@/lib/db";
 // PUT - Kodni yangilash
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = params.id;
+    const { id } = await params;
     const { code, name, description, is_active, max_uses, expires_at } = await req.json();
 
     const pool = getPool();
@@ -41,10 +41,10 @@ export async function PUT(
 // DELETE - Kodni o'chirish
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = params.id;
+    const { id } = await params;
     const pool = getPool();
 
     await pool.execute("DELETE FROM access_codes WHERE id = ?", [id]);
