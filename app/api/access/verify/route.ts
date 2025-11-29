@@ -123,6 +123,35 @@ export async function POST(req: NextRequest) {
       );
 
       console.log(`✅ Access granted with code: ${code}`);
+
+      // Response yaratish
+      const response = NextResponse.json({
+        success: true,
+        message: "Kirish muvaffaqiyatli!",
+        code: {
+          name: accessCode.name,
+        },
+      });
+
+      // Cookie o'rnatish - 7 kun amal qiladi
+      response.cookies.set('has_access', 'true', {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7, // 7 kun
+        path: '/',
+      });
+
+      // Access code'ni ham cookie'ga saqlash
+      response.cookies.set('access_code', code, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7,
+        path: '/',
+      });
+
+      return response;
     } catch (dbError) {
       console.log("Database error, kod topilmadi:", dbError);
       return NextResponse.json(
@@ -130,35 +159,6 @@ export async function POST(req: NextRequest) {
         { status: 401 }
       );
     }
-
-    // Response yaratish
-    const response = NextResponse.json({
-      success: true,
-      message: "Kirish muvaffaqiyatli!",
-      code: {
-        name: accessCode.name,
-      },
-    });
-
-    // Cookie o'rnatish - 7 kun amal qiladi
-    response.cookies.set('has_access', 'true', {
-      httpOnly: false,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 kun
-      path: '/',
-    });
-
-    // Access code'ni ham cookie'ga saqlash (agar kerak bo'lsa)
-    response.cookies.set('access_code', code, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7,
-      path: '/',
-    });
-
-    return response;
   } catch (error) {
     console.error("Access verify error:", error);
     return NextResponse.json(
