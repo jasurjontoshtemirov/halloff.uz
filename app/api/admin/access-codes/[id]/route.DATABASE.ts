@@ -57,7 +57,6 @@ export async function DELETE(
 ) {
   try {
     const params = await context.params;
-  try {
     const id = params.id;
 
     if (!id) {
