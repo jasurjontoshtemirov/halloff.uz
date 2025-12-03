@@ -14,7 +14,7 @@ export default function LoginPage() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
@@ -25,6 +25,20 @@ export default function LoginPage() {
     
     if (result.success) {
       setSuccess(result.message);
+      
+      // Admin bo'lsa, cookie'larni server-side o'rnatish
+      if (result.user?.role === 'admin') {
+        try {
+          await fetch('/api/auth/set-cookies', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isAdmin: true }),
+          });
+        } catch (error) {
+          console.error('Cookie set error:', error);
+        }
+      }
+      
       setTimeout(() => {
         // Admin'lar uchun to'g'ridan-to'g'ri /docs ga, oddiy foydalanuvchilar uchun /subscription ga
         if (result.user?.role === 'admin') {
@@ -32,7 +46,7 @@ export default function LoginPage() {
         } else {
           window.location.href = "/subscription";
         }
-      }, 1000);
+      }, 500);
     } else {
       setError(result.message);
       setLoading(false);

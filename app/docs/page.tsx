@@ -15,17 +15,6 @@ import {
 } from "lucide-react";
 
 export default function DocsPage() {
-  const router = useRouter();
-
-  useEffect(() => {
-    // Kirish kodini tekshirish
-    const hasAccess = localStorage.getItem("hasAccess");
-    
-    if (!hasAccess) {
-      // Agar kirish kodi yo'q bo'lsa, /access sahifasiga yo'naltirish
-      router.push("/access");
-    }
-  }, [router]);
   return (
     <div className="prose-dark max-w-none">
       <div className="not-prose mb-8">

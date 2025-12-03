@@ -4,34 +4,6 @@ import { getPool } from "@/lib/db";
 // GET - Barcha kodlarni olish
 export async function GET(req: NextRequest) {
   try {
-    // VAQTINCHALIK: Hardcoded test kodlar (database'siz)
-    const hardcodedCodes = [
-      {
-        id: 1,
-        code: "A4RZ-RAP7-KLB5-KZP9",
-        name: "Test Kod 1",
-        description: "Vaqtinchalik test kodi",
-        is_active: true,
-        max_uses: null,
-        used_count: 0,
-        expires_at: null,
-        created_at: new Date().toISOString(),
-        last_used_at: null,
-      },
-      {
-        id: 2,
-        code: "TEST-CODE-1234-5678",
-        name: "Test Kod 2",
-        description: "Demo kod",
-        is_active: true,
-        max_uses: 10,
-        used_count: 3,
-        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        created_at: new Date().toISOString(),
-        last_used_at: new Date().toISOString(),
-      },
-    ];
-
     try {
       const pool = getPool();
       
@@ -56,7 +28,50 @@ export async function GET(req: NextRequest) {
         codes: rows,
       });
     } catch (dbError) {
-      console.log("Database not available, using hardcoded codes");
+      console.log("Database not available, using localStorage codes");
+      
+      // localStorage'dan kodlarni olish (client-side'dan yuborilgan)
+      const codesHeader = req.headers.get('x-access-codes');
+      if (codesHeader) {
+        try {
+          const codes = JSON.parse(codesHeader);
+          return NextResponse.json({
+            success: true,
+            codes: codes,
+          });
+        } catch (e) {
+          console.error("Parse error:", e);
+        }
+      }
+      
+      // Default hardcoded codes
+      const hardcodedCodes = [
+        {
+          id: 1,
+          code: "A4RZ-RAP7-KLB5-KZP9",
+          name: "Test Kod 1",
+          description: "Vaqtinchalik test kodi",
+          is_active: true,
+          max_uses: null,
+          used_count: 0,
+          expires_at: null,
+          created_at: new Date().toISOString(),
+          last_used_at: null,
+        },
+        {
+          id: 2,
+          code: "TEST-CODE-1234-5678",
+          name: "Test Kod 2",
+          description: "Demo kod",
+          is_active: true,
+          max_uses: 10,
+          used_count: 3,
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          created_at: new Date().toISOString(),
+          last_used_at: new Date().toISOString(),
+        },
+      ];
+      
       return NextResponse.json({
         success: true,
         codes: hardcodedCodes,
@@ -74,7 +89,8 @@ export async function GET(req: NextRequest) {
 // POST - Yangi kod qo'shish
 export async function POST(req: NextRequest) {
   try {
-    const { code, name, description, max_uses, expires_at } = await req.json();
+    const body = await req.json();
+    const { code, name, description, max_uses, expires_at, localStorageCodes } = body;
 
     if (!code || !name) {
       return NextResponse.json(
@@ -112,10 +128,26 @@ export async function POST(req: NextRequest) {
         message: "Kod muvaffaqiyatli qo'shildi!",
       });
     } catch (dbError) {
-      console.log("Database not available, kod vaqtinchalik saqlandi");
+      console.log("Database not available, using localStorage");
+      
+      // localStorage'dan kelgan kodlarni qaytarish
+      const newCode = {
+        id: Date.now(),
+        code,
+        name,
+        description: description || null,
+        is_active: true,
+        max_uses: max_uses || null,
+        used_count: 0,
+        expires_at: expires_at || null,
+        created_at: new Date().toISOString(),
+        last_used_at: null,
+      };
+      
       return NextResponse.json({
         success: true,
-        message: "Kod vaqtinchalik saqlandi (database yo'q)!",
+        message: "Kod muvaffaqiyatli qo'shildi!",
+        code: newCode,
       });
     }
   } catch (error) {

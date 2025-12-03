@@ -19,10 +19,10 @@ export default function Home() {
               Halloff
             </Link>
             <Link
-              href="/access"
+              href="/docs"
               className="px-6 py-2 text-sm bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition font-medium"
             >
-              Kirish →
+              Boshlash →
             </Link>
           </div>
         </div>
@@ -50,7 +50,7 @@ export default function Home() {
           
           <div className="flex justify-center items-center px-4">
             <Link
-              href="/access"
+              href="/docs"
               className="w-full sm:w-auto group px-6 md:px-10 py-4 md:py-5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl transition-all font-bold text-lg md:text-xl shadow-2xl shadow-blue-500/50 hover:scale-105 transform flex items-center justify-center gap-2 md:gap-3"
             >
               Hoziroq Boshlash
@@ -137,10 +137,10 @@ export default function Home() {
             HTML, CSS va JavaScript'ni professional darajada o'rganing
           </p>
           <Link
-            href="/access"
+            href="/docs"
             className="inline-flex items-center gap-2 px-10 py-5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl transition-all font-bold text-xl shadow-2xl shadow-blue-500/50 hover:scale-105 transform"
           >
-            Kirish Kodi Bilan Boshlash
+            Hoziroq Boshlash
             <ArrowRight className="w-6 h-6" />
           </Link>
         </div>
@@ -170,9 +170,8 @@ export default function Home() {
             <div>
               <h4 className="font-semibold text-white mb-4">Resurslar</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link href="/access" className="hover:text-white">Kirish Kodi</Link></li>
-                <li><Link href="/access" className="hover:text-white">Dokumentatsiya</Link></li>
-                <li><Link href="/access" className="hover:text-white">Bepul Darslar</Link></li>
+                <li><Link href="/docs" className="hover:text-white">Dokumentatsiya</Link></li>
+                <li><Link href="/docs" className="hover:text-white">Bepul Darslar</Link></li>
                 <li><a href="https://t.me/jasurjontoshtemirov" target="_blank" rel="noopener noreferrer" className="hover:text-white">Qo'llab-quvvatlash</a></li>
               </ul>
             </div>

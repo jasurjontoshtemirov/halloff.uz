@@ -24,10 +24,26 @@ export default function AccessCodesPage() {
 
   const fetchCodes = async () => {
     try {
-      const res = await fetch("/api/admin/access-codes");
+      // localStorage'dan kodlarni olish
+      const localCodes = localStorage.getItem("halloff_access_codes");
+      let codesFromStorage: AccessCode[] = [];
+      
+      if (localCodes) {
+        try {
+          codesFromStorage = JSON.parse(localCodes);
+        } catch (e) {
+          console.error("Parse error:", e);
+        }
+      }
+      
+      const res = await fetch("/api/admin/access-codes", {
+        headers: localCodes ? { "x-access-codes": localCodes } : {},
+      });
       const data = await res.json();
       if (data.success) {
         setCodes(data.codes);
+        // localStorage'ga saqlash
+        localStorage.setItem("halloff_access_codes", JSON.stringify(data.codes));
       }
     } catch (error) {
       console.error("Load codes error:", error);
@@ -83,6 +99,23 @@ export default function AccessCodesPage() {
       const data = await response.json();
       
       if (data.success) {
+        // localStorage'ga saqlash
+        if (data.code) {
+          const localCodes = localStorage.getItem("halloff_access_codes");
+          let codes: AccessCode[] = [];
+          
+          if (localCodes) {
+            try {
+              codes = JSON.parse(localCodes);
+            } catch (e) {
+              console.error("Parse error:", e);
+            }
+          }
+          
+          codes.push(data.code);
+          localStorage.setItem("halloff_access_codes", JSON.stringify(codes));
+        }
+        
         navigator.clipboard.writeText(code);
         alert(`✅ Kod muvaffaqiyatli qo'shildi!\n\nKod: ${code}`);
         generateCode();
