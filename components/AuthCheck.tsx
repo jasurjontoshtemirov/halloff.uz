@@ -12,7 +12,7 @@ export default function AuthCheck({ children }: { children: React.ReactNode }) {
     // Check if user is logged in
     if (!isLoggedIn()) {
       router.push("/auth/login");
-    } else {
+    }  else {
       setIsChecking(false);
     }
   }, [router]);
