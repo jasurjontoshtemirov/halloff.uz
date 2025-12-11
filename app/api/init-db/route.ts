@@ -22,7 +22,7 @@ export async function GET() {
   } catch (error) {
     console.error('Database initialization error:', error);
     return NextResponse.json(
-      { success: false, message: 'Database initialization failed', error: error.message },
+      { success: false, message: 'Database initialization failed', error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
