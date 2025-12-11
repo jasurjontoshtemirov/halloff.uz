@@ -3,7 +3,30 @@ import { loginUser } from '@/lib/auth-db';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
+    // Request body ni olish
+    const body = await request.text();
+    console.log('Raw request body:', body);
+    
+    if (!body) {
+      return NextResponse.json(
+        { success: false, message: 'Ma\'lumot yuborilmagan!' },
+        { status: 400 }
+      );
+    }
+
+    let parsedBody;
+    try {
+      parsedBody = JSON.parse(body);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      return NextResponse.json(
+        { success: false, message: 'Noto\'g\'ri ma\'lumot formati!' },
+        { status: 400 }
+      );
+    }
+
+    const { email, password } = parsedBody;
+    console.log('Parsed data:', { email: email ? 'exists' : 'missing', password: password ? 'exists' : 'missing' });
 
     if (!email || !password) {
       return NextResponse.json(
@@ -13,6 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await loginUser(email, password);
+    console.log('Login result:', { success: result.success, message: result.message });
     
     return NextResponse.json(result, { 
       status: result.success ? 200 : 401 
