@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { BookOpen, Mail, Lock, User, Eye, EyeOff, AlertCircle, CheckCircle } from "lucide-react";
+import { GraduationCap, Mail, Lock, User, Eye, EyeOff, AlertCircle, CheckCircle } from "lucide-react";
 
 export default function SignUpPage() {
   const [name, setName] = useState("");
@@ -14,13 +14,6 @@ export default function SignUpPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // Save current user to localStorage (client-side)
-  const saveCurrentUser = (user: any) => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('halloff_current_user', JSON.stringify(user));
-    }
-  };
 
   // Save current user to localStorage (client-side)
   const saveCurrentUser = (user: any) => {
@@ -87,49 +80,54 @@ export default function SignUpPage() {
       } else {
         setError(registerResult.message);
         setLoading(false);
-     }
-    ) {
-);
-      setE
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      setError('Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-y-12">
-      <div clasd">
-}
-        <Link href="/" clas">
-          <BookOpen className="w-8 h-8 text-blue-400" />
+    <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <Link href="/" className="flex items-center justify-center gap-2 mb-8">
+          <GraduationCap className="w-8 h-8 text-blue-400" />
           <span className="text-2xl font-bold text-white">Halloff</span>
         </Link>
 
         {/* SignUp Card */}
-        <div className="bg-[#161b-8">
-          <h1 classNameh1>
+        <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-8">
+          <h1 className="text-2xl font-bold text-white mb-2">Ro'yxatdan o'tish</h1>
           <p className="text-gray-400 mb-6">Yangi hisob yarating</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Erro
-            {e
-2">
-                <AlertCircle classN
-                <p classN</p>
+            {/* Error Message */}
+            {error && (
+              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2">
+                <AlertCircle className="w-5 h-5 text-red-400" />
+                <p className="text-sm text-red-400">{error}</p>
               </div>
             )}
 
-            {/* Succ
-            {sss && (
->
-                <CheckCi
-                <
+            {/* Success Message */}
+            {success && (
+              <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-green-400" />
+                <p className="text-sm text-green-400">{success}</p>
               </div>
             )}
 
             {/* Name */}
             <div>
-              <label c">
-                Ismype="text"
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Ism
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <input
+                  type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ismingiz"
