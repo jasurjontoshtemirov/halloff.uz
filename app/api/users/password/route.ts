@@ -24,18 +24,18 @@ export async function GET(request: NextRequest) {
 
     const pool = getPool();
     
-    // Admin emailini tekshirish
-    const [adminRows] = await pool.execute(
-      'SELECT email FROM users WHERE email = ? AND role = ?',
-      ['k6yd2007@gmail.com', 'admin']
-    );
+    // Hozircha barcha adminlar uchun ruxsat beramiz (keyinchalik cheklash mumkin)
+    // const [adminRows] = await pool.execute(
+    //   'SELECT email FROM users WHERE email = ? AND role = ?',
+    //   ['k6yd2007@gmail.com', 'admin']
+    // );
     
-    if ((adminRows as any[]).length === 0) {
-      return NextResponse.json(
-        { success: false, message: 'Ruxsat yo\'q! Faqat asosiy admin ko\'ra oladi.' },
-        { status: 403 }
-      );
-    }
+    // if ((adminRows as any[]).length === 0) {
+    //   return NextResponse.json(
+    //     { success: false, message: 'Ruxsat yo\'q! Faqat asosiy admin ko\'ra oladi.' },
+    //     { status: 403 }
+    //   );
+    // }
     
     // Ochiq parolni olish
     const [rows] = await pool.execute(
