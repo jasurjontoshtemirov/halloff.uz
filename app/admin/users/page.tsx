@@ -3,7 +3,28 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { isAdmin, type User } from "@/lib/auth-db";
+// Client-side user type
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'user' | 'admin';
+  createdAt: string;
+}
+
+// Check if current user is admin (client-side)
+const isAdmin = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  
+  // Check localStorage admin flag
+  const isAdminFlag = localStorage.getItem('is_admin');
+  
+  // Check user role
+  const userStr = localStorage.getItem('halloff_current_user');
+  const user = userStr ? JSON.parse(userStr) : null;
+  
+  return isAdminFlag === 'true' || user?.role === 'admin';
+};
 import { 
   Users, 
   Trash2,

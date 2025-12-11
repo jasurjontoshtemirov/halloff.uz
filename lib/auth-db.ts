@@ -10,7 +10,7 @@ export interface User {
   createdAt: string;
 }
 
-// Get all users from database
+// Get all users from database (Server-side only)
 export const getUsers = async (): Promise<User[]> => {
   try {
     const { getPool } = await import('@/lib/db');
@@ -32,7 +32,7 @@ export const getUsers = async (): Promise<User[]> => {
   }
 };
 
-// Register new user
+// Register new user (Server-side only)
 export const registerUser = async (name: string, email: string, password: string): Promise<{ success: boolean; message: string }> => {
   try {
     const { getPool } = await import('@/lib/db');
@@ -64,7 +64,7 @@ export const registerUser = async (name: string, email: string, password: string
   }
 };
 
-// Login user
+// Login user (Server-side only)
 export const loginUser = async (email: string, password: string): Promise<{ success: boolean; message: string; user?: User }> => {
   try {
     const { getPool } = await import('@/lib/db');
@@ -105,46 +105,7 @@ export const loginUser = async (email: string, password: string): Promise<{ succ
   }
 };
 
-// Get current logged in user (client-side)
-export const getCurrentUser = (): User | null => {
-  if (typeof window === 'undefined') return null;
-  const user = localStorage.getItem('halloff_current_user');
-  return user ? JSON.parse(user) : null;
-};
-
-// Save current user to localStorage (client-side)
-export const saveCurrentUser = (user: User) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('halloff_current_user', JSON.stringify(user));
-  }
-};
-
-// Logout user
-export const logoutUser = () => {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('halloff_current_user');
-  }
-};
-
-// Check if user is logged in
-export const isLoggedIn = (): boolean => {
-  return getCurrentUser() !== null;
-};
-
-// Check if current user is admin
-export const isAdmin = (): boolean => {
-  if (typeof window === 'undefined') return false;
-  
-  // Check localStorage admin flag
-  const isAdminFlag = localStorage.getItem('is_admin');
-  
-  // Check user role
-  const user = getCurrentUser();
-  
-  return isAdminFlag === 'true' || user?.role === 'admin';
-};
-
-// Delete user (admin only)
+// Delete user (Server-side only)
 export const deleteUser = async (userId: string): Promise<{ success: boolean; message: string }> => {
   try {
     const { getPool } = await import('@/lib/db');
@@ -175,7 +136,7 @@ export const deleteUser = async (userId: string): Promise<{ success: boolean; me
   }
 };
 
-// Get user by ID
+// Get user by ID (Server-side only)
 export const getUserById = async (userId: string): Promise<User | null> => {
   try {
     const { getPool } = await import('@/lib/db');

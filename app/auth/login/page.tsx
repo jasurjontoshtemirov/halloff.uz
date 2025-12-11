@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import { GraduationCap, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle } from "lucide-react";
-import { saveCurrentUser } from "@/lib/auth-db";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -13,6 +11,20 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Save current user to localStorage (client-side)
+  const saveCurrentUser = (user: any) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('halloff_current_user', JSON.stringify(user));
+    }
+  };
+
+  // Save current user to localStorage (client-side)
+  const saveCurrentUser = (user: any) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('halloff_current_user', JSON.stringify(user));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -278,106 +290,106 @@ export default function LoginPage() {
         </Link>
 
         <div className="relative group animate-card-entrance">
-          <div className="absolute -inset-1 bg-gradient-to-r from-blue-600/30 via-blue-500/25 to-black/20 rounded-3xl blur-lg opacity-75 group-hover:opacity-100 transition-all duration-500 animate-glow-pulse"></div>
+          <div className="absolute -inset-1 bg-gradient-to-r from-blue-600/30 via-blue-500/div>
           
-          <div className="relative glass-card-blue rounded-3xl p-8 shadow-2xl hover:scale-[1.02] transform transition-all duration-500">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/15 via-blue-600/10 to-black/20 rounded-3xl"></div>
-            <div className="absolute inset-0 bg-gradient-to-tl from-black/25 via-blue-900/15 to-blue-700/10 rounded-3xl"></div>
-            <div className="absolute inset-0 rounded-3xl animate-shimmer opacity-30"></div>
+          <div className="relative glass-ca>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/15 via></div>
+            <div className="absolute inset-0 bg-gradient-to-tl from-bla
+</div>
             
-            <div className="relative z-10">
+            <div className=">
               <h1 className="text-2xl font-bold text-white mb-2">Xush kelibsiz</h1>
-              <p className="text-gray-300 mb-6">Hisobingizga kiring</p>
+              <p className="text-gray-300 mb-6">Hisobingizga kiring<
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {error && (
-                  <div className="p-3 bg-red-500/10 backdrop-blur-sm border border-red-500/30 rounded-xl flex items-center gap-2">
-                    <AlertCircle className="w-5 h-5 text-red-400" />
+              <form onSu>
+                {e
+2">
+                    <AlertCir0" />
                     <p className="text-sm text-red-400">{error}</p>
                   </div>
                 )}
 
-                {success && (
-                  <div className="p-3 bg-green-500/10 backdrop-blur-sm border border-green-500/30 rounded-xl flex items-center gap-2">
-                    <CheckCircle className="w-5 h-5 text-green-400" />
+                {sss && (
+
+                    <0" />
                     <p className="text-sm text-green-400">{success}</p>
                   </div>
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-200 mb-2">Email</label>
+                  <label className=el>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Mail className="absolute left-3 
                     <input
                       type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="email@example.com"
-                      className="w-full pl-10 pr-4 py-3 glass-input-blue rounded-xl text-white placeholder-gray-400 focus:outline-none"
-                      required
+                      
+                      onet.value)}
+                      "
+
+                     
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-200 mb-2">Parol</label>
+                  <label className="bll</label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Lock className="absolut" />
                     <input
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full pl-10 pr-12 py-3 glass-input-blue rounded-xl text-white placeholder-gray-400 focus:outline-none"
+                      type={shd"}
+                      word}
+                      onCha}
+                      placeholder="•••"
+                      className="w-full pl-10 pr-12 py-3 glass-input"
                       required
                     />
                     <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors duration-200"
-                    >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      type="b
+                      onord)}
+                      200"
+   >
+                      {showPassword ? <EyeOff clas/>}
                     </button>
                   </div>
                 </div>
 
-                <div className="flex justify-end">
-                  <Link href="/auth/forgot-password" className="text-sm text-blue-400 hover:text-blue-300 transition-colors duration-200">
-                    Parolni unutdingizmi?
+fy-end">
+                  <Link">
+                    Parolni unuingizmi?
                   </Link>
                 </div>
 
                 <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-blue-600/50 disabled:to-purple-600/50 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-blue-500/30 hover:shadow-2xl hover:scale-105 transform backdrop-blur-sm"
+                  type="s
+                  dis
+-sm"
                 >
                   {loading ? "Kirish..." : "Kirish"}
                 </button>
-              </form>
+              </form
 
-              <div className="mt-4 p-3 bg-yellow-500/10 backdrop-blur-sm border border-yellow-500/30 rounded-xl">
+
                 <p className="text-xs text-yellow-400 text-center">
-                  💡 Google va GitHub bilan kirish tez orada qo'shiladi
+                  💡 Google va GitHub bi
                 </p>
               </div>
 
-              <p className="mt-6 text-center text-sm text-gray-300">
-                Hisobingiz yo'qmi?{" "}
-                <Link href="/auth/signup" className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200">
-                  Ro'yxatdan o'tish
-                </Link>
+              <p c-300">
+                Hii?{" "}
+                
+              
+Link>
               </p>
             </div>
           </div>
         </div>
 
-        <div className="mt-6 text-center">
-          <Link href="/" className="text-sm text-gray-300 hover:text-white transition-colors duration-200">
-            ← Bosh sahifaga qaytish
-          </Link>
-        </div>
-      </div>
-    </div>
+        <div
+          
+    
+ >
   );
-}
+}div>
+    </
+      </div/div>
+        <  </Link>       
