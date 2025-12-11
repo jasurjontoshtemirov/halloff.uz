@@ -32,14 +32,16 @@ export default function HTMLElementsPage() {
           </div>
           <h2 className="text-3xl font-semibold text-gray-100">Video Dars</h2>
         </div>
-        <div className="bg-gray-900/50 rounded-xl p-8 text-center hover:bg-gray-900/70 transition-all">
-          <p className="text-gray-400 mb-4">HTML Elementlari - Video dars</p>
-          <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl flex items-center justify-center border border-gray-700 hover:border-blue-500/50 transition-all">
-            <div className="text-center">
-              <Play className="w-16 h-16 text-blue-500 mx-auto mb-3" />
-              <span className="text-gray-400 text-lg">Video joylashuvi</span>
-            </div>
-          </div>
+        <div className="aspect-video rounded-xl overflow-hidden border border-gray-700 hover:border-blue-500/50 transition-all">
+          <iframe 
+            width="100%" 
+            height="100%" 
+            src="https://www.youtube.com/embed/l-GaRkk5t2Y?si=Obr_bKief63PlVP0" 
+            title="HTML Elementlari - Video dars"
+            frameBorder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          ></iframe>
         </div>
       </div>
 
@@ -371,9 +373,9 @@ export default function HTMLElementsPage() {
           Oldingi: HTML ga Kirish
         </Link>
         
-        <Link href="/docs/html/attributes" 
+        <Link href="/docs/html/lists-tables" 
               className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-8 py-4 rounded-lg font-medium transition-all flex items-center gap-2 group">
-          Keyingi: HTML Atributlar
+          Keyingi: Ro'yxat va Jadvallar
           <span className="group-hover:translate-x-1 transition-transform">→</span>
         </Link>
       </div>

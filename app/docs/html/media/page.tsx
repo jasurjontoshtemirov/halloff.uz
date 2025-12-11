@@ -32,14 +32,116 @@ export default function HTMLMediaPage() {
           </div>
           <h2 className="text-3xl font-semibold text-gray-100">Video Dars</h2>
         </div>
-        <div className="bg-gray-900/50 rounded-xl p-8 text-center hover:bg-gray-900/70 transition-all">
-          <p className="text-gray-400 mb-4">Media Elementlari - Video dars</p>
-          <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl flex items-center justify-center border border-gray-700 hover:border-pink-500/50 transition-all">
-            <div className="text-center">
-              <Play className="w-16 h-16 text-pink-500 mx-auto mb-3" />
-              <span className="text-gray-400 text-lg">Video joylashuvi</span>
-            </div>
+        <div className="aspect-video rounded-xl overflow-hidden border border-gray-700 hover:border-pink-500/50 transition-all">
+          <iframe 
+            width="100%" 
+            height="100%" 
+            src="https://www.youtube.com/embed/l-GaRkk5t2Y?si=Obr_bKief63PlVP0" 
+            title="Media Elementlari - Video dars"
+            frameBorder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          ></iframe>
+        </div>
+      </div>
+
+      {/* Rasm qo'yish */}
+      <div className="mb-12">
+        <h2 className="text-3xl font-semibold text-gray-100 mb-6">Rasm qo'yish (img)</h2>
+        <p className="text-gray-300 mb-6 text-lg">
+          <code className="bg-gray-800 px-2 py-1 rounded text-pink-400">&lt;img&gt;</code> tegi veb sahifaga rasm qo'shish uchun ishlatiladi.
+        </p>
+        
+        <CodeBlock 
+          language="HTML"
+          code={`<!-- Oddiy rasm -->
+<img src="rasm.jpg" alt="Rasm tavsifi">
+
+<!-- O'lchamli rasm -->
+<img src="logo.png" alt="Logo" width="200" height="100">
+
+<!-- Internet rasm -->
+<img src="https://example.com/photo.jpg" alt="Foto">
+
+<!-- Responsive rasm -->
+<img src="rasm.jpg" alt="Rasm" style="max-width: 100%; height: auto;">
+
+<!-- Lazy loading -->
+<img src="katta-rasm.jpg" alt="Katta rasm" loading="lazy">
+
+<!-- Rasm yuklash xatosi -->
+<img src="mavjud-emas.jpg" alt="Rasm" onerror="this.src='default.jpg'">`}
+        />
+
+        <div className="mt-6 grid md:grid-cols-2 gap-4">
+          <div className="bg-pink-500/10 border border-pink-500/30 p-4 rounded-lg">
+            <p className="text-gray-300 text-sm">
+              <strong className="text-pink-400">src</strong> - Rasm manzili (majburiy)
+            </p>
           </div>
+          <div className="bg-pink-500/10 border border-pink-500/30 p-4 rounded-lg">
+            <p className="text-gray-300 text-sm">
+              <strong className="text-pink-400">alt</strong> - Muqobil matn (majburiy)
+            </p>
+          </div>
+          <div className="bg-pink-500/10 border border-pink-500/30 p-4 rounded-lg">
+            <p className="text-gray-300 text-sm">
+              <strong className="text-pink-400">loading="lazy"</strong> - Kerak bo'lganda yuklash
+            </p>
+          </div>
+          <div className="bg-pink-500/10 border border-pink-500/30 p-4 rounded-lg">
+            <p className="text-gray-300 text-sm">
+              <strong className="text-pink-400">onerror</strong> - Xato bo'lganda boshqa rasm
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Favicon */}
+      <div className="mb-12">
+        <h2 className="text-3xl font-semibold text-gray-100 mb-6">Favicon qo'yish</h2>
+        <p className="text-gray-300 mb-6 text-lg">
+          Favicon - brauzer tabida ko'rinadigan kichik icon. <code className="bg-gray-800 px-2 py-1 rounded text-rose-400">&lt;head&gt;</code> qismiga qo'shiladi.
+        </p>
+        
+        <CodeBlock 
+          language="HTML"
+          code={`<!-- Oddiy favicon -->
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+
+<!-- PNG favicon -->
+<link rel="icon" href="favicon.png" type="image/png">
+
+<!-- Turli o'lchamdagi faviconlar -->
+<link rel="icon" sizes="16x16" href="favicon-16x16.png" type="image/png">
+<link rel="icon" sizes="32x32" href="favicon-32x32.png" type="image/png">
+<link rel="icon" sizes="96x96" href="favicon-96x96.png" type="image/png">
+
+<!-- Apple Touch Icon -->
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<!-- Android Chrome -->
+<link rel="manifest" href="manifest.json">
+
+<!-- To'liq misol -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mening saytim</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" sizes="32x32" href="favicon-32x32.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+</head>
+<body>
+    <!-- Sahifa kontenti -->
+</body>
+</html>`}
+        />
+
+        <div className="mt-6 bg-rose-500/10 border-l-4 border-rose-500 p-4 rounded-r">
+          <p className="text-gray-300">
+            <strong className="text-rose-400">Maslahat:</strong> Favicon 16x16, 32x32, 96x96 o'lchamlarida tayyorlang. ICO format eng keng qo'llab-quvvatlanadi.
+          </p>
         </div>
       </div>
 
@@ -137,52 +239,7 @@ export default function HTMLMediaPage() {
         </div>
       </div>
 
-      {/* SVG */}
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold text-gray-100 mb-6">SVG - Vektor grafika</h2>
-        
-        <CodeBlock 
-          language="HTML"
-          code={`<svg width="200" height="200">
-  <!-- Doira -->
-  <circle cx="100" cy="100" r="80" fill="blue" />
-  
-  <!-- To'rtburchak -->
-  <rect x="50" y="50" width="100" height="100" fill="red" />
-  
-  <!-- Chiziq -->
-  <line x1="0" y1="0" x2="200" y2="200" stroke="green" stroke-width="2" />
-  
-  <!-- Matn -->
-  <text x="100" y="100" fill="white" text-anchor="middle">SVG</text>
-</svg>`}
-        />
-      </div>
 
-      {/* Canvas */}
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold text-gray-100 mb-6">Canvas - Rasm chizish</h2>
-        
-        <CodeBlock 
-          language="HTML"
-          code={`<canvas id="myCanvas" width="400" height="300"></canvas>
-
-<script>
-  const canvas = document.getElementById('myCanvas');
-  const ctx = canvas.getContext('2d');
-  
-  // To'rtburchak chizish
-  ctx.fillStyle = 'blue';
-  ctx.fillRect(50, 50, 200, 100);
-  
-  // Doira chizish
-  ctx.beginPath();
-  ctx.arc(200, 150, 50, 0, 2 * Math.PI);
-  ctx.fillStyle = 'red';
-  ctx.fill();
-</script>`}
-        />
-      </div>
 
       {/* Darsdagi topshiriqlar */}
       <div className="mb-12">
@@ -193,18 +250,36 @@ export default function HTMLMediaPage() {
           
           <div className="space-y-6">
             <div className="bg-gray-900/50 p-6 rounded-lg border border-yellow-500/20">
-              <h3 className="text-xl font-medium text-yellow-400 mb-3">Topshiriq 1: Video galereya</h3>
-              <p className="text-gray-300 mb-4">3 ta video bilan galereya yarating (controls bilan)</p>
+              <h3 className="text-xl font-medium text-yellow-400 mb-3">Topshiriq 1: Rasm galereya</h3>
+              <p className="text-gray-300 mb-4">Foto galereya yarating:</p>
+              <ul className="list-disc list-inside text-gray-400 space-y-2 ml-4">
+                <li>6 ta rasm (3x2 grid)</li>
+                <li>Har biriga alt matn</li>
+                <li>Lazy loading qo'shing</li>
+                <li>Favicon ham qo'ying</li>
+              </ul>
             </div>
 
             <div className="bg-gray-900/50 p-6 rounded-lg border border-yellow-500/20">
-              <h3 className="text-xl font-medium text-yellow-400 mb-3">Topshiriq 2: Musiqa pleyer</h3>
-              <p className="text-gray-300 mb-4">5 ta qo&apos;shiq bilan audio pleyer yarating</p>
+              <h3 className="text-xl font-medium text-yellow-400 mb-3">Topshiriq 2: Video va Audio pleyer</h3>
+              <p className="text-gray-300 mb-4">Multimedia pleyer yarating:</p>
+              <ul className="list-disc list-inside text-gray-400 space-y-2 ml-4">
+                <li>2 ta video (controls, width, height)</li>
+                <li>3 ta audio fayl</li>
+                <li>Har biriga tavsif qo'shing</li>
+                <li>Autoplay va loop sinab ko'ring</li>
+              </ul>
             </div>
 
             <div className="bg-gray-900/50 p-6 rounded-lg border border-yellow-500/20">
-              <h3 className="text-xl font-medium text-yellow-400 mb-3">Topshiriq 3: YouTube joylashtirish</h3>
-              <p className="text-gray-300 mb-4">Sevimli YouTube videolaringizni iframe bilan joylashtiring</p>
+              <h3 className="text-xl font-medium text-yellow-400 mb-3">Topshiriq 3: iframe bilan joylashtirish</h3>
+              <p className="text-gray-300 mb-4">Tashqi kontentni joylashtiring:</p>
+              <ul className="list-disc list-inside text-gray-400 space-y-2 ml-4">
+                <li>YouTube video (iframe)</li>
+                <li>Google Maps (iframe)</li>
+                <li>Boshqa sayt sahifasi</li>
+                <li>Xavfsizlik choralarini unutmang</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -229,7 +304,7 @@ export default function HTMLMediaPage() {
                     <li>Background musiqa (audio)</li>
                     <li>YouTube video (iframe)</li>
                     <li>Google Maps joylashuv (iframe)</li>
-                    <li>SVG logo yoki icon</li>
+                    <li>Favicon va logo</li>
                   </ul>
                   <div className="mt-4 bg-purple-500/10 p-3 rounded">
                     <p className="text-purple-300 text-sm">⏱️ Vaqt: 1.5-2 soat | 📊 Qiyinlik: Qiyin</p>

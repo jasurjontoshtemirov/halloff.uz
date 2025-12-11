@@ -32,14 +32,16 @@ export default function HTMLIntroPage() {
           </div>
           <h2 className="text-3xl font-semibold text-gray-100">Video Dars</h2>
         </div>
-        <div className="bg-gray-900/50 rounded-xl p-8 text-center hover:bg-gray-900/70 transition-all">
-          <p className="text-gray-400 mb-4">HTML ga Kirish - Video dars</p>
-          <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl flex items-center justify-center border border-gray-700 hover:border-orange-500/50 transition-all">
-            <div className="text-center">
-              <Play className="w-16 h-16 text-orange-500 mx-auto mb-3" />
-              <span className="text-gray-400 text-lg">Video joylashuvi</span>
-            </div>
-          </div>
+        <div className="aspect-video rounded-xl overflow-hidden border border-gray-700 hover:border-orange-500/50 transition-all">
+          <iframe 
+            width="100%" 
+            height="100%" 
+            src="https://www.youtube.com/embed/ReVu2YGweVQ?si=p835n0ltSapudRNq" 
+            title="HTML ga Kirish - Video dars"
+            frameBorder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          ></iframe>
         </div>
       </div>
 

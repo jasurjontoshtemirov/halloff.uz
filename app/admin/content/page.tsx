@@ -1,22 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { isAdmin } from "@/lib/auth";
 import { 
   FileText, 
-  ArrowLeft,
-  Code2,
   Palette,
   Braces,
   Edit,
-  Eye,
-  Plus
+  Eye
 } from "lucide-react";
 
 export default function AdminContentPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +31,6 @@ export default function AdminContentPage() {
   const htmlLessons = [
     { name: "Kirish", href: "/docs/html/intro", slug: "intro", path: "docs/html/intro/page.tsx" },
     { name: "Elementlar", href: "/docs/html/elements", slug: "elements", path: "docs/html/elements/page.tsx" },
-    { name: "Atributlar", href: "/docs/html/attributes", slug: "attributes", path: "docs/html/attributes/page.tsx" },
     { name: "Ro'yxat va Jadvallar", href: "/docs/html/lists-tables", slug: "lists-tables", path: "docs/html/lists-tables/page.tsx" },
     { name: "Formalar", href: "/docs/html/forms", slug: "forms", path: "docs/html/forms/page.tsx" },
     { name: "Media", href: "/docs/html/media", slug: "media", path: "docs/html/media/page.tsx" },

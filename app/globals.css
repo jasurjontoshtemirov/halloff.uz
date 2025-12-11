@@ -501,3 +501,428 @@ html {
 [contenteditable="true"] {
   caret-color: #60a5fa;
 }
+
+/* Enhanced animations for login page */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  33% {
+    transform: translateY(-15px) rotate(120deg) scale(1.1);
+  }
+  66% {
+    transform: translateY(-25px) rotate(240deg) scale(0.9);
+  }
+}
+
+@keyframes float-delayed {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translateY(-10px) rotate(-90deg) scale(1.2);
+  }
+  50% {
+    transform: translateY(-20px) rotate(-180deg) scale(0.8);
+  }
+  75% {
+    transform: translateY(-15px) rotate(-270deg) scale(1.1);
+  }
+}
+
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-12px) rotate(180deg) scale(1.05);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(59, 130, 246, 0.6), 0 0 60px rgba(147, 51, 234, 0.4);
+  }
+}
+
+@keyframes card-entrance {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes particle-drift {
+  0%, 100% {
+    transform: translateX(0) translateY(0);
+  }
+  25% {
+    transform: translateX(10px) translateY(-5px);
+  }
+  50% {
+    transform: translateX(-5px) translateY(-10px);
+  }
+  75% {
+    transform: translateX(-10px) translateY(-5px);
+  }
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 12s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.animate-float-slow {
+  animation: float-slow 15s ease-in-out infinite;
+  animation-delay: 4s;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 4s ease-in-out infinite;
+}
+
+.animate-card-entrance {
+  animation: card-entrance 0.8s ease-out;
+}
+
+.animate-particle-drift {
+  animation: particle-drift 6s ease-in-out infinite;
+}
+
+.animation-delay-1000 {
+  animation-delay: 1s;
+}
+
+.animation-delay-1500 {
+  animation-delay: 1.5s;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-2500 {
+  animation-delay: 2.5s;
+}
+
+.animation-delay-3000 {
+  animation-delay: 3s;
+}
+
+.animation-delay-3500 {
+  animation-delay: 3.5s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+.animation-delay-4500 {
+  animation-delay: 4.5s;
+}
+
+.animation-delay-5000 {
+  animation-delay: 5s;
+}
+
+.animation-delay-5500 {
+  animation-delay: 5.5s;
+}
+
+.animation-delay-6000 {
+  animation-delay: 6s;
+}
+
+.animation-delay-6500 {
+  animation-delay: 6.5s;
+}
+
+.animation-delay-7000 {
+  animation-delay: 7s;
+}
+
+.animation-delay-7500 {
+  animation-delay: 7.5s;
+}
+
+.animation-delay-8000 {
+  animation-delay: 8s;
+}
+
+.animation-delay-8500 {
+  animation-delay: 8.5s;
+}
+
+.animation-delay-9000 {
+  animation-delay: 9s;
+}
+
+.animation-delay-9500 {
+  animation-delay: 9.5s;
+}
+
+.animation-delay-10000 {
+  animation-delay: 10s;
+}
+
+.animation-delay-10500 {
+  animation-delay: 10.5s;
+}
+
+.animation-delay-11000 {
+  animation-delay: 11s;
+}
+
+.animation-delay-11500 {
+  animation-delay: 11.5s;
+}
+
+.animation-delay-12000 {
+  animation-delay: 12s;
+}
+
+.animation-delay-12500 {
+  animation-delay: 12.5s;
+}
+
+.animation-delay-13000 {
+  animation-delay: 13s;
+}
+
+.animation-delay-13500 {
+  animation-delay: 13.5s;
+}
+
+.animation-delay-14000 {
+  animation-delay: 14s;
+}
+
+.animation-delay-14500 {
+  animation-delay: 14.5s;
+}
+
+.animation-delay-15000 {
+  animation-delay: 15s;
+}
+
+.animation-delay-15500 {
+  animation-delay: 15.5s;
+}
+
+.animation-delay-16000 {
+  animation-delay: 16s;
+}
+
+.animation-delay-16500 {
+  animation-delay: 16.5s;
+}
+
+.animation-delay-17000 {
+  animation-delay: 17s;
+}
+
+.animation-delay-17500 {
+  animation-delay: 17.5s;
+}
+
+.animation-delay-18000 {
+  animation-delay: 18s;
+}
+
+.animation-delay-18500 {
+  animation-delay: 18.5s;
+}
+
+.animation-delay-19000 {
+  animation-delay: 19s;
+}
+
+.animation-delay-19500 {
+  animation-delay: 19.5s;
+}
+
+.animation-delay-20000 {
+  animation-delay: 20s;
+}
+
+.animation-delay-20500 {
+  animation-delay: 20.5s;
+}
+
+.animation-delay-21000 {
+  animation-delay: 21s;
+}
+
+.animation-delay-21500 {
+  animation-delay: 21.5s;
+}
+
+.animation-delay-22000 {
+  animation-delay: 22s;
+}
+
+.animation-delay-22500 {
+  animation-delay: 22.5s;
+}
+
+.animation-delay-23000 {
+  animation-delay: 23s;
+}
+
+.animation-delay-23500 {
+  animation-delay: 23.5s;
+}
+
+.animation-delay-24000 {
+  animation-delay: 24s;
+}
+
+.animation-delay-24500 {
+  animation-delay: 24.5s;
+}
+
+.animation-delay-25000 {
+  animation-delay: 25s;
+}
+
+.animation-delay-25500 {
+  animation-delay: 25.5s;
+}
+
+/* Glass morphism enhancements */
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 0 0 1px rgba(59, 130, 246, 0.3);
+}
+
+/* Enhanced input styling */
+.glass-input {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(59, 130, 246, 0.6);
+  box-shadow: 
+    0 0 0 3px rgba(59, 130, 246, 0.1),
+    0 4px 20px rgba(59, 130, 246, 0.2);
+}
+.animation-delay-26000 {
+  animation-delay: 26s;
+}
+
+.animation-delay-26500 {
+  animation-delay: 26.5s;
+}
+
+.animation-delay-27000 {
+  animation-delay: 27s;
+}
+
+.animation-delay-27500 {
+  animation-delay: 27.5s;
+}
+
+.animation-delay-28000 {
+  animation-delay: 28s;
+}
+
+.animation-delay-28500 {
+  animation-delay: 28.5s;
+}
+
+.animation-delay-29000 {
+  animation-delay: 29s;
+}
+
+.animation-delay-29500 {
+  animation-delay: 29.5s;
+}
+/* Ko'k va qora glass card */
+.glass-card-blue {
+  background: rgba(30, 58, 138, 0.15);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 4px 16px rgba(59, 130, 246, 0.2),
+    inset 0 1px 0 rgba(59, 130, 246, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.glass-card-blue:hover {
+  background: rgba(30, 58, 138, 0.25);
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 6px 20px rgba(59, 130, 246, 0.3),
+    inset 0 1px 0 rgba(59, 130, 246, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(59, 130, 246, 0.4);
+}
+/* Ko'k va qora glass input */
+.glass-input-blue {
+  background: rgba(30, 58, 138, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(59, 130, 246, 0.1);
+}
+
+.glass-input-blue:focus {
+  background: rgba(30, 58, 138, 0.2);
+  border-color: rgba(59, 130, 246, 0.7);
+  box-shadow: 
+    0 0 0 3px rgba(59, 130, 246, 0.15),
+    0 4px 20px rgba(59, 130, 246, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(59, 130, 246, 0.2);
+}

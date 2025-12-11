@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { BookOpen, Mail, Lock, User, Eye, EyeOff, AlertCircle, CheckCircle } from "lucide-react";
-import { registerUser, loginUser } from "@/lib/auth";
+import { saveCurrentUser } from "@/lib/auth-db";
 
 export default function SignUpPage() {
   const [name, setName] = useState("");
@@ -34,27 +34,51 @@ export default function SignUpPage() {
 
     setLoading(true);
 
-    // Register user
-    const result = registerUser(name, email, password);
-    
-    if (result.success) {
-      // Avtomatik login qilish
-      const loginResult = loginUser(email, password);
+    try {
+      // Register user
+      const registerResponse = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
       
-      if (loginResult.success) {
-        setSuccess("Muvaffaqiyatli ro'yxatdan o'tdingiz! Obuna sahifasiga yo'naltirilmoqda...");
-        setTimeout(() => {
-          // Oddiy foydalanuvchilar uchun to'g'ridan-to'g'ri obuna sahifasiga
-          window.location.href = "/subscription";
-        }, 1500);
+      const registerResult = await registerResponse.json();
+      
+      if (registerResult.success) {
+        // Avtomatik login qilish
+        const loginResponse = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+        
+        const loginResult = await loginResponse.json();
+        
+        if (loginResult.success && loginResult.user) {
+          // Save user to localStorage for client-side access
+          saveCurrentUser(loginResult.user);
+          
+          setSuccess("Muvaffaqiyatli ro'yxatdan o'tdingiz! Darslar sahifasiga yo'naltirilmoqda...");
+          setTimeout(() => {
+            window.location.href = "/docs";
+          }, 1500);
+        } else {
+          setSuccess(registerResult.message);
+          setTimeout(() => {
+            window.location.href = "/auth/login";
+          }, 1500);
+        }
       } else {
-        setSuccess(result.message);
-        setTimeout(() => {
-          window.location.href = "/auth/login";
-        }, 1500);
+        setError(registerResult.message);
+        setLoading(false);
       }
-    } else {
-      setError(result.message);
+    } catch (error) {
+      console.error('Signup error:', error);
+      setError('Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
       setLoading(false);
     }
   };

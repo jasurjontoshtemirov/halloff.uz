@@ -40,7 +40,7 @@ const navigation = {
       submenu: [
         { name: "Kirish", href: "/docs/html/intro" },
         { name: "Elementlar", href: "/docs/html/elements" },
-        { name: "Atributlar", href: "/docs/html/attributes" },
+
         { name: "Ro'yxat va Jadvallar", href: "/docs/html/lists-tables" },
         { name: "Formalar", href: "/docs/html/forms" },
         { name: "Media", href: "/docs/html/media" },

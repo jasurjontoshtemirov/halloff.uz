@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, Code, Zap, Shield, ArrowRight, Sparkles, Rocket } from "lucide-react";
+import { GraduationCap, Code, Zap, Shield, ArrowRight, Sparkles, Rocket } from "lucide-react";
 
 export default function Home() {
   return (
@@ -15,11 +15,14 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="text-xl font-bold text-white flex items-center gap-2">
-              <BookOpen className="w-6 h-6" />
+              <div className="relative">
+                <GraduationCap className="w-6 h-6 text-blue-400" />
+                <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-ping"></div>
+              </div>
               Halloff
             </Link>
             <Link
-              href="/docs"
+              href="/auth/login"
               className="px-6 py-2 text-sm bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition font-medium"
             >
               Boshlash →
@@ -50,7 +53,7 @@ export default function Home() {
           
           <div className="flex justify-center items-center px-4">
             <Link
-              href="/docs"
+              href="/auth/login"
               className="w-full sm:w-auto group px-6 md:px-10 py-4 md:py-5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl transition-all font-bold text-lg md:text-xl shadow-2xl shadow-blue-500/50 hover:scale-105 transform flex items-center justify-center gap-2 md:gap-3"
             >
               Hoziroq Boshlash
@@ -137,7 +140,7 @@ export default function Home() {
             HTML, CSS va JavaScript'ni professional darajada o'rganing
           </p>
           <Link
-            href="/docs"
+            href="/auth/login"
             className="inline-flex items-center gap-2 px-10 py-5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl transition-all font-bold text-xl shadow-2xl shadow-blue-500/50 hover:scale-105 transform"
           >
             Hoziroq Boshlash
@@ -152,7 +155,10 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <BookOpen className="w-5 h-5" />
+                <div className="relative">
+                  <GraduationCap className="w-5 h-5 text-blue-400" />
+                  <div className="absolute -top-0.5 -right-0.5 w-1 h-1 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-ping"></div>
+                </div>
                 Halloff
               </div>
               <p className="text-sm text-gray-400">
@@ -170,8 +176,8 @@ export default function Home() {
             <div>
               <h4 className="font-semibold text-white mb-4">Resurslar</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link href="/docs" className="hover:text-white">Dokumentatsiya</Link></li>
-                <li><Link href="/docs" className="hover:text-white">Bepul Darslar</Link></li>
+                <li><Link href="/auth/login" className="hover:text-white">Dokumentatsiya</Link></li>
+                <li><Link href="/auth/login" className="hover:text-white">Bepul Darslar</Link></li>
                 <li><a href="https://t.me/jasurjontoshtemirov" target="_blank" rel="noopener noreferrer" className="hover:text-white">Qo'llab-quvvatlash</a></li>
               </ul>
             </div>

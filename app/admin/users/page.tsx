@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { isAdmin, getUsers, type User } from "@/lib/auth";
+import { isAdmin, type User } from "@/lib/auth-db";
 import { 
   Users, 
   Trash2,
@@ -23,10 +23,25 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const allUsers = getUsers();
-    setUsers(allUsers);
-    setFilteredUsers(allUsers);
-    setLoading(false);
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('/api/users');
+        const data = await response.json();
+        
+        if (data.success) {
+          setUsers(data.users);
+          setFilteredUsers(data.users);
+        } else {
+          console.error('Failed to fetch users:', data.message);
+        }
+      } catch (error) {
+        console.error('Fetch users error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchUsers();
   }, []);
 
   useEffect(() => {
@@ -41,12 +56,30 @@ export default function AdminUsersPage() {
     }
   }, [searchQuery, users]);
 
-  const handleDeleteUser = (userId: string) => {
+  const handleDeleteUser = async (userId: string) => {
     if (confirm("Bu foydalanuvchini o'chirmoqchimisiz?")) {
-      const updatedUsers = users.filter(u => u.id !== userId);
-      localStorage.setItem('halloff_users', JSON.stringify(updatedUsers));
-      setUsers(updatedUsers);
-      setFilteredUsers(updatedUsers);
+      try {
+        const response = await fetch('/api/users', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId }),
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          const updatedUsers = users.filter(u => u.id !== userId);
+          setUsers(updatedUsers);
+          setFilteredUsers(updatedUsers);
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error('Delete user error:', error);
+        alert('Xatolik yuz berdi!');
+      }
     }
   };
 
@@ -146,7 +179,7 @@ export default function AdminUsersPage() {
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-2 text-gray-400">
                         <Key className="w-4 h-4" />
-                        <span className="text-sm font-mono">{user.password}</span>
+                        <span className="text-sm font-mono">••••••••</span>
                       </div>
                     </td>
                     <td className="py-4 px-6">

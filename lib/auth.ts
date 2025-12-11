@@ -141,7 +141,7 @@ export const getCurrentUserFromCookies = async (request?: Request): Promise<User
     // Server-side - cookie'dan o'qish
     if (typeof window === 'undefined') {
       const { cookies } = await import('next/headers');
-      const cookieStore = await cookies();
+      const cookieStore = cookies();
       const authToken = cookieStore.get('auth_token');
       
       if (!authToken) {
