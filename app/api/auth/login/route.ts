@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { loginUser } from '@/lib/auth-db';
+import { getPool } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
