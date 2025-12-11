@@ -142,6 +142,29 @@ export default function AdminUsersPage() {
     }
   };
 
+  const createAccessKey = async (userId: string) => {
+    try {
+      const response = await fetch('/api/admin/create-access-key', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        alert(`Kirish kaliti yaratildi:\n\n${data.accessKey}\n\nBu kalitni foydalanuvchiga bering.`);
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error('Create access key error:', error);
+      alert('Xatolik yuz berdi!');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center">
@@ -280,14 +303,23 @@ export default function AdminUsersPage() {
                       </div>
                     </td>
                     <td className="py-4 px-6 text-right">
-                      <button
-                        onClick={() => handleDeleteUser(user.id)}
-                        disabled={user.role === 'admin'}
-                        className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-                        title={user.role === 'admin' ? "Adminni o'chirish mumkin emas" : "O'chirish"}
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
+                      <div className="flex items-center gap-2 justify-end">
+                        <button
+                          onClick={() => createAccessKey(user.id)}
+                          className="p-2 text-green-400 hover:text-green-300 hover:bg-green-500/10 rounded-lg transition"
+                          title="Kirish kaliti yaratish"
+                        >
+                          <Key className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(user.id)}
+                          disabled={user.role === 'admin'}
+                          className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                          title={user.role === 'admin' ? "Adminni o'chirish mumkin emas" : "O'chirish"}
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

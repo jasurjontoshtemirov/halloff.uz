@@ -11,11 +11,51 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showAccessKeyModal, setShowAccessKeyModal] = useState(false);
+  const [accessKey, setAccessKey] = useState("");
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   // Save current user to localStorage (client-side)
   const saveCurrentUser = (user: any) => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('halloff_current_user', JSON.stringify(user));
+    }
+  };
+
+  const handleAccessKeySubmit = async () => {
+    if (!accessKey.trim()) {
+      setError("Kirish kalitini kiriting!");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch('/api/auth/verify-access-key', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          userId: currentUser.id, 
+          accessKey: accessKey.trim() 
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Kalitni localStorage ga saqlash
+        localStorage.setItem(`access_key_${currentUser.id}`, 'verified');
+        setShowAccessKeyModal(false);
+        window.location.href = "/docs";
+      } else {
+        setError(result.message);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Access key verification error:', error);
+      setError('Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
+      setLoading(false);
     }
   };
 
@@ -38,11 +78,23 @@ export default function LoginPage() {
       
       if (result.success && result.user) {
         saveCurrentUser(result.user);
+        setCurrentUser(result.user);
         setSuccess(result.message);
         
-        setTimeout(() => {
-          window.location.href = "/docs";
-        }, 500);
+        // Kirish kaliti tekshirish
+        const hasAccessKey = localStorage.getItem(`access_key_${result.user.id}`);
+        if (hasAccessKey) {
+          // Agar kalit mavjud bo'lsa, to'g'ridan-to'g'ri docs ga o'tish
+          setTimeout(() => {
+            window.location.href = "/docs";
+          }, 500);
+        } else {
+          // Agar kalit yo'q bo'lsa, modal oynani ko'rsatish
+          setTimeout(() => {
+            setShowAccessKeyModal(true);
+            setLoading(false);
+          }, 500);
+        }
       } else {
         setError(result.message);
         setLoading(false);
@@ -141,6 +193,57 @@ export default function LoginPage() {
           </Link>
         </div>
       </div>
+
+      {/* Access Key Modal */}
+      {showAccessKeyModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center px-4 z-50">
+          <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold text-white mb-4 text-center">Kirish Kaliti</h2>
+            <p className="text-gray-400 text-sm mb-6 text-center">
+              Dokumentatsiyaga kirish uchun maxsus kalitni kiriting
+            </p>
+
+            {error && (
+              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2 mb-4">
+                <AlertCircle className="w-5 h-5 text-red-400" />
+                <p className="text-sm text-red-400">{error}</p>
+              </div>
+            )}
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-300 mb-2">Kirish Kaliti</label>
+              <input
+                type="text"
+                value={accessKey}
+                onChange={(e) => setAccessKey(e.target.value)}
+                placeholder="Kalitni kiriting..."
+                className="w-full px-4 py-3 bg-[#0f0f0f] border border-[#30363d] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition"
+                onKeyPress={(e) => e.key === 'Enter' && handleAccessKeySubmit()}
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowAccessKeyModal(false);
+                  setAccessKey("");
+                  setError("");
+                }}
+                className="flex-1 py-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition"
+              >
+                Bekor qilish
+              </button>
+              <button
+                onClick={handleAccessKeySubmit}
+                disabled={loading}
+                className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition"
+              >
+                {loading ? "Tekshirilmoqda..." : "Tasdiqlash"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

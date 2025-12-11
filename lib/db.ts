@@ -47,6 +47,19 @@ export async function initDatabase() {
       )
     `);
 
+    // Create access keys table (kirish kalitlari uchun)
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS user_access_keys (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        access_key VARCHAR(255) NOT NULL,
+        is_used BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        used_at TIMESTAMP NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
     // Create admin user if not exists
     const [rows] = await pool.execute(
       'SELECT * FROM users WHERE email = ?',
