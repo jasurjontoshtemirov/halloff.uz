@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GraduationCap, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle } from "lucide-react";
+import { generateDeviceFingerprint, getDeviceName } from "@/lib/device-fingerprint";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -14,6 +15,8 @@ export default function LoginPage() {
   const [showAccessKeyModal, setShowAccessKeyModal] = useState(false);
   const [accessKey, setAccessKey] = useState("");
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [showDeviceModal, setShowDeviceModal] = useState(false);
+  const [userDevices, setUserDevices] = useState<any[]>([]);
 
   // Save current user to localStorage (client-side)
   const saveCurrentUser = (user: any) => {
@@ -59,6 +62,47 @@ export default function LoginPage() {
     }
   };
 
+  const fetchUserDevices = async (email: string) => {
+    try {
+      const response = await fetch(`/api/auth/devices?email=${email}`);
+      const data = await response.json();
+      if (data.success) {
+        setUserDevices(data.devices);
+      }
+    } catch (error) {
+      console.error('Fetch devices error:', error);
+    }
+  };
+
+  const removeDevice = async (deviceId: string) => {
+    try {
+      const response = await fetch('/api/auth/remove-device', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ deviceId }),
+      });
+      
+      const result = await response.json();
+      if (result.success) {
+        // Qurilmalar ro'yxatini yangilash
+        fetchUserDevices(currentUser.email);
+        // Agar 2 tadan kam qurilma qolsa, qayta login qilishga ruxsat berish
+        if (userDevices.length <= 2) {
+          setShowDeviceModal(false);
+          // Qayta login qilish
+          handleSubmit(new Event('submit') as any);
+        }
+      } else {
+        setError(result.message);
+      }
+    } catch (error) {
+      console.error('Remove device error:', error);
+      setError('Xatolik yuz berdi.');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -66,10 +110,15 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      const deviceFingerprint = generateDeviceFingerprint();
+      const deviceName = getDeviceName();
+      
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Device-Fingerprint': deviceFingerprint,
+          'X-Device-Name': deviceName,
         },
         body: JSON.stringify({ email, password }),
       });
@@ -96,7 +145,14 @@ export default function LoginPage() {
           }, 500);
         }
       } else {
-        setError(result.message);
+        if (result.needDeviceManagement) {
+          // Qurilmalar boshqaruvi modalini ko'rsatish
+          setCurrentUser({ email });
+          fetchUserDevices(email);
+          setShowDeviceModal(true);
+        } else {
+          setError(result.message);
+        }
         setLoading(false);
       }
     } catch (error) {
@@ -241,6 +297,51 @@ export default function LoginPage() {
                 {loading ? "Tekshirilmoqda..." : "Tasdiqlash"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Device Management Modal */}
+      {showDeviceModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center px-4 z-50">
+          <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold text-white mb-4 text-center">Qurilmalar Boshqaruvi</h2>
+            <p className="text-gray-400 text-sm mb-6 text-center">
+              Maksimal 2 ta qurilmada kirish mumkin. Boshqa qurilmani o'chiring.
+            </p>
+
+            {error && (
+              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2 mb-4">
+                <AlertCircle className="w-5 h-5 text-red-400" />
+                <p className="text-sm text-red-400">{error}</p>
+              </div>
+            )}
+
+            <div className="space-y-3 mb-6">
+              {userDevices.map((device) => (
+                <div key={device.id} className="flex items-center justify-between p-3 bg-[#0f0f0f] border border-[#30363d] rounded-lg">
+                  <div>
+                    <p className="text-white font-medium">{device.device_name}</p>
+                    <p className="text-xs text-gray-400">
+                      Oxirgi kirish: {new Date(device.last_login).toLocaleDateString('uz-UZ')}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => removeDevice(device.id)}
+                    className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded transition"
+                  >
+                    O'chirish
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setShowDeviceModal(false)}
+              className="w-full py-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition"
+            >
+              Bekor qilish
+            </button>
           </div>
         </div>
       )}

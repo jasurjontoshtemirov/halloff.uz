@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { GraduationCap, Mail, Lock, User, Eye, EyeOff, AlertCircle, CheckCircle } from "lucide-react";
+import { generateDeviceFingerprint, getDeviceName } from "@/lib/device-fingerprint";
 
 export default function SignUpPage() {
   const [name, setName] = useState("");
@@ -93,10 +94,15 @@ export default function SignUpPage() {
       
       if (registerResult.success) {
         // Avtomatik login qilish
+        const deviceFingerprint = generateDeviceFingerprint();
+        const deviceName = getDeviceName();
+        
         const loginResponse = await fetch('/api/auth/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'X-Device-Fingerprint': deviceFingerprint,
+            'X-Device-Name': deviceName,
           },
           body: JSON.stringify({ email, password }),
         });

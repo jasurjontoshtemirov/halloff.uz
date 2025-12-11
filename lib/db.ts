@@ -60,6 +60,22 @@ export async function initDatabase() {
       )
     `);
 
+    // Create user devices table (qurilmalar uchun)
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS user_devices (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        device_name VARCHAR(255) NOT NULL,
+        device_fingerprint VARCHAR(255) UNIQUE NOT NULL,
+        user_agent TEXT,
+        ip_address VARCHAR(45),
+        is_active BOOLEAN DEFAULT TRUE,
+        last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
     // Create admin user if not exists
     const [rows] = await pool.execute(
       'SELECT * FROM users WHERE email = ?',
