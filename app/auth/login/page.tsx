@@ -190,18 +190,17 @@ export default function LoginPage() {
         const updatedDevices = userDevices.filter(device => device.id !== deviceId);
         setUserDevices(updatedDevices);
         
-        // Agar 2 tadan kam qurilma qolsa, login formiga qaytish
+        // Agar 2 tadan kam qurilma qolsa, kalit so'rash
         if (updatedDevices.length < 2) {
           setShowDeviceModal(false);
-          setSuccess("Qurilma o'chirildi! Endi qayta login qiling.");
+          setSuccess("Qurilma o'chirildi!");
           
-          // Formani tozalash va qayta login qilishga tayyorlash
+          // Kalit modalini ko'rsatish
           setTimeout(() => {
-            setEmail("");
-            setPassword("");
             setSuccess("");
-            setCurrentUser(null);
-          }, 2000);
+            setShowAccessKeyModal(true);
+            setLoading(false);
+          }, 1000);
         }
       } else {
         setError(result.message);
