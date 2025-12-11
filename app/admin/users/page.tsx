@@ -59,12 +59,8 @@ export default function AdminUsersPage() {
   const handleDeleteUser = async (userId: string) => {
     if (confirm("Bu foydalanuvchini o'chirmoqchimisiz?")) {
       try {
-        const response = await fetch('/api/users', {
+        const response = await fetch(`/api/users?id=${userId}`, {
           method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ userId }),
         });
         
         const data = await response.json();

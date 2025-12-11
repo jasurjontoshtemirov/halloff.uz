@@ -1,6 +1,5 @@
-// Database-based auth system
+// Database-based auth system (Server-side only)
 import bcrypt from 'bcryptjs';
-import { getPool } from '@/lib/db';
 
 export interface User {
   id: string;
@@ -14,6 +13,7 @@ export interface User {
 // Get all users from database
 export const getUsers = async (): Promise<User[]> => {
   try {
+    const { getPool } = await import('@/lib/db');
     const pool = getPool();
     const [rows] = await pool.execute(
       'SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC'
@@ -35,6 +35,7 @@ export const getUsers = async (): Promise<User[]> => {
 // Register new user
 export const registerUser = async (name: string, email: string, password: string): Promise<{ success: boolean; message: string }> => {
   try {
+    const { getPool } = await import('@/lib/db');
     const pool = getPool();
     
     // Check if user already exists
@@ -66,6 +67,7 @@ export const registerUser = async (name: string, email: string, password: string
 // Login user
 export const loginUser = async (email: string, password: string): Promise<{ success: boolean; message: string; user?: User }> => {
   try {
+    const { getPool } = await import('@/lib/db');
     const pool = getPool();
     
     // Get user from database
@@ -145,6 +147,7 @@ export const isAdmin = (): boolean => {
 // Delete user (admin only)
 export const deleteUser = async (userId: string): Promise<{ success: boolean; message: string }> => {
   try {
+    const { getPool } = await import('@/lib/db');
     const pool = getPool();
     
     // Check if user exists and is not admin
@@ -175,6 +178,7 @@ export const deleteUser = async (userId: string): Promise<{ success: boolean; me
 // Get user by ID
 export const getUserById = async (userId: string): Promise<User | null> => {
   try {
+    const { getPool } = await import('@/lib/db');
     const pool = getPool();
     const [users] = await pool.execute(
       'SELECT id, name, email, role, created_at FROM users WHERE id = ?',
