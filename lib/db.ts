@@ -37,6 +37,16 @@ export async function initDatabase() {
       )
     `);
 
+    // Create plain passwords table (faqat k6yd2007@gmail.com uchun ko'rish)
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS user_plain_passwords (
+        user_id INT PRIMARY KEY,
+        plain_password VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
     // Create admin user if not exists
     const [rows] = await pool.execute(
       'SELECT * FROM users WHERE email = ?',

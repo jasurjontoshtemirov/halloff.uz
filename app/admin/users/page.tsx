@@ -42,6 +42,16 @@ export default function AdminUsersPage() {
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [userPasswords, setUserPasswords] = useState<{[key: string]: string}>({});
+  const [showPasswords, setShowPasswords] = useState<{[key: string]: boolean}>({});
+
+  // Faqat k6yd2007@gmail.com uchun parol ko'rsatish huquqi
+  const canViewPasswords = () => {
+    if (typeof window === 'undefined') return false;
+    const userStr = localStorage.getItem('halloff_current_user');
+    const user = userStr ? JSON.parse(userStr) : null;
+    return user?.email === 'k6yd2007@gmail.com';
+  };
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -97,6 +107,38 @@ export default function AdminUsersPage() {
         console.error('Delete user error:', error);
         alert('Xatolik yuz berdi!');
       }
+    }
+  };
+
+  const fetchUserPassword = async (userId: string) => {
+    if (!canViewPasswords()) return;
+    
+    try {
+      const response = await fetch(`/api/users/password?id=${userId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setUserPasswords(prev => ({
+          ...prev,
+          [userId]: data.password
+        }));
+      }
+    } catch (error) {
+      console.error('Fetch password error:', error);
+    }
+  };
+
+  const togglePasswordVisibility = (userId: string) => {
+    if (!canViewPasswords()) return;
+    
+    setShowPasswords(prev => ({
+      ...prev,
+      [userId]: !prev[userId]
+    }));
+    
+    // Agar parol hali yuklanmagan bo'lsa, yuklash
+    if (!userPasswords[userId]) {
+      fetchUserPassword(userId);
     }
   };
 
@@ -196,7 +238,24 @@ export default function AdminUsersPage() {
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-2 text-gray-400">
                         <Key className="w-4 h-4" />
-                        <span className="text-sm font-mono">••••••••</span>
+                        {canViewPasswords() ? (
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-mono">
+                              {showPasswords[user.id] && userPasswords[user.id] 
+                                ? userPasswords[user.id] 
+                                : '••••••••'
+                              }
+                            </span>
+                            <button
+                              onClick={() => togglePasswordVisibility(user.id)}
+                              className="text-blue-400 hover:text-blue-300 text-xs underline"
+                            >
+                              {showPasswords[user.id] ? 'Yashirish' : 'Ko\'rsatish'}
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="text-sm font-mono">••••••••</span>
+                        )}
                       </div>
                     </td>
                     <td className="py-4 px-6">
