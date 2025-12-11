@@ -151,11 +151,13 @@ export default function LoginPage() {
       if (result.success) {
         // Qurilmalar ro'yxatini yangilash
         fetchUserDevices(currentUser.email);
-        // Agar 2 tadan kam qurilma qolsa, qayta login qilishga ruxsat berish
+        // Agar 2 tadan kam qurilma qolsa, to'g'ridan-to'g'ri docs ga o'tish
         if (userDevices.length <= 2) {
           setShowDeviceModal(false);
-          // Qayta login qilish
-          handleSubmit(new Event('submit') as any);
+          setSuccess("Qurilma o'chirildi! Dokumentatsiyaga yo'naltirilmoqda...");
+          setTimeout(() => {
+            window.location.href = "/docs";
+          }, 1000);
         }
       } else {
         setError(result.message);
