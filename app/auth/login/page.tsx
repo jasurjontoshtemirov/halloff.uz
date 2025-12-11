@@ -187,14 +187,21 @@ export default function LoginPage() {
       const result = await response.json();
       if (result.success) {
         // Qurilmalar ro'yxatini yangilash
-        fetchUserDevices(currentUser.email);
-        // Agar 2 tadan kam qurilma qolsa, to'g'ridan-to'g'ri docs ga o'tish
-        if (userDevices.length <= 2) {
+        const updatedDevices = userDevices.filter(device => device.id !== deviceId);
+        setUserDevices(updatedDevices);
+        
+        // Agar 2 tadan kam qurilma qolsa, login formiga qaytish
+        if (updatedDevices.length < 2) {
           setShowDeviceModal(false);
-          setSuccess("Qurilma o'chirildi! Dokumentatsiyaga yo'naltirilmoqda...");
+          setSuccess("Qurilma o'chirildi! Endi qayta login qiling.");
+          
+          // Formani tozalash va qayta login qilishga tayyorlash
           setTimeout(() => {
-            window.location.href = "/docs";
-          }, 1000);
+            setEmail("");
+            setPassword("");
+            setSuccess("");
+            setCurrentUser(null);
+          }, 2000);
         }
       } else {
         setError(result.message);
