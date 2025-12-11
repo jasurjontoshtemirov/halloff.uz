@@ -44,6 +44,7 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true);
   const [userPasswords, setUserPasswords] = useState<{[key: string]: string}>({});
   const [showPasswords, setShowPasswords] = useState<{[key: string]: boolean}>({});
+  const [userAccessKeys, setUserAccessKeys] = useState<{[key: string]: string[]}>({});
 
   // Faqat k6yd2007@gmail.com uchun parol ko'rsatish huquqi
   const canViewPasswords = () => {
@@ -62,6 +63,11 @@ export default function AdminUsersPage() {
         if (data.success) {
           setUsers(data.users);
           setFilteredUsers(data.users);
+          
+          // Har bir foydalanuvchi uchun access keylarni yuklash
+          data.users.forEach((user: User) => {
+            fetchUserAccessKeys(user.id);
+          });
         } else {
           console.error('Failed to fetch users:', data.message);
         }
@@ -142,6 +148,22 @@ export default function AdminUsersPage() {
     }
   };
 
+  const fetchUserAccessKeys = async (userId: string) => {
+    try {
+      const response = await fetch(`/api/admin/access-keys?userId=${userId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setUserAccessKeys(prev => ({
+          ...prev,
+          [userId]: data.accessKeys
+        }));
+      }
+    } catch (error) {
+      console.error('Fetch access keys error:', error);
+    }
+  };
+
   const createAccessKey = async (userId: string) => {
     try {
       const response = await fetch('/api/admin/create-access-key', {
@@ -155,6 +177,12 @@ export default function AdminUsersPage() {
       const data = await response.json();
       
       if (data.success) {
+        // Yangi kalitni ro'yxatga qo'shish
+        setUserAccessKeys(prev => ({
+          ...prev,
+          [userId]: [...(prev[userId] || []), data.accessKey]
+        }));
+        
         alert(`Kirish kaliti yaratildi:\n\n${data.accessKey}\n\nBu kalitni foydalanuvchiga bering.`);
       } else {
         alert(data.message);
@@ -233,6 +261,7 @@ export default function AdminUsersPage() {
                   <th className="text-left py-4 px-6 text-sm font-semibold text-gray-400">Ism</th>
                   <th className="text-left py-4 px-6 text-sm font-semibold text-gray-400">Email</th>
                   <th className="text-left py-4 px-6 text-sm font-semibold text-gray-400">Parol</th>
+                  <th className="text-left py-4 px-6 text-sm font-semibold text-gray-400">Kirish Kalitlari</th>
                   <th className="text-left py-4 px-6 text-sm font-semibold text-gray-400">Rol</th>
                   <th className="text-left py-4 px-6 text-sm font-semibold text-gray-400">Ro'yxatdan o'tgan</th>
                   <th className="text-right py-4 px-6 text-sm font-semibold text-gray-400">Amallar</th>
@@ -278,6 +307,28 @@ export default function AdminUsersPage() {
                           </div>
                         ) : (
                           <span className="text-sm font-mono">••••••••</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="space-y-1">
+                        {userAccessKeys[user.id]?.length > 0 ? (
+                          userAccessKeys[user.id].map((key, index) => (
+                            <div key={index} className="flex items-center gap-2">
+                              <span className="text-xs font-mono bg-gray-800 px-2 py-1 rounded text-gray-300">
+                                {key.substring(0, 8)}...
+                              </span>
+                              <button
+                                onClick={() => navigator.clipboard.writeText(key)}
+                                className="text-xs text-blue-400 hover:text-blue-300"
+                                title="Nusxalash"
+                              >
+                                📋
+                              </button>
+                            </div>
+                          ))
+                        ) : (
+                          <span className="text-xs text-gray-500">Kalit yo'q</span>
                         )}
                       </div>
                     </td>
