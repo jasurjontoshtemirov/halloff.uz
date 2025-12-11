@@ -38,6 +38,34 @@ export async function POST(request: NextRequest) {
     const result = await loginUser(email, password);
     console.log('Login result:', { success: result.success, message: result.message });
     
+    if (result.success && result.user) {
+      // Cookie o'rnatish
+      const response = NextResponse.json(result, { status: 200 });
+      
+      // Auth token cookie
+      response.cookies.set('auth_token', 'authenticated', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7, // 7 kun
+        path: '/'
+      });
+      
+      // Admin huquqi cookie
+      if (result.user.role === 'admin') {
+        response.cookies.set('is_admin', 'true', {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24 * 7, // 7 kun
+          path: '/'
+        });
+      }
+      
+      console.log('Cookies set for user:', result.user.email);
+      return response;
+    }
+    
     return NextResponse.json(result, { 
       status: result.success ? 200 : 401 
     });
