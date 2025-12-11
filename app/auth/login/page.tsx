@@ -18,6 +18,7 @@ export default function LoginPage() {
   const [showDeviceModal, setShowDeviceModal] = useState(false);
   const [userDevices, setUserDevices] = useState<any[]>([]);
 
+
   // Save current user to localStorage (client-side)
   const saveCurrentUser = (user: any) => {
     if (typeof window !== 'undefined') {
@@ -44,6 +45,7 @@ export default function LoginPage() {
         }),
       });
       
+      
       const result = await response.json();
       
       if (result.success) {
@@ -62,46 +64,7 @@ export default function LoginPage() {
     }
   };
 
-  const fetchUserDevices = async (email: string) => {
-    try {
-      const response = await fetch(`/api/auth/devices?email=${email}`);
-      const data = await response.json();
-      if (data.success) {
-        setUserDevices(data.devices);
-      }
-    } catch (error) {
-      console.error('Fetch devices error:', error);
-    }
-  };
 
-  const removeDevice = async (deviceId: string) => {
-    try {
-      const response = await fetch('/api/auth/remove-device', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ deviceId }),
-      });
-      
-      const result = await response.json();
-      if (result.success) {
-        // Qurilmalar ro'yxatini yangilash
-        fetchUserDevices(currentUser.email);
-        // Agar 2 tadan kam qurilma qolsa, qayta login qilishga ruxsat berish
-        if (userDevices.length <= 2) {
-          setShowDeviceModal(false);
-          // Qayta login qilish
-          handleSubmit(new Event('submit') as any);
-        }
-      } else {
-        setError(result.message);
-      }
-    } catch (error) {
-      console.error('Remove device error:', error);
-      setError('Xatolik yuz berdi.');
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -159,6 +122,47 @@ export default function LoginPage() {
       console.error('Login error:', error);
       setError('Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
       setLoading(false);
+    }
+  };
+
+  const fetchUserDevices = async (email: string) => {
+    try {
+      const response = await fetch(`/api/auth/devices?email=${email}`);
+      const data = await response.json();
+      if (data.success) {
+        setUserDevices(data.devices);
+      }
+    } catch (error) {
+      console.error('Fetch devices error:', error);
+    }
+  };
+
+  const removeDevice = async (deviceId: string) => {
+    try {
+      const response = await fetch('/api/auth/remove-device', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ deviceId }),
+      });
+      
+      const result = await response.json();
+      if (result.success) {
+        // Qurilmalar ro'yxatini yangilash
+        fetchUserDevices(currentUser.email);
+        // Agar 2 tadan kam qurilma qolsa, qayta login qilishga ruxsat berish
+        if (userDevices.length <= 2) {
+          setShowDeviceModal(false);
+          // Qayta login qilish
+          handleSubmit(new Event('submit') as any);
+        }
+      } else {
+        setError(result.message);
+      }
+    } catch (error) {
+      console.error('Remove device error:', error);
+      setError('Xatolik yuz berdi.');
     }
   };
 
@@ -345,6 +349,7 @@ export default function LoginPage() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

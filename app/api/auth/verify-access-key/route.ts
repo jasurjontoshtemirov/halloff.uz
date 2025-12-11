@@ -14,9 +14,9 @@ export async function POST(request: NextRequest) {
 
     const pool = getPool();
     
-    // Kirish kalitini tekshirish
+    // Kirish kalitini tekshirish (is_used ni tekshirmaymiz, har doim ishlatish mumkin)
     const [rows] = await pool.execute(
-      'SELECT id, is_used FROM user_access_keys WHERE user_id = ? AND access_key = ?',
+      'SELECT id FROM user_access_keys WHERE user_id = ? AND access_key = ?',
       [userId, accessKey]
     );
     
@@ -27,20 +27,6 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
-
-    const keyRecord = keyRows[0];
-    if (keyRecord.is_used) {
-      return NextResponse.json(
-        { success: false, message: 'Bu kalit allaqachon ishlatilgan!' },
-        { status: 401 }
-      );
-    }
-
-    // Kalitni ishlatilgan deb belgilash
-    await pool.execute(
-      'UPDATE user_access_keys SET is_used = TRUE, used_at = NOW() WHERE id = ?',
-      [keyRecord.id]
-    );
 
     return NextResponse.json({
       success: true,
