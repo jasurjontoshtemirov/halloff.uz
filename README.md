@@ -134,3 +134,103 @@ CREATE TABLE user_devices (
 - `POST /api/auth/logout-device` - Device'ni logout qilish
 - `GET /api/auth/devices` - Foydalanuvchi qurilmalarini olish
 - `POST /api/auth/remove-device` - Qurilmani o'chirish
+## 🚀 ISPmanager Server Deployment
+
+### Quick Deployment Steps:
+
+1. **Upload files** to ISPmanager File Manager
+2. **Create MySQL database** in ISPmanager
+3. **Configure environment** variables
+4. **Run deployment script**
+
+### Detailed Instructions:
+
+#### 1. Server Preparation
+```bash
+# SSH orqali serverga kirish
+ssh root@your-server-ip
+
+# Node.js va PM2 o'rnatish (agar yo'q bo'lsa)
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+apt-get install -y nodejs
+npm install -g pm2
+```
+
+#### 2. Database Setup
+ISPmanager MySQL panelida:
+- Database yarating: `halloff_db`
+- User yarating: `halloff_user`
+- Strong password o'rnating
+
+#### 3. Environment Configuration
+`.env.production` faylini yarating:
+```bash
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=halloff_user
+DB_PASSWORD=YOUR_STRONG_PASSWORD
+DB_NAME=halloff_db
+NEXTAUTH_URL=https://halloff.uz
+NEXTAUTH_SECRET=RANDOM_SECRET_STRING
+JWT_SECRET=ANOTHER_RANDOM_SECRET
+NODE_ENV=production
+```
+
+#### 4. Deployment
+```bash
+# Fayllarni yuklash
+cd /var/www/halloff.uz/data/
+
+# Deployment script ishga tushirish
+chmod +x deploy.sh
+./deploy.sh
+```
+
+#### 5. Nginx Configuration
+```bash
+# Nginx config faylini nusxalash
+cp nginx.conf /etc/nginx/sites-available/halloff.uz
+ln -s /etc/nginx/sites-available/halloff.uz /etc/nginx/sites-enabled/
+nginx -t && systemctl reload nginx
+```
+
+#### 6. SSL Certificate
+ISPmanager SSL panelidan Let's Encrypt sertifikat o'rnating.
+
+#### 7. Automated Backup
+```bash
+# Backup script sozlash
+chmod +x backup.sh
+crontab -e
+# Quyidagi qatorni qo'shing:
+# 0 2 * * * /var/www/halloff.uz/data/backup.sh
+```
+
+### Monitoring Commands:
+```bash
+# Application status
+pm2 status
+pm2 logs halloff
+
+# Database monitoring
+mysql -u halloff_user -p -e "SELECT COUNT(*) as users FROM halloff_db.users;"
+
+# Active sessions
+mysql -u halloff_user -p -e "
+SELECT u.email, d.device_name, d.last_login 
+FROM halloff_db.users u 
+JOIN halloff_db.user_devices d ON u.id = d.user_id 
+WHERE d.is_active = TRUE;"
+```
+
+### Troubleshooting:
+- **Port conflicts**: Change port in package.json
+- **Database errors**: Check credentials in .env.production
+- **SSL issues**: Verify certificate paths in Nginx
+- **Memory issues**: Restart PM2 or increase server RAM
+
+### Performance Tips:
+- Enable Nginx gzip compression
+- Use PM2 cluster mode for high traffic
+- Set up database indexing
+- Monitor server resources regularly

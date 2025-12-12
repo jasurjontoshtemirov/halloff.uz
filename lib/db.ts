@@ -61,20 +61,22 @@ export async function initDatabase() {
       )
     `);
 
-    // Create user devices table (qurilmalar uchun)
+    // Create user devices table (qurilmalar uchun - single device per user)
     await pool.execute(`
       CREATE TABLE IF NOT EXISTS user_devices (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
-        device_name VARCHAR(255) NOT NULL,
-        device_fingerprint VARCHAR(255) UNIQUE NOT NULL,
+        device_name VARCHAR(255) NOT NULL DEFAULT 'Unknown Device',
+        device_fingerprint VARCHAR(255) NOT NULL,
         user_agent TEXT,
         ip_address VARCHAR(45),
         is_active BOOLEAN DEFAULT TRUE,
-        access_key_expires_at TIMESTAMP NULL,
-        last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_user_device (user_id, device_fingerprint),
+        INDEX idx_user_active (user_id, is_active),
+        INDEX idx_fingerprint (device_fingerprint)
       )
     `);
 
