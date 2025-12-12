@@ -90,21 +90,23 @@ export async function POST(request: NextRequest) {
       
       // Auth token cookie
       response.cookies.set('auth_token', 'authenticated', {
-        httpOnly: true,
-        secure: false, // HTTP uchun false
+        httpOnly: false, // Debug uchun false qilamiz
+        secure: false,
         sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 7 kun
-        path: '/'
+        maxAge: 60 * 60 * 24 * 7,
+        path: '/',
+        domain: '.halloff.uz'
       });
       
       // Admin huquqi cookie
       if (result.user.role === 'admin') {
         response.cookies.set('is_admin', 'true', {
-          httpOnly: true,
-          secure: false, // HTTP uchun false
+          httpOnly: false, // Debug uchun false qilamiz
+          secure: false,
           sameSite: 'lax',
-          maxAge: 60 * 60 * 24 * 7, // 7 kun
-          path: '/'
+          maxAge: 60 * 60 * 24 * 7,
+          path: '/',
+          domain: '.halloff.uz'
         });
       }
       
