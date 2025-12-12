@@ -17,6 +17,7 @@ export default function LoginPage() {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [showDeviceModal, setShowDeviceModal] = useState(false);
   const [userDevices, setUserDevices] = useState<any[]>([]);
+  const [savedCredentials, setSavedCredentials] = useState<{email: string, password: string} | null>(null);
 
   // Sahifa yuklanganda qurilma holatini tekshirish
   useEffect(() => {
@@ -148,6 +149,7 @@ export default function LoginPage() {
         if (result.needDeviceManagement) {
           // Qurilmalar boshqaruvi modalini ko'rsatish
           setCurrentUser({ email });
+          setSavedCredentials({ email, password }); // Parolni saqlash
           fetchUserDevices(email);
           setShowDeviceModal(true);
         } else {
@@ -208,7 +210,10 @@ export default function LoginPage() {
                   'X-Device-Fingerprint': deviceFingerprint,
                   'X-Device-Name': deviceName,
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ 
+                  email: savedCredentials?.email || email, 
+                  password: savedCredentials?.password || password 
+                }),
               });
               
               const loginResult = await loginResponse.json();
