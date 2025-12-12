@@ -1,34 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { loginUser } from '@/lib/auth-db';
-import { getPool } from '@/lib/db';
-import { generateToken } from '@/lib/jwt';
 
 export async function POST(request: NextRequest) {
   try {
-    // Request body ni olish
-    const body = await request.text();
-    console.log('Raw request body:', body);
-    
-    if (!body) {
-      return NextResponse.json(
-        { success: false, message: 'Ma\'lumot yuborilmagan!' },
-        { status: 400 }
-      );
-    }
-
-    let parsedBody;
-    try {
-      parsedBody = JSON.parse(body);
-    } catch (parseError) {
-      console.error('JSON parse error:', parseError);
-      return NextResponse.json(
-        { success: false, message: 'Noto\'g\'ri ma\'lumot formati!' },
-        { status: 400 }
-      );
-    }
-
-    const { email, password } = parsedBody;
-    console.log('Parsed data:', { email: email ? 'exists' : 'missing', password: password ? 'exists' : 'missing' });
+    const { email, password } = await request.json();
 
     if (!email || !password) {
       return NextResponse.json(
@@ -38,91 +13,32 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await loginUser(email, password);
-    console.log('Login result:', { success: result.success, message: result.message });
     
     if (result.success && result.user) {
-      // Qurilma ma'lumotlarini olish
-      const deviceFingerprint = request.headers.get('x-device-fingerprint') || '';
-      const deviceName = request.headers.get('x-device-name') || 'Unknown Device';
-      const userAgent = request.headers.get('user-agent') || '';
-      const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '';
-
-      const pool = getPool();
+      // Oddiy cookie o'rnatish
+      const response = NextResponse.json(result);
       
-      // Qurilmani tekshirish
-      const [deviceRows] = await pool.execute(
-        'SELECT id FROM user_devices WHERE user_id = ? AND device_fingerprint = ?',
-        [result.user.id, deviceFingerprint]
-      );
-      
-      // Qurilma ma'lumotlarini saqlash (login da access key so'ralmasin)
-      if ((deviceRows as any[]).length === 0) {
-        // Yangi qurilma - foydalanuvchining qurilmalari sonini tekshirish
-        const [userDevicesCount] = await pool.execute(
-          'SELECT COUNT(*) as count FROM user_devices WHERE user_id = ? AND is_active = TRUE',
-          [result.user.id]
-        );
-        
-        const deviceCount = (userDevicesCount as any[])[0].count;
-        
-        if (deviceCount >= 2) {
-          return NextResponse.json({
-            success: false,
-            message: 'Maksimal 2 ta qurilmada kirish mumkin. Avval boshqa qurilmani chiqaring.',
-            needDeviceManagement: true
-          }, { status: 403 });
-        }
-        
-        // Yangi qurilmani qo'shish
-        await pool.execute(
-          'INSERT INTO user_devices (user_id, device_name, device_fingerprint, user_agent, ip_address) VALUES (?, ?, ?, ?, ?)',
-          [result.user.id, deviceName, deviceFingerprint, userAgent, ipAddress]
-        );
-      } else {
-        // Mavjud qurilmani yangilash
-        await pool.execute(
-          'UPDATE user_devices SET last_login = NOW(), user_agent = ?, ip_address = ? WHERE user_id = ? AND device_fingerprint = ?',
-          [userAgent, ipAddress, result.user.id, deviceFingerprint]
-        );
-      }
-
-      // JWT token yaratish
-      const token = generateToken({
-        userId: result.user.id,
-        email: result.user.email,
-        role: result.user.role
-      });
-      
-      console.log('Generated JWT token for user:', result.user.email);
-      console.log('Token length:', token.length);
-      
-      // Multiple cookie setting approaches
-      const cookieOptions = {
+      // Auth cookie
+      response.cookies.set('auth_token', 'authenticated', {
         httpOnly: false,
-        secure: false, // HTTP uchun false
-        sameSite: 'lax' as const,
+        secure: false,
+        sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7, // 7 kun
         path: '/'
-      };
-      
-      // Approach 1: NextResponse with Set-Cookie header
-      const setCookieHeaders = [
-        `auth_token=${token}; Path=/; Max-Age=604800; SameSite=Lax`,
-      ];
-      
-      if (result.user.role === 'admin') {
-        setCookieHeaders.push(`is_admin=true; Path=/; Max-Age=604800; SameSite=Lax`);
-      }
-      
-      const response = new NextResponse(JSON.stringify(result), {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Set-Cookie': setCookieHeaders
-        }
       });
       
-      console.log('Set-Cookie headers:', setCookieHeaders);
+      // Admin cookie
+      if (result.user.role === 'admin') {
+        response.cookies.set('is_admin', 'true', {
+          httpOnly: false,
+          secure: false,
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24 * 7,
+          path: '/'
+        });
+      }
+      
+      console.log('Cookies set for user:', result.user.email);
       return response;
     }
     
