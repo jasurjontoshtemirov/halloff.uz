@@ -114,7 +114,39 @@ export default function LoginPage() {
     setSuccess("");
     setLoading(true);
 
-    await performLogin(email, password);
+    try {
+      const deviceFingerprint = generateDeviceFingerprint();
+      const deviceName = getDeviceName();
+      
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Device-Fingerprint': deviceFingerprint,
+          'X-Device-Name': deviceName,
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      
+      const result = await response.json();
+      
+      if (result.success && result.user) {
+        // Save user to localStorage
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('halloff_current_user', JSON.stringify(result.user));
+        }
+        
+        // Redirect to docs
+        window.location.href = "/docs";
+      } else {
+        setError(result.message || 'Login xatosi');
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
+      setLoading(false);
+    }
   };
 
   const fetchUserDevices = async (email: string) => {
@@ -193,13 +225,10 @@ export default function LoginPage() {
       
       if (result.success && result.user) {
         saveCurrentUser(result.user);
-        setCurrentUser(result.user);
         setSuccess(result.message);
         
-        // Login da access key so'ralmasin - to'g'ridan-to'g'ri docs ga o'tish
-        setTimeout(() => {
-          window.location.href = "/docs";
-        }, 500);
+        // To'g'ridan-to'g'ri redirect qilish
+        window.location.href = "/docs";
       } else {
         if (result.needDeviceManagement) {
           // Qurilmalar boshqaruvi modalini ko'rsatish
