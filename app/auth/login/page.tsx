@@ -19,42 +19,7 @@ export default function LoginPage() {
   const [userDevices, setUserDevices] = useState<any[]>([]);
   const [savedCredentials, setSavedCredentials] = useState<{email: string, password: string} | null>(null);
 
-  // Sahifa yuklanganda qurilma holatini tekshirish
-  useEffect(() => {
-    const checkDeviceStatus = async () => {
-      const currentUser = localStorage.getItem('halloff_current_user');
-      if (currentUser) {
-        const user = JSON.parse(currentUser);
-        const deviceFingerprint = generateDeviceFingerprint();
-        
-        try {
-          const response = await fetch('/api/auth/check-device', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ 
-              userId: user.id, 
-              deviceFingerprint 
-            }),
-          });
-          
-          const result = await response.json();
-          
-          if (!result.success || !result.deviceExists) {
-            // Qurilma ma'lumotlar bazasida yo'q - localStorage ni tozalash
-            localStorage.clear();
-            // Cookie larni ham tozalash uchun logout API ni chaqirish
-            await fetch('/api/auth/logout', { method: 'POST' });
-          }
-        } catch (error) {
-          console.error('Device check error:', error);
-        }
-      }
-    };
-
-    checkDeviceStatus();
-  }, []);
+  // Login sahifasida device check kerak emas
 
 
   // Save current user to localStorage (client-side)
