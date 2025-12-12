@@ -14,9 +14,16 @@ export async function POST(request: NextRequest) {
 
     const result = await registerUser(name, email, password);
     
-    return NextResponse.json(result, { 
-      status: result.success ? 201 : 400 
-    });
+    if (result.success) {
+      // Yangi foydalanuvchi uchun access key talab qilish
+      const responseData = {
+        ...result,
+        needsAccessKey: true
+      };
+      return NextResponse.json(responseData, { status: 201 });
+    }
+    
+    return NextResponse.json(result, { status: 400 });
   } catch (error) {
     console.error('Register API error:', error);
     return NextResponse.json(

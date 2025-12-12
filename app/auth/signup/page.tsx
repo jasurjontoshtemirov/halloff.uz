@@ -34,14 +34,18 @@ export default function SignUpPage() {
 
     setLoading(true);
     try {
+      const deviceFingerprint = generateDeviceFingerprint();
+      
       const response = await fetch('/api/auth/verify-access-key', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Device-Fingerprint': deviceFingerprint,
         },
         body: JSON.stringify({ 
           userId: currentUser.id, 
-          accessKey: accessKey.trim() 
+          accessKey: accessKey.trim(),
+          deviceFingerprint: deviceFingerprint
         }),
       });
       
@@ -116,18 +120,16 @@ export default function SignUpPage() {
           
           setSuccess("Muvaffaqiyatli ro'yxatdan o'tdingiz!");
           
-          // Kirish kaliti tekshirish
-          const hasAccessKey = localStorage.getItem(`access_key_${loginResult.user.id}`);
-          if (hasAccessKey) {
-            // Agar kalit mavjud bo'lsa, to'g'ridan-to'g'ri docs ga o'tish
-            setTimeout(() => {
-              window.location.href = "/docs";
-            }, 1500);
-          } else {
-            // Agar kalit yo'q bo'lsa, modal oynani ko'rsatish
+          // Yangi foydalanuvchi uchun access key so'rash
+          if (registerResult.needsAccessKey) {
             setTimeout(() => {
               setShowAccessKeyModal(true);
               setLoading(false);
+            }, 1500);
+          } else {
+            // To'g'ridan-to'g'ri docs ga o'tish
+            setTimeout(() => {
+              window.location.href = "/docs";
             }, 1500);
           }
         } else {
