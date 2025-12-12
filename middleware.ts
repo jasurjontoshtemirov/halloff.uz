@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { verifyToken } from '@/lib/jwt';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -8,17 +9,32 @@ export function middleware(request: NextRequest) {
   if (pathname.startsWith('/docs')) {
     const authToken = request.cookies.get('auth_token');
     
-    if (!authToken) {
+    if (!authToken?.value) {
+      console.log('No auth token found, redirecting to login');
       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
+    
+    // JWT tokenni tekshirish
+    const payload = verifyToken(authToken.value);
+    if (!payload) {
+      console.log('Invalid JWT token, redirecting to login');
+      return NextResponse.redirect(new URL('/auth/login', request.url));
+    }
+    
+    console.log('Valid token for user:', payload.email);
   }
 
   // /admin route'larini himoya qilish
   if (pathname.startsWith('/admin')) {
     const authToken = request.cookies.get('auth_token');
-    const isAdmin = request.cookies.get('is_admin');
     
-    if (!authToken || isAdmin?.value !== 'true') {
+    if (!authToken?.value) {
+      return NextResponse.redirect(new URL('/auth/login', request.url));
+    }
+    
+    // JWT tokenni tekshirish va admin rolini tekshirish
+    const payload = verifyToken(authToken.value);
+    if (!payload || payload.role !== 'admin') {
       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
   }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { loginUser } from '@/lib/auth-db';
 import { getPool } from '@/lib/db';
+import { generateToken } from '@/lib/jwt';
 
 export async function POST(request: NextRequest) {
   try {
@@ -85,16 +86,41 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Cookie o'rnatish - NextResponse.json bilan
-      console.log('Setting cookies for user:', result.user.email);
+      // JWT token yaratish
+      const token = generateToken({
+        userId: result.user.id,
+        email: result.user.email,
+        role: result.user.role
+      });
+      
+      console.log('Setting JWT token for user:', result.user.email);
       
       const response = new NextResponse(JSON.stringify(result), {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Set-Cookie': 'auth_token=authenticated; Path=/; Max-Age=604800; SameSite=Lax; HttpOnly=false'
         }
       });
+      
+      // Cookie o'rnatish
+      response.cookies.set('auth_token', token, {
+        httpOnly: false, // Client-side access uchun
+        secure: false, // HTTP uchun false
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7, // 7 kun
+        path: '/'
+      });
+      
+      // Admin uchun alohida cookie
+      if (result.user.role === 'admin') {
+        response.cookies.set('is_admin', 'true', {
+          httpOnly: false,
+          secure: false,
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24 * 7,
+          path: '/'
+        });
+      }
       
       return response;
     }

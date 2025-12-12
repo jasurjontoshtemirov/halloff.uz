@@ -101,8 +101,12 @@ export default function LoginPage() {
           localStorage.setItem('halloff_current_user', JSON.stringify(result.user));
         }
         
-        // To'g'ridan-to'g'ri redirect
-        window.location.href = "/docs";
+        setSuccess("Muvaffaqiyatli kirdingiz! Yo'naltirilmoqda...");
+        
+        // Kichik kechikish bilan redirect qilish - cookie'lar o'rnatilishi uchun
+        setTimeout(() => {
+          window.location.href = "/docs";
+        }, 1000);
       } else {
         setError(result.message || 'Login xatosi');
         setLoading(false);
