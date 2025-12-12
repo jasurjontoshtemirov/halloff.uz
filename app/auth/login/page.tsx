@@ -122,6 +122,9 @@ export default function LoginPage() {
   // Login jarayonini alohida funksiyaga ajratish
   const performLogin = async (loginEmail: string, loginPassword: string) => {
     try {
+      setLoading(true);
+      setError("");
+      
       const deviceFingerprint = generateDeviceFingerprint();
       const deviceName = getDeviceName();
       
@@ -143,12 +146,13 @@ export default function LoginPage() {
       if (result.success && result.user) {
         localStorage.setItem('halloff_current_user', JSON.stringify(result.user));
         setSuccess("Muvaffaqiyatli kirdingiz!");
+        setLoading(false);
         
         setTimeout(() => {
           window.location.href = "/docs";
         }, 1000);
       } else {
-        setError(result.message);
+        setError(result.message || 'Login xatosi');
         setLoading(false);
       }
     } catch (error) {

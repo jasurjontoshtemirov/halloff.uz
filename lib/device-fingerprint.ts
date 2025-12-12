@@ -10,7 +10,7 @@ export const generateDeviceFingerprint = (): string => {
     ctx.fillText('Device fingerprint', 2, 2);
   }
   
-  // Yanada unique fingerprint yaratish
+  // Yanada unique fingerprint yaratish (consistent)
   const fingerprint = [
     navigator.userAgent,
     navigator.language,
@@ -25,10 +25,8 @@ export const generateDeviceFingerprint = (): string => {
     navigator.doNotTrack || '',
     navigator.hardwareConcurrency || 0,
     navigator.maxTouchPoints || 0,
-    localStorage.length,
-    sessionStorage.length,
-    // Random component agar boshqa hamma narsa bir xil bo'lsa
-    Math.random().toString(36).substring(2, 8)
+    // Consistent unique identifier
+    window.location.hostname
   ].join('|');
   
   // Simple hash function
