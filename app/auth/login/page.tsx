@@ -134,10 +134,20 @@ export default function LoginPage() {
         // Save user to localStorage
         if (typeof window !== 'undefined') {
           localStorage.setItem('halloff_current_user', JSON.stringify(result.user));
+          
+          // Client-side cookie o'rnatish
+          document.cookie = `auth_token=authenticated; path=/; max-age=${60 * 60 * 24 * 7}`;
+          if (result.user.role === 'admin') {
+            document.cookie = `is_admin=true; path=/; max-age=${60 * 60 * 24 * 7}`;
+          }
         }
         
-        // Redirect to docs
-        window.location.href = "/docs";
+        setSuccess("Muvaffaqiyatli kirdingiz! Yo'naltirilmoqda...");
+        
+        // Cookie'lar o'rnatilgandan keyin redirect
+        setTimeout(() => {
+          window.location.replace("/docs");
+        }, 500);
       } else {
         setError(result.message || 'Login xatosi');
         setLoading(false);
