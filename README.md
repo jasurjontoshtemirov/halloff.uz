@@ -97,3 +97,40 @@ MIT License
 ## 👨‍💻 Developer
 
 Halloff Team
+
+## 🔒 Device Management (Qurilma Boshqaruvi)
+
+Xavfsizlik uchun har bir foydalanuvchi faqat **1 ta qurilmada** login qila oladi.
+
+### Qanday ishlaydi:
+- Foydalanuvchi yangi qurilmadan login qilganda, eski qurilmadagi session avtomatik o'chiriladi
+- Device fingerprint orqali qurilmalar aniqlanadi
+- Har bir login vaqtida eski qurilmalar nofaol qilinadi
+
+### Xususiyatlar:
+- ✅ Avtomatik device detection
+- ✅ Eski session'larni o'chirish
+- ✅ Device fingerprinting
+- ✅ Real-time session monitoring
+- ✅ Xavfsiz logout
+
+### Database Schema:
+```sql
+CREATE TABLE user_devices (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  device_name VARCHAR(255) NOT NULL,
+  device_fingerprint VARCHAR(255) NOT NULL,
+  user_agent TEXT,
+  ip_address VARCHAR(45),
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+```
+
+### API Endpoints:
+- `POST /api/auth/check-device` - Device tekshirish
+- `POST /api/auth/logout-device` - Device'ni logout qilish
+- `GET /api/auth/devices` - Foydalanuvchi qurilmalarini olish
+- `POST /api/auth/remove-device` - Qurilmani o'chirish

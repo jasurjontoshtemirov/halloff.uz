@@ -85,8 +85,8 @@ export const registerUser = (name: string, email: string, password: string): { s
   return { success: true, message: 'Muvaffaqiyatli ro\'yxatdan o\'tdingiz!' };
 };
 
-// Login user
-export const loginUser = (email: string, password: string): { success: boolean; message: string; user?: User } => {
+// Login user with device management
+export const loginUser = async (email: string, password: string): Promise<{ success: boolean; message: string; user?: User }> => {
   // Initialize admin on first use
   initializeAdmin();
   
@@ -96,6 +96,48 @@ export const loginUser = (email: string, password: string): { success: boolean; 
   
   if (!user) {
     return { success: false, message: 'Email yoki parol noto\'g\'ri!' };
+  }
+
+  // Device management - faqat bitta device bo'lishi kerak
+  try {
+    const { generateDeviceFingerprint, getDeviceName } = await import('./device-fingerprint');
+    const deviceFingerprint = generateDeviceFingerprint();
+    const deviceName = getDeviceName();
+    
+    // Eski devicelarni o'chirish (server-side)
+    if (typeof window === 'undefined') {
+      const { getPool } = await import('./db');
+      const pool = getPool();
+      
+      // Foydalanuvchining barcha eski devicelarini nofaol qilish
+      await pool.execute(
+        'UPDATE user_devices SET is_active = FALSE WHERE user_id = ? AND device_fingerprint != ?',
+        [user.id, deviceFingerprint]
+      );
+      
+      // Yangi yoki mavjud deviceni aktiv qilish
+      await pool.execute(
+        `INSERT INTO user_devices (user_id, device_name, device_fingerprint, user_agent, is_active, last_login) 
+         VALUES (?, ?, ?, ?, TRUE, NOW()) 
+         ON DUPLICATE KEY UPDATE 
+         is_active = TRUE, 
+         last_login = NOW(),
+         device_name = VALUES(device_name),
+         user_agent = VALUES(user_agent)`,
+        [user.id, deviceName, deviceFingerprint, navigator?.userAgent || '']
+      );
+    } else {
+      // Client-side - localStorage'da device ma'lumotlarini saqlash
+      const deviceInfo = {
+        fingerprint: deviceFingerprint,
+        name: deviceName,
+        loginTime: new Date().toISOString()
+      };
+      localStorage.setItem('halloff_device_info', JSON.stringify(deviceInfo));
+    }
+  } catch (error) {
+    console.error('Device management error:', error);
+    // Device management xatosi bo'lsa ham login qilishga ruxsat berish
   }
 
   // Save current user to localStorage
@@ -111,9 +153,10 @@ export const getCurrentUser = (): User | null => {
   return user ? JSON.parse(user) : null;
 };
 
-// Logout user
+// Logout user (eski funksiya - compatibility uchun)
 export const logoutUser = () => {
   localStorage.removeItem('halloff_current_user');
+  localStorage.removeItem('halloff_device_info');
 };
 
 // Check if user is logged in
@@ -180,4 +223,118 @@ export const getCurrentUserFromCookies = async (request?: Request): Promise<User
     console.error('Get current user error:', error);
     return null;
   }
+};
+
+// Device management functions
+
+// Foydalanuvchining aktiv devicelarini olish
+export const getUserActiveDevices = async (userId: string): Promise<any[]> => {
+  try {
+    if (typeof window === 'undefined') {
+      const { getPool } = await import('./db');
+      const pool = getPool();
+      
+      const [devices]: any = await pool.execute(
+        'SELECT * FROM user_devices WHERE user_id = ? AND is_active = TRUE ORDER BY last_login DESC',
+        [userId]
+      );
+      
+      return devices;
+    }
+    return [];
+  } catch (error) {
+    console.error('Get user devices error:', error);
+    return [];
+  }
+};
+
+// Deviceni nofaol qilish (logout)
+export const deactivateDevice = async (userId: string, deviceFingerprint?: string): Promise<boolean> => {
+  try {
+    if (typeof window === 'undefined') {
+      const { getPool } = await import('./db');
+      const pool = getPool();
+      
+      if (deviceFingerprint) {
+        // Muayyan deviceni nofaol qilish
+        await pool.execute(
+          'UPDATE user_devices SET is_active = FALSE WHERE user_id = ? AND device_fingerprint = ?',
+          [userId, deviceFingerprint]
+        );
+      } else {
+        // Barcha devicelarni nofaol qilish
+        await pool.execute(
+          'UPDATE user_devices SET is_active = FALSE WHERE user_id = ?',
+          [userId]
+        );
+      }
+      
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Deactivate device error:', error);
+    return false;
+  }
+};
+
+// Joriy deviceni tekshirish
+export const checkCurrentDevice = async (userId: string): Promise<{ isValid: boolean; message: string }> => {
+  try {
+    if (typeof window !== 'undefined') {
+      const { generateDeviceFingerprint } = await import('./device-fingerprint');
+      const currentFingerprint = generateDeviceFingerprint();
+      
+      // Server bilan tekshirish uchun API chaqirish
+      const response = await fetch('/api/auth/check-device', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          deviceFingerprint: currentFingerprint
+        })
+      });
+      
+      const result = await response.json();
+      return result;
+    }
+    
+    return { isValid: true, message: 'Server-side check' };
+  } catch (error) {
+    console.error('Check device error:', error);
+    return { isValid: false, message: 'Device tekshirishda xatolik' };
+  }
+};
+
+// Logout with device deactivation
+export const logoutUserWithDevice = async () => {
+  try {
+    const user = getCurrentUser();
+    if (user) {
+      // Deviceni nofaol qilish
+      if (typeof window !== 'undefined') {
+        const { generateDeviceFingerprint } = await import('./device-fingerprint');
+        const deviceFingerprint = generateDeviceFingerprint();
+        
+        await fetch('/api/auth/logout-device', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user.id,
+            deviceFingerprint
+          })
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Logout device error:', error);
+  }
+  
+  // LocalStorage'ni tozalash
+  localStorage.removeItem('halloff_current_user');
+  localStorage.removeItem('halloff_device_info');
 };

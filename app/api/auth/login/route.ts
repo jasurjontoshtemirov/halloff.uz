@@ -28,41 +28,51 @@ export async function POST(request: NextRequest) {
 
       const pool = getPool();
       
+      // Foydalanuvchining aktiv qurilmalari sonini tekshirish
+      const [userDevicesCount] = await pool.execute(
+        'SELECT COUNT(*) as count FROM user_devices WHERE user_id = ? AND is_active = TRUE',
+        [result.user.id]
+      );
+      
+      const deviceCount = (userDevicesCount as any[])[0].count;
+      
       // Qurilmani tekshirish
       const [deviceRows] = await pool.execute(
-        'SELECT id FROM user_devices WHERE user_id = ? AND device_fingerprint = ?',
+        'SELECT id FROM user_devices WHERE user_id = ? AND device_fingerprint = ? AND is_active = TRUE',
         [result.user.id, deviceFingerprint]
       );
       
-      // Qurilma ma'lumotlarini saqlash
-      if ((deviceRows as any[]).length === 0) {
-        // Yangi qurilma - foydalanuvchining qurilmalari sonini tekshirish
-        const [userDevicesCount] = await pool.execute(
-          'SELECT COUNT(*) as count FROM user_devices WHERE user_id = ? AND is_active = TRUE',
+      // Agar bu yangi qurilma bo'lsa va 1 tadan ko'p aktiv qurilma bo'lsa
+      if ((deviceRows as any[]).length === 0 && deviceCount >= 1) {
+        // Barcha eski qurilmalarni nofaol qilish (faqat 1 ta aktiv bo'lishi kerak)
+        await pool.execute(
+          'UPDATE user_devices SET is_active = FALSE WHERE user_id = ?',
           [result.user.id]
         );
         
-        const deviceCount = (userDevicesCount as any[])[0].count;
-        
-        if (deviceCount >= 2) {
-          return NextResponse.json({
-            success: false,
-            message: 'Maksimal 2 ta qurilmada kirish mumkin. Avval boshqa qurilmani chiqaring.',
-            needDeviceManagement: true
-          }, { status: 403 });
-        }
-        
-        // Yangi qurilmani qo'shish
+        // Yangi qurilmani aktiv qilish
         await pool.execute(
-          'INSERT INTO user_devices (user_id, device_name, device_fingerprint, user_agent, ip_address) VALUES (?, ?, ?, ?, ?)',
+          'INSERT INTO user_devices (user_id, device_name, device_fingerprint, user_agent, ip_address, is_active) VALUES (?, ?, ?, ?, ?, TRUE)',
           [result.user.id, deviceName, deviceFingerprint, userAgent, ipAddress]
         );
+        
+        console.log(`Eski qurilmalar o'chirildi, yangi qurilma qo'shildi: ${deviceName}`);
+      } else if ((deviceRows as any[]).length === 0) {
+        // Birinchi qurilma
+        await pool.execute(
+          'INSERT INTO user_devices (user_id, device_name, device_fingerprint, user_agent, ip_address, is_active) VALUES (?, ?, ?, ?, ?, TRUE)',
+          [result.user.id, deviceName, deviceFingerprint, userAgent, ipAddress]
+        );
+        
+        console.log(`Yangi qurilma qo'shildi: ${deviceName}`);
       } else {
         // Mavjud qurilmani yangilash
         await pool.execute(
-          'UPDATE user_devices SET last_login = NOW(), user_agent = ?, ip_address = ? WHERE user_id = ? AND device_fingerprint = ?',
+          'UPDATE user_devices SET last_login = NOW(), user_agent = ?, ip_address = ?, is_active = TRUE WHERE user_id = ? AND device_fingerprint = ?',
           [userAgent, ipAddress, result.user.id, deviceFingerprint]
         );
+        
+        console.log(`Mavjud qurilma yangilandi: ${deviceName}`);
       }
       // Oddiy cookie o'rnatish
       const response = NextResponse.json(result);
