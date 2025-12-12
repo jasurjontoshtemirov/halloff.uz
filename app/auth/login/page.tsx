@@ -196,19 +196,10 @@ export default function LoginPage() {
         setCurrentUser(result.user);
         setSuccess(result.message);
         
-        // Server tomonidan kalit kerakligini tekshirish
-        if (result.needsAccessKey) {
-          // Kalit so'rash
-          setTimeout(() => {
-            setShowAccessKeyModal(true);
-            setLoading(false);
-          }, 500);
-        } else {
-          // To'g'ridan-to'g'ri docs ga o'tish
-          setTimeout(() => {
-            window.location.href = "/docs";
-          }, 500);
-        }
+        // Login da access key so'ralmasin - to'g'ridan-to'g'ri docs ga o'tish
+        setTimeout(() => {
+          window.location.href = "/docs";
+        }, 500);
       } else {
         if (result.needDeviceManagement) {
           // Qurilmalar boshqaruvi modalini ko'rsatish
