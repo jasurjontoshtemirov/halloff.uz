@@ -16,49 +16,54 @@ export async function POST(request: NextRequest) {
     const result = await loginUser(email, password);
     
     if (result.success && result.user) {
-      // Device management
-      const deviceFingerprint = request.headers.get('x-device-fingerprint') || '';
-      const deviceName = request.headers.get('x-device-name') || 'Unknown Device';
-      const userAgent = request.headers.get('user-agent') || '';
-      const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '';
+      // Device management (optional - agar jadval mavjud bo'lsa)
+      try {
+        const deviceFingerprint = request.headers.get('x-device-fingerprint') || '';
+        const deviceName = request.headers.get('x-device-name') || 'Unknown Device';
+        const userAgent = request.headers.get('user-agent') || '';
+        const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '';
 
-      const pool = getPool();
-      
-      // Qurilmani tekshirish
-      const [deviceRows] = await pool.execute(
-        'SELECT id FROM user_devices WHERE user_id = ? AND device_fingerprint = ?',
-        [result.user.id, deviceFingerprint]
-      );
-      
-      // Qurilma ma'lumotlarini saqlash
-      if ((deviceRows as any[]).length === 0) {
-        // Yangi qurilma - foydalanuvchining qurilmalari sonini tekshirish
-        const [userDevicesCount] = await pool.execute(
-          'SELECT COUNT(*) as count FROM user_devices WHERE user_id = ? AND is_active = TRUE',
-          [result.user.id]
+        const pool = getPool();
+        
+        // Qurilmani tekshirish
+        const [deviceRows] = await pool.execute(
+          'SELECT id FROM user_devices WHERE user_id = ? AND device_fingerprint = ?',
+          [result.user.id, deviceFingerprint]
         );
         
-        const deviceCount = (userDevicesCount as any[])[0].count;
-        
-        if (deviceCount >= 2) {
-          return NextResponse.json({
-            success: false,
-            message: 'Maksimal 2 ta qurilmada kirish mumkin. Avval boshqa qurilmani chiqaring.',
-            needDeviceManagement: true
-          }, { status: 403 });
+        // Qurilma ma'lumotlarini saqlash
+        if ((deviceRows as any[]).length === 0) {
+          // Yangi qurilma - foydalanuvchining qurilmalari sonini tekshirish
+          const [userDevicesCount] = await pool.execute(
+            'SELECT COUNT(*) as count FROM user_devices WHERE user_id = ? AND is_active = TRUE',
+            [result.user.id]
+          );
+          
+          const deviceCount = (userDevicesCount as any[])[0].count;
+          
+          if (deviceCount >= 2) {
+            return NextResponse.json({
+              success: false,
+              message: 'Maksimal 2 ta qurilmada kirish mumkin. Avval boshqa qurilmani chiqaring.',
+              needDeviceManagement: true
+            }, { status: 403 });
+          }
+          
+          // Yangi qurilmani qo'shish
+          await pool.execute(
+            'INSERT INTO user_devices (user_id, device_name, device_fingerprint, user_agent, ip_address) VALUES (?, ?, ?, ?, ?)',
+            [result.user.id, deviceName, deviceFingerprint, userAgent, ipAddress]
+          );
+        } else {
+          // Mavjud qurilmani yangilash
+          await pool.execute(
+            'UPDATE user_devices SET last_login = NOW(), user_agent = ?, ip_address = ? WHERE user_id = ? AND device_fingerprint = ?',
+            [userAgent, ipAddress, result.user.id, deviceFingerprint]
+          );
         }
-        
-        // Yangi qurilmani qo'shish
-        await pool.execute(
-          'INSERT INTO user_devices (user_id, device_name, device_fingerprint, user_agent, ip_address) VALUES (?, ?, ?, ?, ?)',
-          [result.user.id, deviceName, deviceFingerprint, userAgent, ipAddress]
-        );
-      } else {
-        // Mavjud qurilmani yangilash
-        await pool.execute(
-          'UPDATE user_devices SET last_login = NOW(), user_agent = ?, ip_address = ? WHERE user_id = ? AND device_fingerprint = ?',
-          [userAgent, ipAddress, result.user.id, deviceFingerprint]
-        );
+      } catch (deviceError) {
+        console.error('Device management error (ignoring):', deviceError);
+        // Device management xatosi bo'lsa, login jarayonini davom ettirish
       }
       // Oddiy cookie o'rnatish
       const response = NextResponse.json(result);
