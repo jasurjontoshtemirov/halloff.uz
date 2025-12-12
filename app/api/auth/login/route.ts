@@ -93,39 +93,36 @@ export async function POST(request: NextRequest) {
         role: result.user.role
       });
       
-      console.log('Setting JWT token for user:', result.user.email);
+      console.log('Generated JWT token for user:', result.user.email);
+      console.log('Token length:', token.length);
+      
+      // Multiple cookie setting approaches
+      const cookieOptions = {
+        httpOnly: false,
+        secure: false, // HTTP uchun false
+        sameSite: 'lax' as const,
+        maxAge: 60 * 60 * 24 * 7, // 7 kun
+        path: '/'
+      };
+      
+      // Approach 1: NextResponse with Set-Cookie header
+      const setCookieHeaders = [
+        `auth_token=${token}; Path=/; Max-Age=604800; SameSite=Lax`,
+      ];
+      
+      if (result.user.role === 'admin') {
+        setCookieHeaders.push(`is_admin=true; Path=/; Max-Age=604800; SameSite=Lax`);
+      }
       
       const response = new NextResponse(JSON.stringify(result), {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Set-Cookie': `auth_token=${token}; Path=/; Max-Age=604800; SameSite=Lax`
+          'Set-Cookie': setCookieHeaders
         }
       });
       
-      // Cookie o'rnatish
-      console.log('Setting auth_token cookie with value length:', token.length);
-      response.cookies.set('auth_token', token, {
-        httpOnly: false, // Client-side access uchun
-        secure: false, // HTTP uchun false
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 7 kun
-        path: '/'
-      });
-      
-      // Admin uchun alohida cookie
-      if (result.user.role === 'admin') {
-        console.log('Setting is_admin cookie for admin user');
-        response.cookies.set('is_admin', 'true', {
-          httpOnly: false,
-          secure: false,
-          sameSite: 'lax',
-          maxAge: 60 * 60 * 24 * 7,
-          path: '/'
-        });
-      }
-      
-      console.log('Response cookies set, returning response');
+      console.log('Set-Cookie headers:', setCookieHeaders);
       return response;
     }
     
