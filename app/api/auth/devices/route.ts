@@ -8,36 +8,38 @@ export async function GET(request: NextRequest) {
 
     if (!email) {
       return NextResponse.json(
-        { success: false, message: 'Email talab qilinadi!' },
+        { success: false, message: 'Email kiritilmagan!' },
         { status: 400 }
       );
     }
 
     const pool = getPool();
     
-    // Foydalanuvchi ID sini olish
-    const [userRows] = await pool.execute(
+    // Foydalanuvchini topish
+    const [users] = await pool.execute(
       'SELECT id FROM users WHERE email = ?',
       [email]
     );
     
-    const users = userRows as any[];
-    if (users.length === 0) {
+    const userRows = users as any[];
+    if (userRows.length === 0) {
       return NextResponse.json(
         { success: false, message: 'Foydalanuvchi topilmadi!' },
         { status: 404 }
       );
     }
-
+    
+    const userId = userRows[0].id;
+    
     // Foydalanuvchining qurilmalarini olish
-    const [deviceRows] = await pool.execute(
-      'SELECT id, device_name, last_login, created_at FROM user_devices WHERE user_id = ? AND is_active = TRUE ORDER BY last_login DESC',
-      [users[0].id]
+    const [devices] = await pool.execute(
+      'SELECT id, device_name, last_login FROM user_devices WHERE user_id = ? AND is_active = TRUE ORDER BY last_login DESC',
+      [userId]
     );
-
+    
     return NextResponse.json({
       success: true,
-      devices: deviceRows
+      devices: devices
     });
   } catch (error) {
     console.error('Get devices error:', error);
