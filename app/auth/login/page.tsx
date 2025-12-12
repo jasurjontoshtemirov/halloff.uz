@@ -190,16 +190,14 @@ export default function LoginPage() {
         const updatedDevices = userDevices.filter(device => device.id !== deviceId);
         setUserDevices(updatedDevices);
         
-        // Agar 2 tadan kam qurilma qolsa, kalit so'rash
+        // Agar 2 tadan kam qurilma qolsa, to'g'ridan-to'g'ri docs ga o'tish
         if (updatedDevices.length < 2) {
           setShowDeviceModal(false);
-          setSuccess("Qurilma o'chirildi!");
+          setSuccess("Qurilma o'chirildi! Dokumentatsiyaga yo'naltirilmoqda...");
           
-          // Kalit modalini ko'rsatish
+          // To'g'ridan-to'g'ri docs ga o'tish
           setTimeout(() => {
-            setSuccess("");
-            setShowAccessKeyModal(true);
-            setLoading(false);
+            window.location.href = "/docs";
           }, 1000);
         }
       } else {
