@@ -93,7 +93,11 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
       
+      console.log('Login response status:', response.status);
+      console.log('Login response headers:', [...response.headers.entries()]);
+      
       const result = await response.json();
+      console.log('Login result:', result);
       
       if (result.success && result.user) {
         // Save user to localStorage
@@ -103,10 +107,15 @@ export default function LoginPage() {
         
         setSuccess("Muvaffaqiyatli kirdingiz! Yo'naltirilmoqda...");
         
+        // Cookie'larni tekshirish
+        console.log('All cookies:', document.cookie);
+        console.log('Auth token cookie:', document.cookie.split(';').find(c => c.trim().startsWith('auth_token=')));
+        
         // Kichik kechikish bilan redirect qilish - cookie'lar o'rnatilishi uchun
         setTimeout(() => {
+          console.log('Cookies before redirect:', document.cookie);
           window.location.href = "/docs";
-        }, 1000);
+        }, 1500);
       } else {
         setError(result.message || 'Login xatosi');
         setLoading(false);
