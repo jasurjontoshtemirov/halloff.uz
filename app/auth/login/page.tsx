@@ -190,14 +190,52 @@ export default function LoginPage() {
         const updatedDevices = userDevices.filter(device => device.id !== deviceId);
         setUserDevices(updatedDevices);
         
-        // Agar 2 tadan kam qurilma qolsa, to'g'ridan-to'g'ri docs ga o'tish
+        // Agar 2 tadan kam qurilma qolsa, login jarayonini yakunlash
         if (updatedDevices.length < 2) {
           setShowDeviceModal(false);
-          setSuccess("Qurilma o'chirildi! Dokumentatsiyaga yo'naltirilmoqda...");
+          setSuccess("Qurilma o'chirildi! Login yakunlanmoqda...");
           
-          // To'g'ridan-to'g'ri docs ga o'tish
-          setTimeout(() => {
-            window.location.href = "/docs";
+          // Login jarayonini yakunlash
+          setTimeout(async () => {
+            try {
+              const deviceFingerprint = generateDeviceFingerprint();
+              const deviceName = getDeviceName();
+              
+              const loginResponse = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-Device-Fingerprint': deviceFingerprint,
+                  'X-Device-Name': deviceName,
+                },
+                body: JSON.stringify({ email, password }),
+              });
+              
+              const loginResult = await loginResponse.json();
+              
+              if (loginResult.success && loginResult.user) {
+                saveCurrentUser(loginResult.user);
+                
+                // Kirish kaliti tekshirish
+                const hasAccessKey = localStorage.getItem(`access_key_${loginResult.user.id}`);
+                if (hasAccessKey) {
+                  // Agar kalit mavjud bo'lsa, to'g'ridan-to'g'ri docs ga o'tish
+                  window.location.href = "/docs";
+                } else {
+                  // Agar kalit yo'q bo'lsa, modal oynani ko'rsatish
+                  setCurrentUser(loginResult.user);
+                  setShowAccessKeyModal(true);
+                  setLoading(false);
+                }
+              } else {
+                setError("Login yakunlashda xatolik yuz berdi.");
+                setLoading(false);
+              }
+            } catch (error) {
+              console.error('Complete login error:', error);
+              setError('Login yakunlashda xatolik yuz berdi.');
+              setLoading(false);
+            }
           }, 1000);
         }
       } else {
