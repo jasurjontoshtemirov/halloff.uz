@@ -3,29 +3,28 @@ import { getPool } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId, deviceFingerprint } = await request.json();
+    const { deviceFingerprint, userId } = await request.json();
 
-    if (!userId || !deviceFingerprint) {
+    if (!deviceFingerprint || !userId) {
       return NextResponse.json(
-        { success: false, message: 'User ID va device fingerprint talab qilinadi!' },
+        { success: false, message: 'Ma\'lumot yetishmaydi!' },
         { status: 400 }
       );
     }
 
     const pool = getPool();
     
-    // Qurilmani tekshirish
-    const [rows] = await pool.execute(
+    // Qurilma active ekanligini tekshirish
+    const [deviceRows] = await pool.execute(
       'SELECT id FROM user_devices WHERE user_id = ? AND device_fingerprint = ? AND is_active = TRUE',
       [userId, deviceFingerprint]
     );
     
-    const deviceRows = rows as any[];
-    const deviceExists = deviceRows.length > 0;
-
+    const isActive = (deviceRows as any[]).length > 0;
+    
     return NextResponse.json({
       success: true,
-      deviceExists: deviceExists
+      isActive: isActive
     });
   } catch (error) {
     console.error('Check device error:', error);

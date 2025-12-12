@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { isAdmin } from "@/lib/auth";
+import { generateDeviceFingerprint } from "@/lib/device-fingerprint";
 import { 
   BookOpen, 
   Rocket, 
@@ -161,6 +162,50 @@ export default function DocsLayout({
     if (!currentUser) {
       window.location.href = '/auth/login';
     }
+  }, []);
+
+  // Device check - qurilma active ekanligini tekshirish
+  useEffect(() => {
+    const checkDevice = async () => {
+      try {
+        const currentUser = localStorage.getItem('halloff_current_user');
+        if (!currentUser) return;
+
+        const user = JSON.parse(currentUser);
+        const deviceFingerprint = generateDeviceFingerprint();
+
+        const response = await fetch('/api/auth/check-device', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user.id,
+            deviceFingerprint: deviceFingerprint
+          }),
+        });
+
+        const result = await response.json();
+        
+        if (result.success && !result.isActive) {
+          // Qurilma o'chirilgan - logout qilish
+          await fetch('/api/auth/logout', { method: 'POST' });
+          localStorage.removeItem('halloff_current_user');
+          alert('Sizning qurilmangiz boshqa joydan o\'chirildi. Qaytadan kiring.');
+          window.location.href = '/auth/login';
+        }
+      } catch (error) {
+        console.error('Device check error:', error);
+      }
+    };
+
+    // Har 30 soniyada tekshirish
+    const interval = setInterval(checkDevice, 30000);
+    
+    // Sahifa ochilganda ham tekshirish
+    checkDevice();
+
+    return () => clearInterval(interval);
   }, []);
 
   // Keyboard shortcut for search
