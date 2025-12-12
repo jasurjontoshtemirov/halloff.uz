@@ -99,10 +99,12 @@ export async function POST(request: NextRequest) {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
+          'Set-Cookie': `auth_token=${token}; Path=/; Max-Age=604800; SameSite=Lax`
         }
       });
       
       // Cookie o'rnatish
+      console.log('Setting auth_token cookie with value length:', token.length);
       response.cookies.set('auth_token', token, {
         httpOnly: false, // Client-side access uchun
         secure: false, // HTTP uchun false
@@ -113,6 +115,7 @@ export async function POST(request: NextRequest) {
       
       // Admin uchun alohida cookie
       if (result.user.role === 'admin') {
+        console.log('Setting is_admin cookie for admin user');
         response.cookies.set('is_admin', 'true', {
           httpOnly: false,
           secure: false,
@@ -122,6 +125,7 @@ export async function POST(request: NextRequest) {
         });
       }
       
+      console.log('Response cookies set, returning response');
       return response;
     }
     
