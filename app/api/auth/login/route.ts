@@ -85,35 +85,16 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Cookie o'rnatish
+      // Cookie o'rnatish - Headers orqali
       const response = NextResponse.json(result, { status: 200 });
       
       // Auth token cookie
-      response.cookies.set('auth_token', 'authenticated', {
-        httpOnly: false, // Debug uchun false qilamiz
-        secure: false,
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7,
-        path: '/',
-        domain: '.halloff.uz'
-      });
-      
-      // Admin huquqi cookie
-      if (result.user.role === 'admin') {
-        response.cookies.set('is_admin', 'true', {
-          httpOnly: false, // Debug uchun false qilamiz
-          secure: false,
-          sameSite: 'lax',
-          maxAge: 60 * 60 * 24 * 7,
-          path: '/',
-          domain: '.halloff.uz'
-        });
-      }
+      response.headers.set('Set-Cookie', 'auth_token=authenticated; Path=/; Max-Age=604800; SameSite=Lax');
       
       console.log('Cookies set for user:', result.user.email);
       
       // Login da access key so'ralmasin
-      return NextResponse.json(result, { status: 200 });
+      return response;
     }
     
     return NextResponse.json(result, { 
