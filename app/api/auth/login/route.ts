@@ -54,6 +54,8 @@ export async function POST(request: NextRequest) {
         [result.user.id, deviceFingerprint]
       );
       
+      let needsAccessKey = false;
+      
       if ((deviceRows as any[]).length === 0) {
         // Yangi qurilma - foydalanuvchining qurilmalari sonini tekshirish
         const [userDevicesCount] = await pool.execute(
@@ -71,12 +73,26 @@ export async function POST(request: NextRequest) {
           }, { status: 403 });
         }
         
-        // Yangi qurilmani qo'shish
+        // Yangi qurilmani qo'shish - kalit kerak
         await pool.execute(
           'INSERT INTO user_devices (user_id, device_name, device_fingerprint, user_agent, ip_address) VALUES (?, ?, ?, ?, ?)',
           [result.user.id, deviceName, deviceFingerprint, userAgent, ipAddress]
         );
+        needsAccessKey = true;
       } else {
+        // Mavjud qurilma - kalit muddatini tekshirish
+        const [deviceDetails] = await pool.execute(
+          'SELECT access_key_expires_at FROM user_devices WHERE user_id = ? AND device_fingerprint = ?',
+          [result.user.id, deviceFingerprint]
+        );
+        
+        const device = (deviceDetails as any[])[0];
+        const now = new Date();
+        
+        if (!device.access_key_expires_at || new Date(device.access_key_expires_at) < now) {
+          needsAccessKey = true;
+        }
+        
         // Mavjud qurilmani yangilash
         await pool.execute(
           'UPDATE user_devices SET last_login = NOW(), user_agent = ?, ip_address = ? WHERE user_id = ? AND device_fingerprint = ?',
@@ -108,7 +124,14 @@ export async function POST(request: NextRequest) {
       }
       
       console.log('Cookies set for user:', result.user.email);
-      return response;
+      
+      // Kalit kerakligini javobga qo'shish
+      const responseData = {
+        ...result,
+        needsAccessKey: needsAccessKey
+      };
+      
+      return NextResponse.json(responseData, { status: 200 });
     }
     
     return NextResponse.json(result, { 

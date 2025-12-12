@@ -72,14 +72,18 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
+      const deviceFingerprint = generateDeviceFingerprint();
+      
       const response = await fetch('/api/auth/verify-access-key', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Device-Fingerprint': deviceFingerprint,
         },
         body: JSON.stringify({ 
           userId: currentUser.id, 
-          accessKey: accessKey.trim() 
+          accessKey: accessKey.trim(),
+          deviceFingerprint: deviceFingerprint
         }),
       });
       
@@ -110,58 +114,7 @@ export default function LoginPage() {
     setSuccess("");
     setLoading(true);
 
-    try {
-      const deviceFingerprint = generateDeviceFingerprint();
-      const deviceName = getDeviceName();
-      
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Device-Fingerprint': deviceFingerprint,
-          'X-Device-Name': deviceName,
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      
-      const result = await response.json();
-      
-      if (result.success && result.user) {
-        saveCurrentUser(result.user);
-        setCurrentUser(result.user);
-        setSuccess(result.message);
-        
-        // Kirish kaliti tekshirish
-        const hasAccessKey = localStorage.getItem(`access_key_${result.user.id}`);
-        if (hasAccessKey) {
-          // Agar kalit mavjud bo'lsa, to'g'ridan-to'g'ri docs ga o'tish
-          setTimeout(() => {
-            window.location.href = "/docs";
-          }, 500);
-        } else {
-          // Agar kalit yo'q bo'lsa, modal oynani ko'rsatish
-          setTimeout(() => {
-            setShowAccessKeyModal(true);
-            setLoading(false);
-          }, 500);
-        }
-      } else {
-        if (result.needDeviceManagement) {
-          // Qurilmalar boshqaruvi modalini ko'rsatish
-          setCurrentUser({ email });
-          setSavedCredentials({ email, password }); // Parolni saqlash
-          fetchUserDevices(email);
-          setShowDeviceModal(true);
-        } else {
-          setError(result.message);
-        }
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
-      setLoading(false);
-    }
+    await performLogin(email, password);
   };
 
   const fetchUserDevices = async (email: string) => {
@@ -199,46 +152,11 @@ export default function LoginPage() {
           
           // Login jarayonini yakunlash
           setTimeout(async () => {
-            try {
-              const deviceFingerprint = generateDeviceFingerprint();
-              const deviceName = getDeviceName();
-              
-              const loginResponse = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'X-Device-Fingerprint': deviceFingerprint,
-                  'X-Device-Name': deviceName,
-                },
-                body: JSON.stringify({ 
-                  email: savedCredentials?.email || email, 
-                  password: savedCredentials?.password || password 
-                }),
-              });
-              
-              const loginResult = await loginResponse.json();
-              
-              if (loginResult.success && loginResult.user) {
-                saveCurrentUser(loginResult.user);
-                
-                // Kirish kaliti tekshirish
-                const hasAccessKey = localStorage.getItem(`access_key_${loginResult.user.id}`);
-                if (hasAccessKey) {
-                  // Agar kalit mavjud bo'lsa, to'g'ridan-to'g'ri docs ga o'tish
-                  window.location.href = "/docs";
-                } else {
-                  // Agar kalit yo'q bo'lsa, modal oynani ko'rsatish
-                  setCurrentUser(loginResult.user);
-                  setShowAccessKeyModal(true);
-                  setLoading(false);
-                }
-              } else {
-                setError("Login yakunlashda xatolik yuz berdi.");
-                setLoading(false);
-              }
-            } catch (error) {
-              console.error('Complete login error:', error);
-              setError('Login yakunlashda xatolik yuz berdi.');
+            if (savedCredentials) {
+              // Saqlangan ma'lumotlar bilan qayta login qilish
+              await performLogin(savedCredentials.email, savedCredentials.password);
+            } else {
+              setError("Login ma'lumotlari topilmadi.");
               setLoading(false);
             }
           }, 1000);
@@ -249,6 +167,64 @@ export default function LoginPage() {
     } catch (error) {
       console.error('Remove device error:', error);
       setError('Xatolik yuz berdi.');
+    }
+  };
+
+  // Login jarayonini alohida funksiyaga ajratish
+  const performLogin = async (loginEmail: string, loginPassword: string) => {
+    try {
+      const deviceFingerprint = generateDeviceFingerprint();
+      const deviceName = getDeviceName();
+      
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Device-Fingerprint': deviceFingerprint,
+          'X-Device-Name': deviceName,
+        },
+        body: JSON.stringify({ 
+          email: loginEmail, 
+          password: loginPassword 
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (result.success && result.user) {
+        saveCurrentUser(result.user);
+        setCurrentUser(result.user);
+        setSuccess(result.message);
+        
+        // Server tomonidan kalit kerakligini tekshirish
+        if (result.needsAccessKey) {
+          // Kalit so'rash
+          setTimeout(() => {
+            setShowAccessKeyModal(true);
+            setLoading(false);
+          }, 500);
+        } else {
+          // To'g'ridan-to'g'ri docs ga o'tish
+          setTimeout(() => {
+            window.location.href = "/docs";
+          }, 500);
+        }
+      } else {
+        if (result.needDeviceManagement) {
+          // Qurilmalar boshqaruvi modalini ko'rsatish
+          setCurrentUser({ email: loginEmail });
+          setSavedCredentials({ email: loginEmail, password: loginPassword });
+          fetchUserDevices(loginEmail);
+          setShowDeviceModal(true);
+        } else {
+          setError(result.message);
+        }
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
+      setLoading(false);
     }
   };
 

@@ -155,6 +155,49 @@ export default function DocsLayout({
     setUserIsAdmin(isAdmin());
   }, []);
 
+  // Check access key expiration
+  useEffect(() => {
+    const checkAccessKeyExpiration = async () => {
+      const currentUser = localStorage.getItem('halloff_current_user');
+      if (!currentUser) {
+        window.location.href = '/auth/login';
+        return;
+      }
+
+      try {
+        const user = JSON.parse(currentUser);
+        
+        // Import device fingerprint function dynamically
+        const { generateDeviceFingerprint } = await import('@/lib/device-fingerprint');
+        const deviceFingerprint = generateDeviceFingerprint();
+        
+        const response = await fetch('/api/auth/check-access-key-expiration', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Device-Fingerprint': deviceFingerprint,
+          },
+          body: JSON.stringify({ userId: user.id }),
+        });
+
+        const result = await response.json();
+        
+        if (!result.success || result.expired) {
+          // Access key expired or invalid - redirect to login
+          localStorage.clear();
+          window.location.href = '/auth/login';
+        }
+      } catch (error) {
+        console.error('Access key check error:', error);
+        // On error, redirect to login for security
+        localStorage.clear();
+        window.location.href = '/auth/login';
+      }
+    };
+
+    checkAccessKeyExpiration();
+  }, []);
+
   // Keyboard shortcut for search
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

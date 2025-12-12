@@ -54,6 +54,7 @@ export async function initDatabase() {
         user_id INT NOT NULL,
         access_key VARCHAR(255) NOT NULL,
         is_used BOOLEAN DEFAULT FALSE,
+        expires_at TIMESTAMP NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         used_at TIMESTAMP NULL,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -70,6 +71,7 @@ export async function initDatabase() {
         user_agent TEXT,
         ip_address VARCHAR(45),
         is_active BOOLEAN DEFAULT TRUE,
+        access_key_expires_at TIMESTAMP NULL,
         last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
