@@ -85,15 +85,17 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Cookie o'rnatish - Headers orqali
-      const response = NextResponse.json(result, { status: 200 });
+      // Cookie o'rnatish - NextResponse.json bilan
+      console.log('Setting cookies for user:', result.user.email);
       
-      // Auth token cookie
-      response.headers.set('Set-Cookie', 'auth_token=authenticated; Path=/; Max-Age=604800; SameSite=Lax');
+      const response = new NextResponse(JSON.stringify(result), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Set-Cookie': 'auth_token=authenticated; Path=/; Max-Age=604800; SameSite=Lax; HttpOnly=false'
+        }
+      });
       
-      console.log('Cookies set for user:', result.user.email);
-      
-      // Login da access key so'ralmasin
       return response;
     }
     
