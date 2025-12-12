@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
       // Auth token cookie
       response.cookies.set('auth_token', 'authenticated', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: false, // HTTP uchun false
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7, // 7 kun
         path: '/'
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
       if (result.user.role === 'admin') {
         response.cookies.set('is_admin', 'true', {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
+          secure: false, // HTTP uchun false
           sameSite: 'lax',
           maxAge: 60 * 60 * 24 * 7, // 7 kun
           path: '/'
