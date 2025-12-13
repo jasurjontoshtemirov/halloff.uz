@@ -12,11 +12,26 @@ export async function middleware(request: NextRequest) {
   // /docs route'larini himoya qilish
   if (pathname.startsWith('/docs')) {
     const authToken = request.cookies.get('auth_token');
+    const isAdmin = request.cookies.get('is_admin');
     
+    console.log('Docs middleware check:');
+    console.log('Path:', pathname);
+    console.log('Auth token:', authToken?.value);
+    console.log('Is admin:', isAdmin?.value);
+    
+    // Auth token tekshirish
     if (!authToken?.value || authToken.value !== 'authenticated') {
+      console.log('Redirecting to login - no auth token');
       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
 
+    // Admin bo'lsa to'g'ridan-to'g'ri ruxsat berish
+    if (isAdmin?.value === 'true') {
+      console.log('Admin access granted to docs');
+      return NextResponse.next();
+    }
+
+    console.log('Regular user access to docs');
     // Device tekshirish (vaqtincha o'chirilgan)
     // const deviceCheck = await checkUserDevice(request);
     // if (!deviceCheck.isValid) {
@@ -27,21 +42,30 @@ export async function middleware(request: NextRequest) {
     // }
   }
 
-  // /admin route'larini himoya qilish (vaqtincha to'liq o'chirilgan)
-  // if (pathname.startsWith('/admin')) {
-  //   const authToken = request.cookies.get('auth_token');
-  //   const isAdmin = request.cookies.get('is_admin');
+  // /admin route'larini himoya qilish
+  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin-test')) {
+    const authToken = request.cookies.get('auth_token');
+    const isAdmin = request.cookies.get('is_admin');
     
-  //   console.log('Admin middleware check:');
-  //   console.log('Path:', pathname);
-  //   console.log('Auth token:', authToken?.value);
-  //   console.log('Is admin:', isAdmin?.value);
+    console.log('Admin middleware check:');
+    console.log('Path:', pathname);
+    console.log('Auth token:', authToken?.value);
+    console.log('Is admin:', isAdmin?.value);
     
-  //   if (!authToken?.value || authToken.value !== 'authenticated') {
-  //     console.log('Redirecting to login - no auth token');
-  //     return NextResponse.redirect(new URL('/auth/login', request.url));
-  //   }
-  // }
+    // Auth token tekshirish
+    if (!authToken?.value || authToken.value !== 'authenticated') {
+      console.log('Redirecting to login - no auth token');
+      return NextResponse.redirect(new URL('/auth/login', request.url));
+    }
+
+    // Admin tekshirish
+    if (isAdmin?.value !== 'true') {
+      console.log('Redirecting to login - not admin');
+      return NextResponse.redirect(new URL('/auth/login', request.url));
+    }
+
+    console.log('Admin access granted');
+  }
 
   return NextResponse.next();
 }
