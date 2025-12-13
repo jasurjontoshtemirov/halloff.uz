@@ -16,63 +16,35 @@ export async function POST(request: NextRequest) {
     const result = await loginUser(email, password);
     
     if (result.success && result.user) {
-      // Device management
-      const deviceFingerprint = request.headers.get('x-device-fingerprint') || '';
-      const deviceName = request.headers.get('x-device-name') || 'Unknown Device';
-      const userAgent = request.headers.get('user-agent') || '';
-      const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '';
+      // Device management (vaqtincha o'chirilgan - keyinroq yoqiladi)
+      try {
+        const deviceFingerprint = request.headers.get('x-device-fingerprint') || '';
+        const deviceName = request.headers.get('x-device-name') || 'Unknown Device';
+        const userAgent = request.headers.get('user-agent') || '';
+        const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '';
 
-      console.log('Device info for user:', result.user.email);
-      console.log('Device fingerprint:', deviceFingerprint);
-      console.log('Device name:', deviceName);
-
-      const pool = getPool();
-      
-      // Foydalanuvchining aktiv qurilmalari sonini tekshirish
-      const [userDevicesCount] = await pool.execute(
-        'SELECT COUNT(*) as count FROM user_devices WHERE user_id = ? AND is_active = TRUE',
-        [result.user.id]
-      );
-      
-      const deviceCount = (userDevicesCount as any[])[0].count;
-      
-      // Qurilmani tekshirish
-      const [deviceRows] = await pool.execute(
-        'SELECT id FROM user_devices WHERE user_id = ? AND device_fingerprint = ? AND is_active = TRUE',
-        [result.user.id, deviceFingerprint]
-      );
-      
-      // Agar bu yangi qurilma bo'lsa va 1 tadan ko'p aktiv qurilma bo'lsa
-      if ((deviceRows as any[]).length === 0 && deviceCount >= 1) {
-        // Barcha eski qurilmalarni nofaol qilish (faqat 1 ta aktiv bo'lishi kerak)
-        await pool.execute(
-          'UPDATE user_devices SET is_active = FALSE WHERE user_id = ?',
-          [result.user.id]
-        );
+        console.log('Device info for user:', result.user.email);
         
-        // Yangi qurilmani aktiv qilish
+        // Device management faqat agar database mavjud bo'lsa
+        const pool = getPool();
+        
+        // Simple device logging (xatolik bo'lsa ham login'ga ruxsat berish)
         await pool.execute(
-          'INSERT INTO user_devices (user_id, device_name, device_fingerprint, user_agent, ip_address, is_active) VALUES (?, ?, ?, ?, ?, TRUE)',
+          `INSERT INTO user_devices (user_id, device_name, device_fingerprint, user_agent, ip_address, is_active) 
+           VALUES (?, ?, ?, ?, ?, TRUE) 
+           ON DUPLICATE KEY UPDATE 
+           is_active = TRUE, 
+           last_login = NOW(),
+           device_name = VALUES(device_name),
+           user_agent = VALUES(user_agent),
+           ip_address = VALUES(ip_address)`,
           [result.user.id, deviceName, deviceFingerprint, userAgent, ipAddress]
         );
         
-        console.log(`Eski qurilmalar o'chirildi, yangi qurilma qo'shildi: ${deviceName}`);
-      } else if ((deviceRows as any[]).length === 0) {
-        // Birinchi qurilma
-        await pool.execute(
-          'INSERT INTO user_devices (user_id, device_name, device_fingerprint, user_agent, ip_address, is_active) VALUES (?, ?, ?, ?, ?, TRUE)',
-          [result.user.id, deviceName, deviceFingerprint, userAgent, ipAddress]
-        );
-        
-        console.log(`Yangi qurilma qo'shildi: ${deviceName}`);
-      } else {
-        // Mavjud qurilmani yangilash
-        await pool.execute(
-          'UPDATE user_devices SET last_login = NOW(), user_agent = ?, ip_address = ?, is_active = TRUE WHERE user_id = ? AND device_fingerprint = ?',
-          [userAgent, ipAddress, result.user.id, deviceFingerprint]
-        );
-        
-        console.log(`Mavjud qurilma yangilandi: ${deviceName}`);
+        console.log(`Device logged: ${deviceName}`);
+      } catch (deviceError) {
+        console.error('Device management error (ignored):', deviceError);
+        // Device xatosi bo'lsa ham login'ga ruxsat berish
       }
       // Oddiy cookie o'rnatish
       const response = NextResponse.json(result);

@@ -17,15 +17,14 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
 
-    // Device tekshirish
-    const deviceCheck = await checkUserDevice(request);
-    if (!deviceCheck.isValid) {
-      // Device noto'g'ri bo'lsa logout qilish
-      const response = NextResponse.redirect(new URL('/auth/login?message=device_changed', request.url));
-      response.cookies.delete('auth_token');
-      response.cookies.delete('is_admin');
-      return response;
-    }
+    // Device tekshirish (vaqtincha o'chirilgan)
+    // const deviceCheck = await checkUserDevice(request);
+    // if (!deviceCheck.isValid) {
+    //   const response = NextResponse.redirect(new URL('/auth/login?message=device_changed', request.url));
+    //   response.cookies.delete('auth_token');
+    //   response.cookies.delete('is_admin');
+    //   return response;
+    // }
   }
 
   // /admin route'larini himoya qilish
@@ -37,14 +36,14 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
 
-    // Device tekshirish admin uchun ham
-    const deviceCheck = await checkUserDevice(request);
-    if (!deviceCheck.isValid) {
-      const response = NextResponse.redirect(new URL('/auth/login?message=device_changed', request.url));
-      response.cookies.delete('auth_token');
-      response.cookies.delete('is_admin');
-      return response;
-    }
+    // Device tekshirish admin uchun ham (vaqtincha o'chirilgan)
+    // const deviceCheck = await checkUserDevice(request);
+    // if (!deviceCheck.isValid) {
+    //   const response = NextResponse.redirect(new URL('/auth/login?message=device_changed', request.url));
+    //   response.cookies.delete('auth_token');
+    //   response.cookies.delete('is_admin');
+    //   return response;
+    // }
   }
 
   return NextResponse.next();
