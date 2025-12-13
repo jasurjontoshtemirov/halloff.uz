@@ -49,13 +49,14 @@ export async function POST(request: NextRequest) {
       // Oddiy cookie o'rnatish
       const response = NextResponse.json(result);
       
-      // Cookie sozlamalari
+      // Cookie sozlamalari (production uchun)
       const cookieOptions = {
         httpOnly: false,
-        secure: true, // HTTPS uchun
+        secure: false, // Vaqtincha false qilamiz
         sameSite: 'lax' as const,
         maxAge: 60 * 60 * 24 * 7, // 7 kun
-        path: '/'
+        path: '/',
+        domain: undefined // Auto-detect domain
       };
 
       // Auth cookie
