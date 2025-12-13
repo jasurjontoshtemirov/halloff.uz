@@ -48,17 +48,21 @@ export default function LoginPage() {
         console.log('Login response:', result);
         console.log('User role:', result.user.role);
         
-        // Admin bo'lsa admin panelga, aks holda docs'ga yo'naltirish
-        setTimeout(() => {
-          if (result.user.role === 'admin') {
-            localStorage.setItem('is_admin', 'true');
-            console.log('Redirecting to admin panel...');
-            window.location.href = "/admin";
-          } else {
-            console.log('Redirecting to docs...');
-            window.location.href = "/docs";
-          }
-        }, 1000);
+        // localStorage ga saqlash
+        localStorage.setItem('halloff_current_user', JSON.stringify(result.user));
+        if (result.user.role === 'admin') {
+          localStorage.setItem('is_admin', 'true');
+        }
+        
+        // Redirect qilish
+        console.log('Redirecting...');
+        if (result.user.role === 'admin') {
+          console.log('Going to admin panel');
+          window.location.replace("/admin");
+        } else {
+          console.log('Going to docs');
+          window.location.replace("/docs");
+        }
       } else {
         if (result.needDeviceManagement) {
           // Qurilmalar boshqaruvi modalini ko'rsatish
@@ -156,17 +160,18 @@ export default function LoginPage() {
       
       if (result.success && result.user) {
         localStorage.setItem('halloff_current_user', JSON.stringify(result.user));
+        if (result.user.role === 'admin') {
+          localStorage.setItem('is_admin', 'true');
+        }
         setSuccess("Muvaffaqiyatli kirdingiz!");
         setLoading(false);
         
-        setTimeout(() => {
-          if (result.user.role === 'admin') {
-            localStorage.setItem('is_admin', 'true');
-            window.location.href = "/admin";
-          } else {
-            window.location.href = "/docs";
-          }
-        }, 1000);
+        // Redirect
+        if (result.user.role === 'admin') {
+          window.location.replace("/admin");
+        } else {
+          window.location.replace("/docs");
+        }
       } else {
         setError(result.message || 'Login xatosi');
         setLoading(false);

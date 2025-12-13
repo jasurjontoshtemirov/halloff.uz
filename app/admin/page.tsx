@@ -22,11 +22,11 @@ export default function AdminDashboard() {
   // Debug: Cookie'larni tekshirish
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      console.log('Admin panel cookies:');
-      console.log('auth_token:', document.cookie.includes('auth_token'));
-      console.log('is_admin:', document.cookie.includes('is_admin'));
-      console.log('user_id:', document.cookie.includes('user_id'));
+      console.log('Admin panel loaded!');
+      console.log('Current URL:', window.location.href);
       console.log('All cookies:', document.cookie);
+      console.log('localStorage user:', localStorage.getItem('halloff_current_user'));
+      console.log('localStorage admin:', localStorage.getItem('is_admin'));
     }
   }, []);
   const [users, setUsers] = useState<User[]>([]);
