@@ -49,34 +49,28 @@ export async function POST(request: NextRequest) {
       // Oddiy cookie o'rnatish
       const response = NextResponse.json(result);
       
-      // Auth cookie
-      response.cookies.set('auth_token', 'authenticated', {
+      // Cookie sozlamalari
+      const cookieOptions = {
         httpOnly: false,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        secure: true, // HTTPS uchun
+        sameSite: 'lax' as const,
         maxAge: 60 * 60 * 24 * 7, // 7 kun
         path: '/'
-      });
+      };
+
+      // Auth cookie
+      response.cookies.set('auth_token', 'authenticated', cookieOptions);
       
       // User ID cookie
-      response.cookies.set('user_id', result.user.id.toString(), {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7,
-        path: '/'
-      });
+      response.cookies.set('user_id', result.user.id.toString(), cookieOptions);
       
       // Admin cookie
       if (result.user.role === 'admin') {
-        response.cookies.set('is_admin', 'true', {
-          httpOnly: false,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          maxAge: 60 * 60 * 24 * 7,
-          path: '/'
-        });
+        response.cookies.set('is_admin', 'true', cookieOptions);
+        console.log('Admin cookie set for:', result.user.email);
       }
+      
+      console.log('All cookies set for user:', result.user.email, 'Role:', result.user.role);
       
       console.log('Cookies set for user:', result.user.email);
       return response;

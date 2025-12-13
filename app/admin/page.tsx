@@ -18,6 +18,17 @@ import {
 
 export default function AdminDashboard() {
   const router = useRouter();
+  
+  // Debug: Cookie'larni tekshirish
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      console.log('Admin panel cookies:');
+      console.log('auth_token:', document.cookie.includes('auth_token'));
+      console.log('is_admin:', document.cookie.includes('is_admin'));
+      console.log('user_id:', document.cookie.includes('user_id'));
+      console.log('All cookies:', document.cookie);
+    }
+  }, []);
   const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);

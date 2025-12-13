@@ -44,12 +44,18 @@ export default function LoginPage() {
         // localStorage ga saqlash
         localStorage.setItem('halloff_current_user', JSON.stringify(result.user));
         
+        // Debug: Response'ni ko'rish
+        console.log('Login response:', result);
+        console.log('User role:', result.user.role);
+        
         // Admin bo'lsa admin panelga, aks holda docs'ga yo'naltirish
         setTimeout(() => {
           if (result.user.role === 'admin') {
             localStorage.setItem('is_admin', 'true');
+            console.log('Redirecting to admin panel...');
             window.location.href = "/admin";
           } else {
+            console.log('Redirecting to docs...');
             window.location.href = "/docs";
           }
         }, 1000);
