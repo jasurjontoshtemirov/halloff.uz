@@ -186,6 +186,10 @@ export default function Home() {
               <ul className="space-y-2 text-sm text-gray-400">
                 <li><a href="https://t.me/jasurjontoshtemirov" target="_blank" rel="noopener noreferrer" className="hover:text-white">Telegram</a></li>
                 <li><a href="https://instagram.com/jasurjontoshtemirov" target="_blank" rel="noopener noreferrer" className="hover:text-white">Instagram</a></li>
+                <li><Link href="/auth/admin-login" className="hover:text-red-400 flex items-center gap-1">
+                  <Shield className="w-3 h-3" />
+                  Admin Panel
+                </Link></li>
               </ul>
             </div>
           </div>
