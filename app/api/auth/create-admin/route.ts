@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Create admin error:', error);
     return NextResponse.json(
-      { success: false, message: 'Admin yaratishda xatolik', error: error.message },
+      { success: false, message: 'Admin yaratishda xatolik', error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
