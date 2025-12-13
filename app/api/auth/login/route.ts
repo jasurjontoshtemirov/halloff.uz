@@ -80,9 +80,18 @@ export async function POST(request: NextRequest) {
       // Auth cookie
       response.cookies.set('auth_token', 'authenticated', {
         httpOnly: false,
-        secure: false,
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7, // 7 kun
+        path: '/'
+      });
+      
+      // User ID cookie
+      response.cookies.set('user_id', result.user.id.toString(), {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7,
         path: '/'
       });
       
@@ -90,7 +99,7 @@ export async function POST(request: NextRequest) {
       if (result.user.role === 'admin') {
         response.cookies.set('is_admin', 'true', {
           httpOnly: false,
-          secure: false,
+          secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
           maxAge: 60 * 60 * 24 * 7,
           path: '/'
