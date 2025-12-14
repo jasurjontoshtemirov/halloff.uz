@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { loginUser } from '@/lib/auth-db';
 import { getPool } from '@/lib/db';
-import { generateTokens, generateSessionId, generateCSRFToken } from '@/lib/jwt-security';
-import { loginLimiter, getClientIP } from '@/lib/rate-limiter';
+import { securityLogger } from '@/lib/security-logger';
 import { SecurityValidator } from '@/lib/validation';
-import { securityLogger, SecurityEventType } from '@/lib/security-logger';
-import { resolve } from 'path';
+import { loginLimiter, getClientIP } from '@/lib/rate-limiter';
 
 export async function POST(request: NextRequest) {
   const ip = getClientIP(request);
@@ -41,9 +39,11 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const { email: sanitizedEmail, password: sanitizedPassword } = validation.sanitizedData!;
+    // Use sanitized data for login
+    const sanitizedEmail = validation.sanitizedData?.email || email;
+    const sanitizedPassword = validation.sanitizedData?.password || password;
 
-    const result = await loginUser(email, password);
+    const result = await loginUser(sanitizedEmail, sanitizedPassword);
     
     if (result.success && result.user) {
       // Device management (vaqtincha o'chirilgan - keyinroq yoqiladi)

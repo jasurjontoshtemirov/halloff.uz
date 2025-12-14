@@ -40,7 +40,8 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const { email: sanitizedEmail, password: sanitizedPassword } = validation.sanitizedData!;
+    const sanitizedEmail = validation.sanitizedData?.email || email;
+    const sanitizedPassword = validation.sanitizedData?.password || password;
 
     // 3. Attempt login
     const result = await loginUser(sanitizedEmail, sanitizedPassword);
