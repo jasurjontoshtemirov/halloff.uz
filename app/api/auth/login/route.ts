@@ -49,15 +49,19 @@ export async function POST(request: NextRequest) {
       // Oddiy cookie o'rnatish
       const response = NextResponse.json(result);
       
-      // Cookie sozlamalari (production uchun)
+      // Cookie sozlamalari (xavfsiz)
+      const isProduction = process.env.NODE_ENV === 'production';
       const cookieOptions = {
-        httpOnly: false,
-        secure: false, // Vaqtincha false qilamiz
+        httpOnly: false, // Client-side access uchun
+        secure: isProduction, // HTTPS'da true
         sameSite: 'lax' as const,
         maxAge: 60 * 60 * 24 * 7, // 7 kun
         path: '/',
-        domain: undefined // Auto-detect domain
+        // Domain'ni aniq belgilash
+        domain: isProduction ? '.halloff.uz' : undefined
       };
+
+      console.log('Setting cookies with options:', cookieOptions);
 
       // Auth cookie
       response.cookies.set('auth_token', 'authenticated', cookieOptions);

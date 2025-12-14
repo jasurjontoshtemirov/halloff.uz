@@ -9,8 +9,87 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Middleware'ni butunlay o'chirish - faqat client-side tekshirish
-  console.log('Middleware disabled - allowing all access to:', pathname);
+  // Public route'lar (ruxsat berilgan)
+  const publicRoutes = [
+    '/',
+    '/auth/login',
+    '/auth/signup',
+    '/admin-test'
+  ];
+
+  if (publicRoutes.includes(pathname)) {
+    return NextResponse.next();
+  }
+
+  // Protected route'larni tekshirish
+  if (pathname.startsWith('/docs') || pathname.startsWith('/admin')) {
+    
+    // Cookie'larni tekshirish
+    const authToken = request.cookies.get('auth_token');
+    const isAdmin = request.cookies.get('is_admin');
+    const userId = request.cookies.get('user_id');
+    
+    console.log('=== MIDDLEWARE DEBUG ===');
+    console.log('Path:', pathname);
+    console.log('All cookies:', request.cookies.toString());
+    console.log('Auth token:', authToken?.value);
+    console.log('Is admin:', isAdmin?.value);
+    console.log('User ID:', userId?.value);
+    
+    // Auth token yo'q bo'lsa
+    if (!authToken?.value || authToken.value !== 'authenticated') {
+      console.log('❌ No valid auth token - redirecting to login');
+      return NextResponse.redirect(new URL('/auth/login?error=auth_required', request.url));
+    }
+
+    // Admin panel uchun admin tekshirish
+    if (pathname.startsWith('/admin')) {
+      if (isAdmin?.value !== 'true') {
+        console.log('❌ Not admin - redirecting to login');
+        return NextResponse.redirect(new URL('/auth/login?error=admin_required', request.url));
+      }
+      console.log('✅ Admin access granted');
+    }
+
+    // Database'dan user tekshirish (qo'shimcha xavfsizlik)
+    if (userId?.value) {
+      try {
+        const { getPool } = await import('@/lib/db');
+        const pool = getPool();
+        
+        const [users]: any = await pool.execute(
+          'SELECT id, role FROM users WHERE id = ?',
+          [userId.value]
+        );
+        
+        if (users.length === 0) {
+          console.log('❌ User not found in database');
+          const response = NextResponse.redirect(new URL('/auth/login?error=user_not_found', request.url));
+          response.cookies.delete('auth_token');
+          response.cookies.delete('is_admin');
+          response.cookies.delete('user_id');
+          return response;
+        }
+        
+        const user = users[0];
+        
+        // Admin panel uchun database'dan ham tekshirish
+        if (pathname.startsWith('/admin') && user.role !== 'admin') {
+          console.log('❌ Database confirms user is not admin');
+          return NextResponse.redirect(new URL('/auth/login?error=not_admin', request.url));
+        }
+        
+        console.log('✅ Database validation passed');
+        
+      } catch (dbError) {
+        console.error('Database validation error:', dbError);
+        // Database xatosi bo'lsa ham davom etish (fallback)
+      }
+    }
+
+    console.log('✅ Access granted to:', pathname);
+  }
+
   return NextResponse.next();
 }
 
