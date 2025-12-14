@@ -57,8 +57,8 @@ export async function POST(request: NextRequest) {
         sameSite: 'lax' as const,
         maxAge: 60 * 60 * 24 * 7, // 7 kun
         path: '/',
-        // Domain'ni aniq belgilash
-        domain: isProduction ? '.halloff.uz' : undefined
+        // Domain muammosini hal qilish
+        domain: undefined // Auto-detect, subdomain muammolarini oldini olish
       };
 
       console.log('Setting cookies with options:', cookieOptions);
