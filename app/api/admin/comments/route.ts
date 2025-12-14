@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     // Get total count
     const [countResult]: any = await pool.execute(`
       SELECT COUNT(*) as total FROM lesson_comments ${whereClause}
-    `, params);
+    `);
     
     const total = countResult[0].total;
     
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
       ${whereClause}
       ORDER BY created_at DESC
       LIMIT ? OFFSET ?
-    `, [...params, limit, offset]);
+    `, [limit, offset]);
 
     return NextResponse.json({
       success: true,
