@@ -19,14 +19,34 @@ import {
 export default function AdminDashboard() {
   const router = useRouter();
   
-  // Debug: Cookie'larni tekshirish
+  // Client-side auth tekshirish
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      console.log('Admin panel loaded!');
-      console.log('Current URL:', window.location.href);
-      console.log('All cookies:', document.cookie);
-      console.log('localStorage user:', localStorage.getItem('halloff_current_user'));
-      console.log('localStorage admin:', localStorage.getItem('is_admin'));
+      const user = localStorage.getItem('halloff_current_user');
+      const isAdminFlag = localStorage.getItem('is_admin');
+      
+      console.log('Admin panel - checking auth');
+      console.log('User:', user);
+      console.log('Is admin:', isAdminFlag);
+      
+      if (!user) {
+        console.log('No user found - redirecting to login');
+        window.location.href = '/auth/login';
+        return;
+      }
+      
+      try {
+        const userData = JSON.parse(user);
+        if (userData.role !== 'admin' && isAdminFlag !== 'true') {
+          console.log('Not admin - redirecting to docs');
+          window.location.href = '/docs';
+          return;
+        }
+        console.log('Admin access granted');
+      } catch (error) {
+        console.error('User data parse error:', error);
+        window.location.href = '/auth/login';
+      }
     }
   }, []);
   const [users, setUsers] = useState<User[]>([]);

@@ -9,64 +9,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // /docs route'larini himoya qilish
-  if (pathname.startsWith('/docs')) {
-    const authToken = request.cookies.get('auth_token');
-    const isAdmin = request.cookies.get('is_admin');
-    
-    console.log('Docs middleware check:');
-    console.log('Path:', pathname);
-    console.log('Auth token:', authToken?.value);
-    console.log('Is admin:', isAdmin?.value);
-    
-    // Auth token tekshirish
-    if (!authToken?.value || authToken.value !== 'authenticated') {
-      console.log('Redirecting to login - no auth token');
-      return NextResponse.redirect(new URL('/auth/login', request.url));
-    }
-
-    // Admin bo'lsa to'g'ridan-to'g'ri ruxsat berish
-    if (isAdmin?.value === 'true') {
-      console.log('Admin access granted to docs');
-      return NextResponse.next();
-    }
-
-    console.log('Regular user access to docs');
-    // Device tekshirish (vaqtincha o'chirilgan)
-    // const deviceCheck = await checkUserDevice(request);
-    // if (!deviceCheck.isValid) {
-    //   const response = NextResponse.redirect(new URL('/auth/login?message=device_changed', request.url));
-    //   response.cookies.delete('auth_token');
-    //   response.cookies.delete('is_admin');
-    //   return response;
-    // }
-  }
-
-  // /admin route'larini himoya qilish
-  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin-test')) {
-    const authToken = request.cookies.get('auth_token');
-    const isAdmin = request.cookies.get('is_admin');
-    
-    console.log('Admin middleware check:');
-    console.log('Path:', pathname);
-    console.log('Auth token:', authToken?.value);
-    console.log('Is admin:', isAdmin?.value);
-    
-    // Auth token tekshirish
-    if (!authToken?.value || authToken.value !== 'authenticated') {
-      console.log('Redirecting to login - no auth token');
-      return NextResponse.redirect(new URL('/auth/login', request.url));
-    }
-
-    // Admin tekshirish
-    if (isAdmin?.value !== 'true') {
-      console.log('Redirecting to login - not admin');
-      return NextResponse.redirect(new URL('/auth/login', request.url));
-    }
-
-    console.log('Admin access granted');
-  }
-
+  // Middleware'ni butunlay o'chirish - faqat client-side tekshirish
+  console.log('Middleware disabled - allowing all access to:', pathname);
   return NextResponse.next();
 }
 
