@@ -13,7 +13,8 @@ export async function GET(request: NextRequest) {
     const pool = getPool();
     
     let whereClause = '';
-    let params: any[] = [];
+    let countParams: any[] = [];
+    let selectParams: any[] = [];
     
     if (status === 'pending') {
       whereClause = 'WHERE is_approved = FALSE';
@@ -24,11 +25,12 @@ export async function GET(request: NextRequest) {
     // Get total count
     const [countResult]: any = await pool.execute(`
       SELECT COUNT(*) as total FROM lesson_comments ${whereClause}
-    `);
+    `, countParams);
     
     const total = countResult[0].total;
     
     // Get comments with pagination
+    selectParams = [limit, offset];
     const [comments] = await pool.execute(`
       SELECT 
         id,
@@ -47,7 +49,7 @@ export async function GET(request: NextRequest) {
       ${whereClause}
       ORDER BY created_at DESC
       LIMIT ? OFFSET ?
-    `, [limit, offset]);
+    `, selectParams);
 
     return NextResponse.json({
       success: true,
