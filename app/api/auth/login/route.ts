@@ -50,15 +50,13 @@ export async function POST(request: NextRequest) {
       const response = NextResponse.json(result);
       
       // Cookie sozlamalari (xavfsiz)
-      const isProduction = process.env.NODE_ENV === 'production';
       const cookieOptions = {
         httpOnly: false, // Client-side access uchun
-        secure: isProduction, // HTTPS'da true
+        secure: false, // Vaqtincha false - cookie muammosini hal qilish uchun
         sameSite: 'lax' as const,
         maxAge: 60 * 60 * 24 * 7, // 7 kun
-        path: '/',
-        // Domain muammosini hal qilish
-        domain: undefined // Auto-detect, subdomain muammolarini oldini olish
+        path: '/'
+        // domain o'chirildi - muammo keltirayapti
       };
 
       console.log('Setting cookies with options:', cookieOptions);
