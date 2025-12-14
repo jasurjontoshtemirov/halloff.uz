@@ -123,6 +123,15 @@ export default function AdminLayout({
               <span>Kontent</span>
             </Link>
             <Link
+              href="/admin/videos"
+              className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-[#0f0f0f] rounded-lg transition"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15M9 10v4a1 1 0 001 1h4M9 10V9a1 1 0 011-1h4a1 1 0 011 1v1M9 10H8a1 1 0 00-1 1v3a1 1 0 001 1h1m0-4h4.586M15 19l-3-3 3-3" />
+              </svg>
+              <span>Video Darslar</span>
+            </Link>
+            <Link
               href="/admin/demo-edit"
               className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-[#0f0f0f] rounded-lg transition"
             >
