@@ -33,7 +33,7 @@ export async function middleware(request: NextRequest) {
     console.log('Path:', pathname);
     console.log('Request URL:', request.url);
     console.log('Request headers cookie:', request.headers.get('cookie'));
-    console.log('Cookies object:', Object.fromEntries(request.cookies.entries()));
+    console.log('Cookies object:', request.cookies.getAll());
     console.log('Auth token:', authToken?.value);
     console.log('Is admin:', isAdmin?.value);
     console.log('User ID:', userId?.value);
