@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Play, AlertCircle } from 'lucide-react';
+import CommentsSection from './CommentsSection';
 
 interface VideoPlayerProps {
   lessonPath: string;
@@ -117,6 +118,12 @@ export default function VideoPlayer({ lessonPath, fallbackTitle }: VideoPlayerPr
           </p>
         )}
       </div>
+      
+      {/* Comments Section */}
+      <CommentsSection 
+        lessonPath={lessonPath} 
+        lessonTitle={video?.lesson_title || fallbackTitle || 'Dars'} 
+      />
     </div>
   );
 }

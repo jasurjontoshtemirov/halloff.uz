@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { telegramService } from './telegram';
 
 export enum SecurityEventType {
   LOGIN_SUCCESS = 'LOGIN_SUCCESS',
@@ -81,10 +82,19 @@ class SecurityLogger {
     // Send to monitoring system, Telegram, email, etc.
     console.error('🚨 CRITICAL SECURITY EVENT:', event);
     
-    // TODO: Implement notification system
-    // - Send to Telegram bot
-    // - Send email alert
-    // - Trigger monitoring alerts
+    // Send to Telegram
+    await telegramService.sendSecurityAlert({
+      type: `CRITICAL: ${event.type}`,
+      message: `${event.email ? `User: ${event.email} | ` : ''}${JSON.stringify(event.details)}`,
+      ip: event.ip,
+      userAgent: event.userAgent,
+      details: {
+        type: event.type,
+        severity: event.severity,
+        userId: event.userId,
+        timestamp: event.timestamp
+      }
+    });
   }
 
   // Helper methods for common events

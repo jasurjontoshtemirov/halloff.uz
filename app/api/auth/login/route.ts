@@ -4,6 +4,7 @@ import { getPool } from '@/lib/db';
 import { securityLogger } from '@/lib/security-logger';
 import { SecurityValidator } from '@/lib/validation';
 import { loginLimiter, getClientIP } from '@/lib/rate-limiter';
+import { telegramService } from '@/lib/telegram';
 
 export async function POST(request: NextRequest) {
   const ip = getClientIP(request);
@@ -46,6 +47,14 @@ export async function POST(request: NextRequest) {
     const result = await loginUser(sanitizedEmail, sanitizedPassword);
     
     if (result.success && result.user) {
+      // Telegram notification for successful login
+      await telegramService.sendUserActivity({
+        action: 'LOGIN SUCCESS',
+        user: result.user.email,
+        details: `Role: ${result.user.role}`,
+        ip: ip
+      });
+
       // Device management (vaqtincha o'chirilgan - keyinroq yoqiladi)
       try {
         const deviceFingerprint = request.headers.get('x-device-fingerprint') || '';
