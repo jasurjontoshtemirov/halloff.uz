@@ -1,17 +1,47 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { loginUser } from '@/lib/auth-db';
 import { getPool } from '@/lib/db';
+import { generateTokens, generateSessionId, generateCSRFToken } from '@/lib/jwt-security';
+import { loginLimiter, getClientIP } from '@/lib/rate-limiter';
+import { SecurityValidator } from '@/lib/validation';
+import { securityLogger, SecurityEventType } from '@/lib/security-logger';
+import { resolve } from 'path';
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIP(request);
+  const userAgent = request.headers.get('user-agent') || 'Unknown';
+  
   try {
-    const { email, password } = await request.json();
-
-    if (!email || !password) {
-      return NextResponse.json(
-        { success: false, message: 'Email va parolni kiriting!' },
-        { status: 400 }
-      );
+    // 1. Rate limiting check
+    const rateLimitResult = loginLimiter.recordAttempt(ip);
+    if (!rateLimitResult.allowed) {
+      await securityLogger.logRateLimitExceeded(ip, userAgent, '/api/auth/login', 0);
+      
+      return NextResponse.json({
+        success: false,
+        message: `Juda ko'p harakat. Keyinroq qaytadan urinib ko'ring.`,
+        rateLimited: true
+      }, { status: 429 });
     }
+
+    const body = await request.json();
+    const { email, password } = body;
+
+    // 2. Input validation
+    const validation = SecurityValidator.validateLoginData(email, password);
+    if (!validation.isValid) {
+      await securityLogger.logSuspiciousActivity(ip, userAgent, 'Invalid input format', {
+        errors: validation.errors,
+        email: email
+      });
+
+      return NextResponse.json({
+        success: false,
+        message: 'Ma\'lumotlar noto\'g\'ri: ' + validation.errors.join(', ')
+      }, { status: 400 });
+    }
+
+    const { email: sanitizedEmail, password: sanitizedPassword } = validation.sanitizedData!;
 
     const result = await loginUser(email, password);
     
@@ -44,9 +74,9 @@ export async function POST(request: NextRequest) {
         console.log(`Device logged: ${deviceName}`);
       } catch (deviceError) {
         console.error('Device management error (ignored):', deviceError);
-        // Device xatosi bo'lsa ham login'ga ruxsat berish
+
       }
-      // Oddiy cookie o'rnatish
+
       const response = NextResponse.json(result);
       
       // Cookie sozlamalari (xavfsiz)
