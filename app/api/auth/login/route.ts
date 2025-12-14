@@ -62,8 +62,6 @@ export async function POST(request: NextRequest) {
         const userAgent = request.headers.get('user-agent') || '';
         const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '';
 
-        console.log('Device info for user:', result.user.email);
-        
         // Device management faqat agar database mavjud bo'lsa
         const pool = getPool();
         
@@ -79,11 +77,8 @@ export async function POST(request: NextRequest) {
            ip_address = VALUES(ip_address)`,
           [result.user.id, deviceName, deviceFingerprint, userAgent, ipAddress]
         );
-        
-        console.log(`Device logged: ${deviceName}`);
       } catch (deviceError) {
-        console.error('Device management error (ignored):', deviceError);
-
+        // Device management xatosi - login'ga ruxsat berish davom etadi
       }
 
       const response = NextResponse.json(result);
@@ -98,8 +93,6 @@ export async function POST(request: NextRequest) {
         // domain o'chirildi - muammo keltirayapti
       };
 
-      console.log('Setting cookies with options:', cookieOptions);
-
       // Auth cookie
       response.cookies.set('auth_token', 'authenticated', cookieOptions);
       
@@ -109,12 +102,7 @@ export async function POST(request: NextRequest) {
       // Admin cookie
       if (result.user.role === 'admin') {
         response.cookies.set('is_admin', 'true', cookieOptions);
-        console.log('Admin cookie set for:', result.user.email);
       }
-      
-      console.log('All cookies set for user:', result.user.email, 'Role:', result.user.role);
-      
-      console.log('Cookies set for user:', result.user.email);
       return response;
     }
     

@@ -2,8 +2,14 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { GraduationCap, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle } from "lucide-react";
+import { GraduationCap, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { generateDeviceFingerprint, getDeviceName } from "@/lib/device-fingerprint";
+
+interface Device {
+  id: string;
+  device_name: string;
+  last_login: string;
+}
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -13,13 +19,37 @@ export default function LoginPage() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [showDeviceModal, setShowDeviceModal] = useState(false);
-  const [userDevices, setUserDevices] = useState<any[]>([]);
+  const [userDevices, setUserDevices] = useState<Device[]>([]);
   const [savedCredentials, setSavedCredentials] = useState<{email: string, password: string} | null>(null);
+  const [deviceLoading, setDeviceLoading] = useState(false);
+
+  // Email validation
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Password validation
+  const validatePassword = (password: string): boolean => {
+    return password.length >= 6;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+
+    // Client-side validation
+    if (!validateEmail(email)) {
+      setError("Email formatini to'g'ri kiriting");
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setError("Parol kamida 6 ta belgidan iborat bo'lishi kerak");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -43,31 +73,22 @@ export default function LoginPage() {
         
         // localStorage ga saqlash
         localStorage.setItem('halloff_current_user', JSON.stringify(result.user));
-        
-        // Debug: Response'ni ko'rish
-        console.log('Login response:', result);
-        console.log('User role:', result.user.role);
-        
-        // localStorage ga saqlash
-        localStorage.setItem('halloff_current_user', JSON.stringify(result.user));
         if (result.user.role === 'admin') {
           localStorage.setItem('is_admin', 'true');
         }
         
         // Redirect qilish
-        console.log('Redirecting...');
-        if (result.user.role === 'admin') {
-          console.log('Going to admin panel');
-          window.location.replace("/admin");
-        } else {
-          console.log('Going to docs');
-          window.location.replace("/docs");
-        }
+        setTimeout(() => {
+          if (result.user.role === 'admin') {
+            window.location.replace("/admin");
+          } else {
+            window.location.replace("/docs");
+          }
+        }, 1000);
       } else {
         if (result.needDeviceManagement) {
-          // Qurilmalar boshqaruvi modalini ko'rsatish
           setSavedCredentials({ email, password });
-          fetchUserDevices(email);
+          await fetchUserDevices(email);
           setShowDeviceModal(true);
         } else {
           setError(result.message || 'Login xatosi');
@@ -75,25 +96,30 @@ export default function LoginPage() {
         setLoading(false);
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setError('Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
+      setError('Tarmoq xatosi. Internetni tekshiring.');
       setLoading(false);
     }
   };
 
   const fetchUserDevices = async (email: string) => {
+    setDeviceLoading(true);
     try {
       const response = await fetch(`/api/auth/devices?email=${email}`);
       const data = await response.json();
       if (data.success) {
         setUserDevices(data.devices);
+      } else {
+        setError("Qurilmalar ma'lumotini olishda xatolik");
       }
     } catch (error) {
-      console.error('Fetch devices error:', error);
+      setError("Tarmoq xatosi yuz berdi");
+    } finally {
+      setDeviceLoading(false);
     }
   };
 
   const removeDevice = async (deviceId: string) => {
+    setDeviceLoading(true);
     try {
       const response = await fetch('/api/auth/remove-device', {
         method: 'POST',
@@ -105,19 +131,15 @@ export default function LoginPage() {
       
       const result = await response.json();
       if (result.success) {
-        // Qurilmalar ro'yxatini yangilash
         const updatedDevices = userDevices.filter(device => device.id !== deviceId);
         setUserDevices(updatedDevices);
         
-        // Agar 2 tadan kam qurilma qolsa, login jarayonini yakunlash
         if (updatedDevices.length < 2) {
           setShowDeviceModal(false);
           setSuccess("Qurilma o'chirildi! Login yakunlanmoqda...");
           
-          // Login jarayonini yakunlash
           setTimeout(async () => {
             if (savedCredentials) {
-              // Saqlangan ma'lumotlar bilan qayta login qilish
               await performLogin(savedCredentials.email, savedCredentials.password);
             } else {
               setError("Login ma'lumotlari topilmadi.");
@@ -126,15 +148,15 @@ export default function LoginPage() {
           }, 1000);
         }
       } else {
-        setError(result.message);
+        setError(result.message || "Qurilmani o'chirishda xatolik");
       }
     } catch (error) {
-      console.error('Remove device error:', error);
-      setError('Xatolik yuz berdi.');
+      setError('Tarmoq xatosi yuz berdi');
+    } finally {
+      setDeviceLoading(false);
     }
   };
 
-  // Login jarayonini alohida funksiyaga ajratish
   const performLogin = async (loginEmail: string, loginPassword: string) => {
     try {
       setLoading(true);
@@ -164,21 +186,20 @@ export default function LoginPage() {
           localStorage.setItem('is_admin', 'true');
         }
         setSuccess("Muvaffaqiyatli kirdingiz!");
-        setLoading(false);
         
-        // Redirect
-        if (result.user.role === 'admin') {
-          window.location.replace("/admin");
-        } else {
-          window.location.replace("/docs");
-        }
+        setTimeout(() => {
+          if (result.user.role === 'admin') {
+            window.location.replace("/admin");
+          } else {
+            window.location.replace("/docs");
+          }
+        }, 1000);
       } else {
         setError(result.message || 'Login xatosi');
         setLoading(false);
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setError('Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
+      setError('Tarmoq xatosi yuz berdi');
       setLoading(false);
     }
   };
@@ -219,7 +240,8 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
-                  className="w-full pl-10 pr-4 py-3 bg-[#0f0f0f] border border-[#30363d] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition"
+                  disabled={loading}
+                  className="w-full pl-10 pr-4 py-3 bg-[#0f0f0f] border border-[#30363d] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
                   required
                 />
               </div>
@@ -234,13 +256,15 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-12 py-3 bg-[#0f0f0f] border border-[#30363d] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition"
+                  disabled={loading}
+                  className="w-full pl-10 pr-12 py-3 bg-[#0f0f0f] border border-[#30363d] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                  disabled={loading}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 disabled:opacity-50"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -250,8 +274,9 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition"
+              className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition flex items-center justify-center gap-2"
             >
+              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               {loading ? "Kirish..." : "Kirish"}
             </button>
           </form>
@@ -287,28 +312,37 @@ export default function LoginPage() {
               </div>
             )}
 
-            <div className="space-y-3 mb-6">
-              {userDevices.map((device) => (
-                <div key={device.id} className="flex items-center justify-between p-3 bg-[#0f0f0f] border border-[#30363d] rounded-lg">
-                  <div>
-                    <p className="text-white font-medium">{device.device_name}</p>
-                    <p className="text-xs text-gray-400">
-                      Oxirgi kirish: {new Date(device.last_login).toLocaleDateString('uz-UZ')}
-                    </p>
+            {deviceLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-blue-400" />
+                <span className="ml-2 text-gray-400">Yuklanmoqda...</span>
+              </div>
+            ) : (
+              <div className="space-y-3 mb-6">
+                {userDevices.map((device) => (
+                  <div key={device.id} className="flex items-center justify-between p-3 bg-[#0f0f0f] border border-[#30363d] rounded-lg">
+                    <div>
+                      <p className="text-white font-medium">{device.device_name}</p>
+                      <p className="text-xs text-gray-400">
+                        Oxirgi kirish: {new Date(device.last_login).toLocaleDateString('uz-UZ')}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => removeDevice(device.id)}
+                      disabled={deviceLoading}
+                      className="px-3 py-1 bg-red-600 hover:bg-red-700 disabled:bg-red-600/50 disabled:cursor-not-allowed text-white text-sm rounded transition"
+                    >
+                      O'chirish
+                    </button>
                   </div>
-                  <button
-                    onClick={() => removeDevice(device.id)}
-                    className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded transition"
-                  >
-                    O'chirish
-                  </button>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             <button
               onClick={() => setShowDeviceModal(false)}
-              className="w-full py-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition"
+              disabled={deviceLoading}
+              className="w-full py-3 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-600/50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition"
             >
               Bekor qilish
             </button>
