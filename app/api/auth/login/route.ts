@@ -6,14 +6,16 @@ import { SecurityValidator } from '@/lib/validation';
 import { loginLimiter, getClientIP } from '@/lib/rate-limiter';
 import { telegramService } from '@/lib/telegram';
 import { signToken } from '@/lib/token';
+import { csrfProtection } from '@/lib/csrf-middleware';
 
 export async function POST(request: NextRequest) {
   const ip = getClientIP(request);
   const userAgent = request.headers.get('user-agent') || 'Unknown';
 
   try {
-    // 1. Rate limiting check
-    const rateLimitResult = loginLimiter.recordAttempt(ip);
+    // 1. Rate limiting check (Enhanced with combined fingerprint)
+    const fingerprint = `${ip}|${userAgent}`;
+    const rateLimitResult = loginLimiter.recordAttempt(fingerprint);
     if (!rateLimitResult.allowed) {
       await securityLogger.logRateLimitExceeded(ip, userAgent, '/api/auth/login', 0);
 
@@ -23,6 +25,10 @@ export async function POST(request: NextRequest) {
         rateLimited: true
       }, { status: 429 });
     }
+
+
+    // 2. CSRF Protection
+    await csrfProtection(request);
 
     const body = await request.json();
     const { email, password } = body;
@@ -88,22 +94,16 @@ export async function POST(request: NextRequest) {
       const token = await signToken({ userId: result.user.id, role: result.user.role });
 
       const cookieOptions = {
-        httpOnly: true, // Secure: Client JS cannot read it
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax' as const,
+        httpOnly: true,
+        secure: true, // Always secure in modern app or if behind TLS proxy
+        sameSite: 'strict' as const,
         maxAge: 60 * 60 * 24 * 7, // 7 days
         path: '/'
       };
 
       response.cookies.set('auth_token', token, cookieOptions);
 
-      // User ID cookie (for client convenience if needed, but not for auth)
-      response.cookies.set('user_id', result.user.id.toString(), { ...cookieOptions, httpOnly: false });
 
-      // Admin cookie (Removed insecure flag, use token claim instead or just keep for client UI but not trust in middleware)
-      if (result.user.role === 'admin') {
-        response.cookies.set('is_admin', 'true', { ...cookieOptions, httpOnly: false });
-      }
       return response;
     }
 

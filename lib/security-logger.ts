@@ -49,10 +49,13 @@ class SecurityLogger {
       timestamp: new Date().toISOString()
     };
 
-    // Console log for immediate visibility
+    // Console log for immediate visibility (Masked PII)
+    const maskedEmail = event.email ? event.email.replace(/(^.{3}).*(@.*$)/, '$1***$2') : undefined;
+    const maskedIp = event.ip.replace(/\.\d+\.\d+$/, '.***.***'); // Simple IPv4 mask
+
     console.log(`🔒 SECURITY [${event.severity}] ${event.type}:`, {
-      email: event.email,
-      ip: event.ip,
+      email: maskedEmail,
+      ip: maskedIp,
       details: event.details
     });
 
@@ -70,7 +73,7 @@ class SecurityLogger {
       const date = new Date().toISOString().split('T')[0];
       const filename = `security-${date}.log`;
       const filepath = path.join(this.logDir, filename);
-      
+
       const logLine = JSON.stringify(event) + '\n';
       await fs.appendFile(filepath, logLine);
     } catch (error) {
@@ -81,7 +84,7 @@ class SecurityLogger {
   private async handleCriticalEvent(event: SecurityEvent) {
     // Send to monitoring system, Telegram, email, etc.
     console.error('🚨 CRITICAL SECURITY EVENT:', event);
-    
+
     // Send to Telegram
     await telegramService.sendSecurityAlert({
       type: `CRITICAL: ${event.type}`,
