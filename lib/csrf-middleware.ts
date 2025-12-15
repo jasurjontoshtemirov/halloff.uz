@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import crypto from 'crypto';
 
 // Generate a random CSRF token
-function generateToken(): string {
+export function generateToken(): string {
     return crypto.randomBytes(32).toString('hex');
 }
 
