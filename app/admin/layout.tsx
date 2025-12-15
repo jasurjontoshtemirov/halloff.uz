@@ -19,15 +19,12 @@ export default function AdminLayout({
     // Small delay to ensure localStorage is ready
     const timer = setTimeout(() => {
       const adminStatus = isAdmin();
-      console.log("Admin status:", adminStatus);
-      
       if (!adminStatus) {
-        console.log("Not admin, redirecting to docs");
-        router.replace("/docs");
-      } else {
-        setCurrentUser(getCurrentUser());
-        setLoading(false);
+        router.push("/docs");
+        return;
       }
+      setCurrentUser(getCurrentUser());
+      setLoading(false);
     }, 100);
 
     return () => clearTimeout(timer);
