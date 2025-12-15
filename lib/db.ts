@@ -22,7 +22,7 @@ export function getPool() {
 // Initialize database tables
 export async function initDatabase() {
   const pool = getPool();
-  
+
   try {
     // Create users table
     await pool.execute(`
@@ -34,16 +34,6 @@ export async function initDatabase() {
         role ENUM('user', 'admin') DEFAULT 'user',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      )
-    `);
-
-    // Create plain passwords table (faqat k6yd2007@gmail.com uchun ko'rish)
-    await pool.execute(`
-      CREATE TABLE IF NOT EXISTS user_plain_passwords (
-        user_id INT PRIMARY KEY,
-        plain_password VARCHAR(255) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     `);
 
@@ -89,7 +79,7 @@ export async function initDatabase() {
     if ((rows as any[]).length === 0) {
       const bcrypt = require('bcryptjs');
       const hashedPassword = await bcrypt.hash('admin123', 10);
-      
+
       await pool.execute(
         'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
         ['Admin', 'admin@halloff.uz', hashedPassword, 'admin']
@@ -105,7 +95,7 @@ export async function initDatabase() {
     if ((mainAdminRows as any[]).length === 0) {
       const bcrypt = require('bcryptjs');
       const hashedPassword = await bcrypt.hash('@Qwer1234', 10);
-      
+
       await pool.execute(
         'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
         ['Main Admin', 'k6yd2007@gmail.com', hashedPassword, 'admin']
