@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { GraduationCap, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { generateDeviceFingerprint, getDeviceName } from "@/lib/device-fingerprint";
 
@@ -20,8 +21,26 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showDeviceModal, setShowDeviceModal] = useState(false);
   const [userDevices, setUserDevices] = useState<Device[]>([]);
-  const [savedCredentials, setSavedCredentials] = useState<{email: string, password: string} | null>(null);
+  const [savedCredentials, setSavedCredentials] = useState<{ email: string, password: string } | null>(null);
+
   const [deviceLoading, setDeviceLoading] = useState(false);
+  const [csrfToken, setCsrfToken] = useState<string>("");
+
+  useEffect(() => {
+    // Fetch CSRF token on mount
+    const fetchCsrfToken = async () => {
+      try {
+        const res = await fetch('/api/auth/csrf');
+        if (res.ok) {
+          const data = await res.json();
+          setCsrfToken(data.csrfToken);
+        }
+      } catch (e) {
+        console.error("Failed to fetch CSRF token", e);
+      }
+    };
+    fetchCsrfToken();
+  }, []);
 
   // Email validation
   const validateEmail = (email: string): boolean => {
@@ -55,28 +74,30 @@ export default function LoginPage() {
     try {
       const deviceFingerprint = generateDeviceFingerprint();
       const deviceName = getDeviceName();
-      
+
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+
           'X-Device-Fingerprint': deviceFingerprint,
           'X-Device-Name': deviceName,
+          'x-csrf-token': csrfToken,
         },
         body: JSON.stringify({ email, password }),
       });
-      
+
       const result = await response.json();
-      
+
       if (result.success && result.user) {
         setSuccess("Muvaffaqiyatli kirdingiz!");
-        
+
         // localStorage ga saqlash
         localStorage.setItem('halloff_current_user', JSON.stringify(result.user));
         if (result.user.role === 'admin') {
           localStorage.setItem('is_admin', 'true');
         }
-        
+
         // Redirect qilish
         setTimeout(() => {
           if (result.user.role === 'admin') {
@@ -128,16 +149,16 @@ export default function LoginPage() {
         },
         body: JSON.stringify({ deviceId }),
       });
-      
+
       const result = await response.json();
       if (result.success) {
         const updatedDevices = userDevices.filter(device => device.id !== deviceId);
         setUserDevices(updatedDevices);
-        
+
         if (updatedDevices.length < 2) {
           setShowDeviceModal(false);
           setSuccess("Qurilma o'chirildi! Login yakunlanmoqda...");
-          
+
           setTimeout(async () => {
             if (savedCredentials) {
               await performLogin(savedCredentials.email, savedCredentials.password);
@@ -161,32 +182,34 @@ export default function LoginPage() {
     try {
       setLoading(true);
       setError("");
-      
+
       const deviceFingerprint = generateDeviceFingerprint();
       const deviceName = getDeviceName();
-      
+
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+
           'X-Device-Fingerprint': deviceFingerprint,
           'X-Device-Name': deviceName,
+          'x-csrf-token': csrfToken,
         },
-        body: JSON.stringify({ 
-          email: loginEmail, 
-          password: loginPassword 
+        body: JSON.stringify({
+          email: loginEmail,
+          password: loginPassword
         }),
       });
-      
+
       const result = await response.json();
-      
+
       if (result.success && result.user) {
         localStorage.setItem('halloff_current_user', JSON.stringify(result.user));
         if (result.user.role === 'admin') {
           localStorage.setItem('is_admin', 'true');
         }
         setSuccess("Muvaffaqiyatli kirdingiz!");
-        
+
         setTimeout(() => {
           if (result.user.role === 'admin') {
             window.location.replace("/admin");

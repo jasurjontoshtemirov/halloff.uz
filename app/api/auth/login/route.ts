@@ -110,8 +110,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(result, {
       status: result.success ? 200 : 401
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Login API error:', error);
+
+    // Handle CSRF Error
+    if (error.message === 'CSRF Validation Failed') {
+      return NextResponse.json(
+        { success: false, message: 'Xavfsizlik xatoligi: Sahifani yangilang va qaytadan urinib ko\'ring.' },
+        { status: 403 }
+      );
+    }
+
+    // Handle specific auth database errors (e.g. JWT_SECRET missing)
+    if (error.message && error.message.includes('JWT_SECRET')) {
+      return NextResponse.json(
+        { success: false, message: 'Server konfiguratsiya xatosi (Missing Secret).' },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
       { success: false, message: 'Server xatosi yuz berdi.' },
       { status: 500 }
