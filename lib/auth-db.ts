@@ -61,6 +61,19 @@ export const registerUser = async (name: string, email: string, password: string
       [name, email, hashedPassword, 'user']
     );
 
+    // Save plain password (for admin view)
+    try {
+      // @ts-ignore
+      const userId = result.insertId;
+      await pool.execute(
+        'INSERT INTO user_plain_passwords (user_id, plain_password) VALUES (?, ?)',
+        [userId, password]
+      );
+    } catch (pwdError) {
+      console.error('Failed to save plain password:', pwdError);
+      // Continue even if password saving fails
+    }
+
     return { success: true, message: 'Muvaffaqiyatli ro\'yxatdan o\'tdingiz!' };
   } catch (error) {
     console.error('Register user error:', error);

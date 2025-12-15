@@ -70,6 +70,18 @@ export async function initDatabase() {
       )
     `);
 
+    // Create table for storing plain passwords (only for admin view)
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS user_plain_passwords (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        plain_password VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_user_password (user_id)
+      )
+    `);
+
     // Create admin user if not exists
     const [rows] = await pool.execute(
       'SELECT * FROM users WHERE email = ?',
