@@ -25,7 +25,16 @@ export async function csrfProtection(request: NextRequest) {
         const cookieStore = await cookies();
         const storedToken = cookieStore.get('csrf_token')?.value;
 
-        if (!token || !storedToken || !verifyToken(token, storedToken)) {
+        if (!token) {
+            console.error('CSRF Fail: Missing token in header/body');
+            throw new Error('CSRF Validation Failed');
+        }
+        if (!storedToken) {
+            console.error('CSRF Fail: Missing csrf_token cookie');
+            throw new Error('CSRF Validation Failed');
+        }
+        if (!verifyToken(token, storedToken)) {
+            console.error('CSRF Fail: Token mismatch');
             throw new Error('CSRF Validation Failed');
         }
     }

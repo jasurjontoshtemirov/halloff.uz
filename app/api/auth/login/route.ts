@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
       const cookieOptions = {
         httpOnly: true,
         secure: true, // Always secure in modern app or if behind TLS proxy
-        sameSite: 'strict' as const,
+        sameSite: 'lax' as const,
         maxAge: 60 * 60 * 24 * 7, // 7 days
         path: '/'
       };
