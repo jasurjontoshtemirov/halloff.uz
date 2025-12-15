@@ -54,9 +54,13 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setCurrentUser(getCurrentUser());
-    setUsers(getUsers());
-    setLoading(false);
+    const loadData = async () => {
+      setCurrentUser(getCurrentUser());
+      const usersList = await getUsers();
+      setUsers(usersList);
+      setLoading(false);
+    };
+    loadData();
   }, []);
 
   const handleDeleteUser = (userId: string) => {
