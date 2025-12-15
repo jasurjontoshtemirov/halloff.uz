@@ -18,7 +18,7 @@ export const getUsers = async (): Promise<User[]> => {
     const [rows] = await pool.execute(
       'SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC'
     );
-    
+
     return (rows as any[]).map(row => ({
       id: row.id.toString(),
       name: row.name,
@@ -37,13 +37,13 @@ export const registerUser = async (name: string, email: string, password: string
   try {
     const { getPool } = await import('@/lib/db');
     const pool = getPool();
-    
+
     // Check if user already exists
     const [existingUsers] = await pool.execute(
       'SELECT id FROM users WHERE email = ?',
       [email]
     );
-    
+
     if ((existingUsers as any[]).length > 0) {
       return { success: false, message: 'Bu email allaqachon ro\'yxatdan o\'tgan!' };
     }
@@ -55,15 +55,6 @@ export const registerUser = async (name: string, email: string, password: string
     const [result] = await pool.execute(
       'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
       [name, email, hashedPassword, 'user']
-    );
-
-    // Ochiq parolni alohida jadvalda saqlash (faqat admin ko'rishi uchun)
-    const insertResult = result as any;
-    const userId = insertResult.insertId;
-    
-    await pool.execute(
-      'INSERT INTO user_plain_passwords (user_id, plain_password) VALUES (?, ?)',
-      [userId, password]
     );
 
     return { success: true, message: 'Muvaffaqiyatli ro\'yxatdan o\'tdingiz!' };
@@ -78,20 +69,20 @@ export const loginUser = async (email: string, password: string): Promise<{ succ
   try {
     const { getPool } = await import('@/lib/db');
     const pool = getPool();
-    
+
     // Get user from database
     const [users] = await pool.execute(
       'SELECT id, name, email, password, role, created_at FROM users WHERE email = ?',
       [email]
     );
-    
+
     const userRows = users as any[];
     if (userRows.length === 0) {
       return { success: false, message: 'Email yoki parol noto\'g\'ri!' };
     }
-    
+
     const user = userRows[0];
-    
+
     // Check password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
@@ -119,25 +110,25 @@ export const deleteUser = async (userId: string): Promise<{ success: boolean; me
   try {
     const { getPool } = await import('@/lib/db');
     const pool = getPool();
-    
+
     // Check if user exists and is not admin
     const [users] = await pool.execute(
       'SELECT role FROM users WHERE id = ?',
       [userId]
     );
-    
+
     const userRows = users as any[];
     if (userRows.length === 0) {
       return { success: false, message: 'Foydalanuvchi topilmadi!' };
     }
-    
+
     if (userRows[0].role === 'admin') {
       return { success: false, message: 'Adminni o\'chirish mumkin emas!' };
     }
-    
+
     // Delete user
     await pool.execute('DELETE FROM users WHERE id = ?', [userId]);
-    
+
     return { success: true, message: 'Foydalanuvchi muvaffaqiyatli o\'chirildi!' };
   } catch (error) {
     console.error('Delete user error:', error);
@@ -154,12 +145,12 @@ export const getUserById = async (userId: string): Promise<User | null> => {
       'SELECT id, name, email, role, created_at FROM users WHERE id = ?',
       [userId]
     );
-    
+
     const userRows = users as any[];
     if (userRows.length === 0) {
       return null;
     }
-    
+
     const user = userRows[0];
     return {
       id: user.id.toString(),
