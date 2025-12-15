@@ -7,7 +7,7 @@ echo "Starting deployment..."
 git pull origin main
 
 # 2. Install dependencies (in case of new packages)
-npm install
+npm install --legacy-peer-deps
 
 # 3. Build the application
 # Note: Next.js build will create the production build in .next/
