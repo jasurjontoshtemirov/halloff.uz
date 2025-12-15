@@ -11,6 +11,8 @@ npm install --legacy-peer-deps
 
 # 3. Build the application
 # Note: Next.js build will create the production build in .next/
+# Clean previous build to avoid corruption
+rm -rf .next
 npm run build
 
 # 4. Restart the application using PM2
