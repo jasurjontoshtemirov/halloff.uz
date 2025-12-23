@@ -24,10 +24,10 @@ export default function DocsPage() {
   }, []);
 
   return (
-    <div className="prose-dark max-w-none">
+    <div className="min-h-screen bg-[#0f0f0f] px-6 max-w-none">
       {/* Hero Section */}
       <div className={`not-prose mb-12 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-        <div className="relative overflow-hidden bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 rounded-2xl p-8 mb-8">
+        <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 rounded-3xl p-12 mb-12 shadow-2xl max-w-6xl mx-auto">
           {/* Background Effects */}
           <div className="absolute inset-0">
             <div className="absolute top-4 right-4 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>

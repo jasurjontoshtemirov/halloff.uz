@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { isAdmin, getCurrentUser, type User } from "@/lib/auth";
 import { Shield, Home, Users, FileText, Settings } from "lucide-react";
 
 export default function AdminLayout({
@@ -12,22 +11,11 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Small delay to ensure localStorage is ready
-    const timer = setTimeout(() => {
-      const adminStatus = isAdmin();
-      if (!adminStatus) {
-        router.push("/docs");
-        return;
-      }
-      setCurrentUser(getCurrentUser());
-      setLoading(false);
-    }, 100);
-
-    return () => clearTimeout(timer);
+    // Auth olib tashlandi - to'g'ridan-to'g'ri ruxsat
+    setLoading(false);
   }, [router]);
 
   if (loading) {
@@ -62,13 +50,11 @@ export default function AdminLayout({
               {/* User Info */}
               <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-[#0f0f0f] rounded-lg border border-[#30363d]">
                 <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
-                  <span className="text-purple-400 font-semibold text-sm">
-                    {currentUser?.name.charAt(0).toUpperCase()}
-                  </span>
+                  <span className="text-purple-400 font-semibold text-sm">A</span>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-white">{currentUser?.name}</p>
-                  <p className="text-xs text-gray-400">{currentUser?.phone}</p>
+                  <p className="text-sm font-medium text-white">Admin</p>
+                  <p className="text-xs text-gray-400">+998990022701</p>
                 </div>
               </div>
 

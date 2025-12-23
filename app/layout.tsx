@@ -3,7 +3,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "Halloff - Dokumentatsiya",
+  title: "Halloff",
   description: "Halloff - Zamonaviy va professional dasturlash kurslari platformasi",
 };
 

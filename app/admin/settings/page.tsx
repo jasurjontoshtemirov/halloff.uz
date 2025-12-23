@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { isAdmin } from "@/lib/auth";
 import { generateSyncCode, importFromSyncCode } from "@/lib/sync";
 import { Settings, Save, RefreshCw, Copy, Download, Upload, CheckCircle } from "lucide-react";
 

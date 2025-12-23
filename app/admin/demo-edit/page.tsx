@@ -2,16 +2,9 @@
 
 import { useState } from "react";
 import InlineEditor from "@/components/InlineEditor";
-import { getCurrentUser } from "@/lib/auth";
 
 export default function DemoEditPage() {
-  const [user, setUser] = useState<any>(null);
-
-  // Check if admin
-  useState(() => {
-    const currentUser = getCurrentUser();
-    setUser(currentUser);
-  });
+  const [user, setUser] = useState<any>({ role: 'admin' }); // Auth olib tashlandi - admin sifatida ko'rsatish
 
   const handleSave = async (content: string) => {
     // Simulate save

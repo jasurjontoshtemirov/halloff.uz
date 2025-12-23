@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { isAdmin, getUsers, getCurrentUser, type User } from "@/lib/auth";
 import {
   Users,
   FileText,
@@ -18,51 +17,13 @@ import {
 
 export default function AdminDashboard() {
   const router = useRouter();
-
-  // Client-side auth tekshirish
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const user = localStorage.getItem('halloff_current_user');
-      const isAdminFlag = localStorage.getItem('is_admin');
-
-      if (!user) {
-        router.push('/auth/login');
-        return;
-      }
-
-      try {
-        const userData = JSON.parse(user);
-        if (userData.role !== 'admin' && isAdminFlag !== 'true') {
-          router.push('/docs');
-          return;
-        }
-      } catch (error) {
-        console.error('User data parse error:', error);
-        router.push('/auth/login');
-      }
-    }
-  }, []);
-  const [users, setUsers] = useState<User[]>([]);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadData = async () => {
-      setCurrentUser(getCurrentUser());
-      const usersList = await getUsers();
-      setUsers(usersList);
-      setLoading(false);
-    };
-    loadData();
+    // Auth olib tashlandi - to'g'ridan-to'g'ri ma'lumotlarni yuklash
+    setLoading(false);
   }, []);
-
-  const handleDeleteUser = (userId: string) => {
-    if (confirm("Bu foydalanuvchini o'chirmoqchimisiz?")) {
-      const updatedUsers = users.filter(u => u.id !== userId);
-      localStorage.setItem('halloff_users', JSON.stringify(updatedUsers));
-      setUsers(updatedUsers);
-    }
-  };
 
   if (loading) {
     return (
@@ -75,120 +36,101 @@ export default function AdminDashboard() {
     );
   }
 
-  const totalUsers = users.length;
-  const adminUsers = users.filter(u => u.role === 'admin').length;
-  const regularUsers = users.filter(u => u.role === 'user').length;
-
   return (
     <div className="p-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-white mb-2">Admin Dashboard</h1>
+        <p className="text-gray-400">Halloff platformasini boshqarish paneli</p>
+      </div>
+
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Link href="/admin/users" className="bg-[#161b22] border border-[#30363d] hover:border-blue-500/50 rounded-xl p-6 transition cursor-pointer group">
-          <div className="flex items-center justify-between mb-4">
-            <Users className="w-8 h-8 text-blue-400 group-hover:scale-110 transition" />
-            <span className="text-3xl font-bold text-white">{totalUsers}</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-400">Foydalanuvchilar</p>
+              <p className="text-2xl font-bold text-white">0</p>
+            </div>
+            <Users className="w-8 h-8 text-blue-500" />
           </div>
-          <h3 className="text-gray-400 text-sm group-hover:text-blue-400 transition">Jami foydalanuvchilar</h3>
-        </Link>
+        </div>
 
-        <Link href="/admin/users" className="bg-[#161b22] border border-[#30363d] hover:border-purple-500/50 rounded-xl p-6 transition cursor-pointer group">
-          <div className="flex items-center justify-between mb-4">
-            <Shield className="w-8 h-8 text-purple-400 group-hover:scale-110 transition" />
-            <span className="text-3xl font-bold text-white">{adminUsers}</span>
+        <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-400">HTML Darslari</p>
+              <p className="text-2xl font-bold text-white">7</p>
+            </div>
+            <FileText className="w-8 h-8 text-orange-500" />
           </div>
-          <h3 className="text-gray-400 text-sm group-hover:text-purple-400 transition">Adminlar</h3>
-        </Link>
+        </div>
 
-        <Link href="/admin/users" className="bg-[#161b22] border border-[#30363d] hover:border-green-500/50 rounded-xl p-6 transition cursor-pointer group">
-          <div className="flex items-center justify-between mb-4">
-            <Users className="w-8 h-8 text-green-400 group-hover:scale-110 transition" />
-            <span className="text-3xl font-bold text-white">{regularUsers}</span>
+        <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-400">CSS Darslari</p>
+              <p className="text-2xl font-bold text-white">18</p>
+            </div>
+            <BookOpen className="w-8 h-8 text-blue-500" />
           </div>
-          <h3 className="text-gray-400 text-sm group-hover:text-green-400 transition">Oddiy foydalanuvchilar</h3>
-        </Link>
+        </div>
+
+        <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-400">JS Darslari</p>
+              <p className="text-2xl font-bold text-white">34+</p>
+            </div>
+            <Settings className="w-8 h-8 text-yellow-500" />
+          </div>
+        </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Link
-          href="/admin/users"
-          className="bg-[#161b22] border border-[#30363d] hover:border-blue-500/50 rounded-xl p-6 transition group"
+          href="/admin/content"
+          className="block p-6 bg-[#161b22] border border-[#30363d] rounded-lg hover:border-blue-500/50 transition group"
         >
-          <Users className="w-10 h-10 text-blue-400 mb-3 group-hover:scale-110 transition" />
-          <h3 className="text-lg font-semibold text-white mb-2">Foydalanuvchilar</h3>
-          <p className="text-sm text-gray-400">Barcha foydalanuvchilarni ko'rish va boshqarish</p>
+          <div className="flex items-center gap-4 mb-4">
+            <FileText className="w-8 h-8 text-blue-500 group-hover:scale-110 transition" />
+            <h3 className="text-xl font-semibold text-white">Kontent Boshqaruvi</h3>
+          </div>
+          <p className="text-gray-400">Darslarni tahrirlash va yangi kontent qo'shish</p>
         </Link>
 
         <Link
-          href="/admin/content"
-          className="bg-[#161b22] border border-[#30363d] hover:border-green-500/50 rounded-xl p-6 transition group"
+          href="/admin/users"
+          className="block p-6 bg-[#161b22] border border-[#30363d] rounded-lg hover:border-green-500/50 transition group"
         >
-          <FileText className="w-10 h-10 text-green-400 mb-3 group-hover:scale-110 transition" />
-          <h3 className="text-lg font-semibold text-white mb-2">Kontent boshqaruvi</h3>
-          <p className="text-sm text-gray-400">HTML, CSS, JavaScript darslarini tahrirlash</p>
+          <div className="flex items-center gap-4 mb-4">
+            <Users className="w-8 h-8 text-green-500 group-hover:scale-110 transition" />
+            <h3 className="text-xl font-semibold text-white">Foydalanuvchilar</h3>
+          </div>
+          <p className="text-gray-400">Foydalanuvchilarni ko'rish va boshqarish</p>
         </Link>
 
         <Link
           href="/admin/settings"
-          className="bg-[#161b22] border border-[#30363d] hover:border-purple-500/50 rounded-xl p-6 transition group"
+          className="block p-6 bg-[#161b22] border border-[#30363d] rounded-lg hover:border-purple-500/50 transition group"
         >
-          <Settings className="w-10 h-10 text-purple-400 mb-3 group-hover:scale-110 transition" />
-          <h3 className="text-lg font-semibold text-white mb-2">Sozlamalar</h3>
-          <p className="text-sm text-gray-400">Sayt sozlamalarini boshqarish</p>
+          <div className="flex items-center gap-4 mb-4">
+            <Settings className="w-8 h-8 text-purple-500 group-hover:scale-110 transition" />
+            <h3 className="text-xl font-semibold text-white">Sozlamalar</h3>
+          </div>
+          <p className="text-gray-400">Tizim sozlamalari va konfiguratsiya</p>
         </Link>
       </div>
 
-      {/* Recent Users */}
-      <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-6">
-        <h2 className="text-xl font-bold text-white mb-6">So'nggi foydalanuvchilar</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-[#30363d]">
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-400">Ism</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-400">Email</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-400">Rol</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-400">Sana</th>
-                <th className="text-right py-3 px-4 text-sm font-semibold text-gray-400">Amallar</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.slice(0, 10).map((user) => (
-                <tr key={user.id} className="border-b border-[#30363d] hover:bg-[#0f0f0f] transition">
-                  <td className="py-3 px-4 text-white">{user.name}</td>
-                  <td className="py-3 px-4 text-gray-400">{user.phone}</td>
-                  <td className="py-3 px-4">
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${user.role === 'admin'
-                        ? 'bg-purple-500/20 text-purple-400'
-                        : 'bg-blue-500/20 text-blue-400'
-                      }`}>
-                      {user.role === 'admin' ? 'Admin' : 'User'}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-gray-400 text-sm">
-                    {new Date(user.createdAt).toLocaleDateString('uz-UZ')}
-                  </td>
-                  <td className="py-3 px-4 text-right">
-                    <button
-                      onClick={() => handleDeleteUser(user.id)}
-                      disabled={user.role === 'admin'}
-                      className="text-red-400 hover:text-red-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="mt-4 text-center">
-          <Link
-            href="/admin/users"
-            className="text-blue-400 hover:text-blue-300 text-sm"
-          >
-            Barchasini ko'rish →
-          </Link>
+      {/* Recent Activity */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold text-white mb-4">So'nggi Faoliyat</h2>
+        <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-6">
+          <div className="text-center py-8">
+            <Shield className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+            <p className="text-gray-400">Hozircha faoliyat yo'q</p>
+            <p className="text-sm text-gray-500 mt-2">Tizim ishga tushgandan so'ng bu yerda ma'lumotlar ko'rinadi</p>
+          </div>
         </div>
       </div>
     </div>

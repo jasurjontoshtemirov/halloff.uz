@@ -58,11 +58,8 @@ export default function UsersPage() {
   };
 
   useEffect(() => {
-    // Check admin access
-    if (!isAdmin()) {
-      router.push('/auth/login');
-      return;
-    }
+    // Authentication olib tashlandi - admin panelga ruxsat
+    setLoading(false);
 
     loadUsers();
   }, [router]);
