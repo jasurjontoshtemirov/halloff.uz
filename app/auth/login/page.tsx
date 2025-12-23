@@ -54,22 +54,20 @@ export default function LoginPage() {
       const result = await response.json();
       
       if (result.success && result.user) {
-        setSuccess("Muvaffaqiyatli kirdingiz!");
-        
         // localStorage ga saqlash
         localStorage.setItem('halloff_current_user', JSON.stringify(result.user));
         if (result.user.role === 'admin') {
           localStorage.setItem('is_admin', 'true');
         }
         
-        // Redirect qilish
-        setTimeout(() => {
-          if (result.user.role === 'admin') {
-            window.location.replace("/admin");
-          } else {
-            window.location.replace("/docs");
+        // To'g'ridan-to'g'ri redirect
+        if (result.user.role === 'admin') {
+          window.location.href = "/admin";
+        } else {
+          window.location.href = "/docs";
+        }
           }
-        }, 1000);
+        }, 1500);
       } else {
         setError(result.message || 'Login xatosi');
         setLoading(false);
