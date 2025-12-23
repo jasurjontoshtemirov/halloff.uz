@@ -46,12 +46,12 @@ export default function AdminUsersPage() {
   const [showPasswords, setShowPasswords] = useState<{[key: string]: boolean}>({});
   const [userAccessKeys, setUserAccessKeys] = useState<{[key: string]: string[]}>({});
 
-  // Faqat k6yd2007@gmail.com uchun parol ko'rsatish huquqi
+  // Faqat +998901234567 uchun parol ko'rsatish huquqi
   const canViewPasswords = () => {
     if (typeof window === 'undefined') return false;
     const userStr = localStorage.getItem('halloff_current_user');
     const user = userStr ? JSON.parse(userStr) : null;
-    return user?.email === 'k6yd2007@gmail.com';
+    return user?.phone === '+998901234567';
   };
 
   useEffect(() => {
@@ -87,7 +87,7 @@ export default function AdminUsersPage() {
     } else {
       const filtered = users.filter(user => 
         user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchQuery.toLowerCase())
+        user.phone.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredUsers(filtered);
     }
@@ -284,7 +284,7 @@ export default function AdminUsersPage() {
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-2 text-gray-400">
                         <Mail className="w-4 h-4" />
-                        <span className="text-sm">{user.email}</span>
+                        <span className="text-sm">{user.phone}</span>
                       </div>
                     </td>
                     <td className="py-4 px-6">

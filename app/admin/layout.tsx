@@ -68,7 +68,7 @@ export default function AdminLayout({
                 </div>
                 <div>
                   <p className="text-sm font-medium text-white">{currentUser?.name}</p>
-                  <p className="text-xs text-gray-400">{currentUser?.email}</p>
+                  <p className="text-xs text-gray-400">{currentUser?.phone}</p>
                 </div>
               </div>
 

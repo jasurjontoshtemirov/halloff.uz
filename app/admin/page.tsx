@@ -156,7 +156,7 @@ export default function AdminDashboard() {
               {users.slice(0, 10).map((user) => (
                 <tr key={user.id} className="border-b border-[#30363d] hover:bg-[#0f0f0f] transition">
                   <td className="py-3 px-4 text-white">{user.name}</td>
-                  <td className="py-3 px-4 text-gray-400">{user.email}</td>
+                  <td className="py-3 px-4 text-gray-400">{user.phone}</td>
                   <td className="py-3 px-4">
                     <span className={`px-2 py-1 rounded text-xs font-medium ${user.role === 'admin'
                         ? 'bg-purple-500/20 text-purple-400'

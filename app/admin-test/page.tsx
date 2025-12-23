@@ -39,7 +39,7 @@ export default function AdminTestPage() {
             <div className="space-y-2">
               <p className="text-gray-300"><strong>ID:</strong> {user.id}</p>
               <p className="text-gray-300"><strong>Name:</strong> {user.name}</p>
-              <p className="text-gray-300"><strong>Email:</strong> {user.email}</p>
+              <p className="text-gray-300"><strong>Phone:</strong> {user.phone}</p>
               <p className="text-gray-300"><strong>Role:</strong> 
                 <span className={user.role === 'admin' ? 'text-green-400' : 'text-blue-400'}>
                   {user.role}
