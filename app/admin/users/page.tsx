@@ -7,7 +7,10 @@ import Link from "next/link";
 interface User {
   id: string;
   name: string;
-  email: string;
+  phone: string;
+  role: 'user' | 'admin';
+  createdAt: string;
+}
   role: 'user' | 'admin';
   createdAt: string;
 }
@@ -46,12 +49,12 @@ export default function AdminUsersPage() {
   const [showPasswords, setShowPasswords] = useState<{[key: string]: boolean}>({});
   const [userAccessKeys, setUserAccessKeys] = useState<{[key: string]: string[]}>({});
 
-  // Faqat +998901234567 uchun parol ko'rsatish huquqi
+  // Faqat +998990022701 uchun parol ko'rsatish huquqi
   const canViewPasswords = () => {
     if (typeof window === 'undefined') return false;
     const userStr = localStorage.getItem('halloff_current_user');
     const user = userStr ? JSON.parse(userStr) : null;
-    return user?.phone === '+998901234567';
+    return user?.phone === '+998990022701';
   };
 
   useEffect(() => {
