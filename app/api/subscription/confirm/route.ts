@@ -43,8 +43,8 @@ export async function POST(req: NextRequest) {
 
       // Foydalanuvchini topish
       const [users]: any = await connection.query(
-        "SELECT id FROM users WHERE email = ?",
-        [user.email]
+        "SELECT id FROM users WHERE phone = ?",
+        [user.phone]
       );
 
       if (users.length === 0 || users[0].id !== payment.user_id) {

@@ -22,7 +22,7 @@ export async function GET() {
         `SELECT 
           p.*,
           u.name as user_name,
-          u.email as user_email,
+          u.phone as user_phone,
           u.subscription_end
         FROM payments p
         JOIN users u ON p.user_id = u.id

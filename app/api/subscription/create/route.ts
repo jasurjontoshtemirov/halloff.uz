@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
 
       // Console'ga log qilish (admin ko'rishi uchun)
       console.log('💳 Yangi obuna so\'rovi:');
-      console.log('   Foydalanuvchi:', dbUser.name, '(' + dbUser.email + ')');
+      console.log('   Foydalanuvchi:', dbUser.name, '(' + dbUser.phone + ')');
       console.log('   To\'lov ID:', paymentId);
       console.log('   Summa: 10,000 so\'m');
       console.log('   Admin panel:', 'http://localhost:3001/admin/subscriptions');
