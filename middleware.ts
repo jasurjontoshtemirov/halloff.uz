@@ -3,46 +3,7 @@ import type { NextRequest } from 'next/server';
 import { verifyToken } from '@/lib/token';
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // Public routes
-  const publicRoutes = [
-    '/',
-    '/auth/login',
-    '/auth/signup',
-    '/admin-test'
-  ];
-
-  if (publicRoutes.includes(pathname)) {
-    return NextResponse.next();
-  }
-
-  // Protected routes check
-  if (pathname.startsWith('/docs') || pathname.startsWith('/admin')) {
-    const authToken = request.cookies.get('auth_token');
-    const isAdmin = request.cookies.get('is_admin');
-
-    console.log('=== AUTH CHECK ===');
-    console.log('Path:', pathname);
-    console.log('Auth token:', authToken?.value);
-    console.log('Is admin:', isAdmin?.value);
-
-    if (!authToken?.value || authToken.value !== 'authenticated') {
-      console.log('❌ No valid auth token - redirecting to login');
-      return NextResponse.redirect(new URL('/auth/login?error=auth_required', request.url));
-    }
-
-    // Admin panel access check
-    if (pathname.startsWith('/admin')) {
-      if (!isAdmin?.value || isAdmin.value !== 'true') {
-        console.log('❌ Not admin - redirecting to login');
-        return NextResponse.redirect(new URL('/auth/login?error=admin_required', request.url));
-      }
-    }
-
-    console.log('✅ Access granted to:', pathname);
-  }
-
+  // Hamma sahifaga ruxsat berish - login yo'q
   return NextResponse.next();
 }
 
