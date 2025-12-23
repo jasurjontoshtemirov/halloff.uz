@@ -5,7 +5,7 @@ import { verifyToken } from './token';
 export interface User {
   id: string;
   name: string;
-  email: string;
+  phone: string;
   role: 'user' | 'admin';
   createdAt: string;
 }
@@ -25,7 +25,7 @@ export const getCurrentUserFromCookies = async (): Promise<User | null> => {
     const { getPool } = await import('./db');
     const pool = getPool();
     const [rows] = await pool.execute(
-      'SELECT id, name, email, role, created_at FROM users WHERE id = ?',
+      'SELECT id, name, phone, role, created_at FROM users WHERE id = ?',
       [payload.userId]
     );
     
@@ -35,7 +35,7 @@ export const getCurrentUserFromCookies = async (): Promise<User | null> => {
     return {
       id: users[0].id.toString(),
       name: users[0].name,
-      email: users[0].email,
+      phone: users[0].phone,
       role: users[0].role,
       createdAt: users[0].created_at,
     };
@@ -50,13 +50,13 @@ export const getUsers = async (): Promise<User[]> => {
     const { getPool } = await import('./db');
     const pool = getPool();
     const [rows] = await pool.execute(
-      'SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC'
+      'SELECT id, name, phone, role, created_at FROM users ORDER BY created_at DESC'
     );
     
     return (rows as any[]).map(row => ({
       id: row.id.toString(),
       name: row.name,
-      email: row.email,
+      phone: row.phone,
       role: row.role,
       createdAt: row.created_at,
     }));

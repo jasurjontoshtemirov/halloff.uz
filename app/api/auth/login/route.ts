@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       // Telegram notification for successful login
       await telegramService.sendUserActivity({
         action: 'LOGIN SUCCESS',
-        user: result.user.email,
+        user: result.user.phone,
         details: `Role: ${result.user.role}`,
         ip: ip
       });
