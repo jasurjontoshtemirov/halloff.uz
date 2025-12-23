@@ -3,27 +3,29 @@ import { registerUser } from '@/lib/auth-db';
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, password } = await request.json();
+    const { name, phone } = await request.json();
 
-    if (!name || !email || !password) {
+    if (!name || !phone) {
       return NextResponse.json(
-        { success: false, message: 'Barcha maydonlarni to\'ldiring!' },
+        { success: false, message: 'Ism va telefon raqam kiritilishi shart!' },
         { status: 400 }
       );
     }
 
-    const result = await registerUser(name, email, password);
-    
-    if (result.success) {
-      // Yangi foydalanuvchi uchun access key talab qilish
-      const responseData = {
-        ...result,
-        needsAccessKey: true
-      };
-      return NextResponse.json(responseData, { status: 201 });
+    // Phone validation
+    const phoneRegex = /^\+998[0-9]{9}$/;
+    if (!phoneRegex.test(phone)) {
+      return NextResponse.json({
+        success: false,
+        message: 'Telefon raqam formati noto\'g\'ri (+998XXXXXXXXX)'
+      }, { status: 400 });
     }
+
+    const result = await registerUser(name.trim(), phone);
     
-    return NextResponse.json(result, { status: 400 });
+    return NextResponse.json(result, { 
+      status: result.success ? 201 : 400 
+    });
   } catch (error) {
     console.error('Register API error:', error);
     return NextResponse.json(

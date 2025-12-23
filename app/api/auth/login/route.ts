@@ -32,27 +32,26 @@ export async function POST(request: NextRequest) {
     // await csrfProtection(request); // Temporarily disabled for debugging
 
     const body = await request.json();
-    const { email, password } = body;
+    const { phone } = body;
 
     // 2. Input validation
-    const validation = SecurityValidator.validateLoginData(email, password);
-    if (!validation.isValid) {
-      await securityLogger.logSuspiciousActivity(ip, userAgent, 'Invalid input format', {
-        errors: validation.errors,
-        email: email
-      });
-
+    if (!phone) {
       return NextResponse.json({
         success: false,
-        message: 'Ma\'lumotlar noto\'g\'ri: ' + validation.errors.join(', ')
+        message: 'Telefon raqam kiritilishi shart'
       }, { status: 400 });
     }
 
-    // Use sanitized data for login
-    const sanitizedEmail = validation.sanitizedData?.email || email;
-    const sanitizedPassword = validation.sanitizedData?.password || password;
+    // Phone validation
+    const phoneRegex = /^\+998[0-9]{9}$/;
+    if (!phoneRegex.test(phone)) {
+      return NextResponse.json({
+        success: false,
+        message: 'Telefon raqam formati noto\'g\'ri'
+      }, { status: 400 });
+    }
 
-    const result = await loginUser(sanitizedEmail, sanitizedPassword);
+    const result = await loginUser(phone);
 
     if (result.success && result.user) {
       // Telegram notification for successful login

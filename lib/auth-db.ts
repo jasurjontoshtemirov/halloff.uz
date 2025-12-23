@@ -1,15 +1,9 @@
 // Database-based auth system (Server-side only)
-import bcrypt from 'bcryptjs';
-
-if (!process.env.JWT_SECRET) {
-  throw new Error('FATAL: JWT_SECRET environment variable is not defined.');
-}
 
 export interface User {
   id: string;
   name: string;
-  email: string;
-  password?: string; // Optional for security
+  phone: string;
   role: 'user' | 'admin';
   createdAt: string;
 }
@@ -20,13 +14,13 @@ export const getUsers = async (): Promise<User[]> => {
     const { getPool } = await import('@/lib/db');
     const pool = getPool();
     const [rows] = await pool.execute(
-      'SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC'
+      'SELECT id, name, phone, role, created_at FROM users ORDER BY created_at DESC'
     );
 
     return (rows as any[]).map(row => ({
       id: row.id.toString(),
       name: row.name,
-      email: row.email,
+      phone: row.phone,
       role: row.role,
       createdAt: row.created_at,
     }));
@@ -37,42 +31,26 @@ export const getUsers = async (): Promise<User[]> => {
 };
 
 // Register new user (Server-side only)
-export const registerUser = async (name: string, email: string, password: string): Promise<{ success: boolean; message: string }> => {
+export const registerUser = async (name: string, phone: string): Promise<{ success: boolean; message: string }> => {
   try {
     const { getPool } = await import('@/lib/db');
     const pool = getPool();
 
     // Check if user already exists
     const [existingUsers] = await pool.execute(
-      'SELECT id FROM users WHERE email = ?',
-      [email]
+      'SELECT id FROM users WHERE phone = ?',
+      [phone]
     );
 
     if ((existingUsers as any[]).length > 0) {
-      return { success: false, message: 'Bu email allaqachon ro\'yxatdan o\'tgan!' };
+      return { success: false, message: 'Bu telefon raqam allaqachon ro\'yxatdan o\'tgan!' };
     }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
 
     // Create new user
-    const [result] = await pool.execute(
-      'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
-      [name, email, hashedPassword, 'user']
+    await pool.execute(
+      'INSERT INTO users (name, phone, role) VALUES (?, ?, ?)',
+      [name, phone, 'user']
     );
-
-    // Save plain password (for admin view)
-    try {
-      // @ts-ignore
-      const userId = result.insertId;
-      await pool.execute(
-        'INSERT INTO user_plain_passwords (user_id, plain_password) VALUES (?, ?)',
-        [userId, password]
-      );
-    } catch (pwdError) {
-      console.error('Failed to save plain password:', pwdError);
-      // Continue even if password saving fails
-    }
 
     return { success: true, message: 'Muvaffaqiyatli ro\'yxatdan o\'tdingiz!' };
   } catch (error) {
@@ -82,35 +60,29 @@ export const registerUser = async (name: string, email: string, password: string
 };
 
 // Login user (Server-side only)
-export const loginUser = async (email: string, password: string): Promise<{ success: boolean; message: string; user?: User }> => {
+export const loginUser = async (phone: string): Promise<{ success: boolean; message: string; user?: User }> => {
   try {
     const { getPool } = await import('@/lib/db');
     const pool = getPool();
 
     // Get user from database
     const [users] = await pool.execute(
-      'SELECT id, name, email, password, role, created_at FROM users WHERE email = ?',
-      [email]
+      'SELECT id, name, phone, role, created_at FROM users WHERE phone = ?',
+      [phone]
     );
 
     const userRows = users as any[];
     if (userRows.length === 0) {
-      return { success: false, message: 'Email yoki parol noto\'g\'ri!' };
+      return { success: false, message: 'Telefon raqam topilmadi! Avval ro\'yxatdan o\'ting.' };
     }
 
     const user = userRows[0];
 
-    // Check password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return { success: false, message: 'Email yoki parol noto\'g\'ri!' };
-    }
-
-    // Return user without password
+    // Return user
     const userResponse: User = {
       id: user.id.toString(),
       name: user.name,
-      email: user.email,
+      phone: user.phone,
       role: user.role,
       createdAt: user.created_at,
     };
@@ -159,7 +131,7 @@ export const getUserById = async (userId: string): Promise<User | null> => {
     const { getPool } = await import('@/lib/db');
     const pool = getPool();
     const [users] = await pool.execute(
-      'SELECT id, name, email, role, created_at FROM users WHERE id = ?',
+      'SELECT id, name, phone, role, created_at FROM users WHERE id = ?',
       [userId]
     );
 
@@ -172,7 +144,7 @@ export const getUserById = async (userId: string): Promise<User | null> => {
     return {
       id: user.id.toString(),
       name: user.name,
-      email: user.email,
+      phone: user.phone,
       role: user.role,
       createdAt: user.created_at,
     };
