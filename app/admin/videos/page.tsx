@@ -71,8 +71,38 @@ export default function AdminVideosPage() {
     }
   };
 
+  const handleClearVideo = async (video: Video) => {
+    if (!confirm('Rostdan ham bu darsdan videoni olib tashlamoqchimisiz? (Dars o\'zi qoladi, faqat video o\'chiriladi)')) return;
+
+    try {
+      const response = await fetch(`/api/admin/videos/${video.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lesson_title: video.lesson_title,
+          youtube_video_id: null, // Videoni o'chirish
+          video_title: '',
+          description: null,
+          is_active: video.is_active
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        await fetchVideos();
+        alert('Video muvaffaqiyatli olib tashlandi!');
+      } else {
+        alert('Xatolik: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Clear video error:', error);
+      alert('Video olib tashlanishda xatolik yuz berdi');
+    }
+  };
+
   const handleDelete = async (id: number) => {
-    if (!confirm('Rostdan ham bu videoni o\'chirmoqchimisiz?')) return;
+    if (!confirm('DIQQAT! Bu butun darsni o\'chiradi (video bilan birga). Rostdan ham davom etmoqchimisiz?')) return;
 
     try {
       const response = await fetch(`/api/admin/videos/${id}`, {
@@ -251,10 +281,19 @@ export default function AdminVideosPage() {
                       >
                         <Edit className="w-4 h-4" />
                       </button>
+                      {video.youtube_video_id && (
+                        <button
+                          onClick={() => handleClearVideo(video)}
+                          className="p-2 text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10 rounded-lg transition-all"
+                          title="Videoni olib tashla (dars qoladi)"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
                       <button
                         onClick={() => handleDelete(video.id)}
                         className="p-2 text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-lg transition-all"
-                        title="O'chirish"
+                        title="Butun darsni o'chirish"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
