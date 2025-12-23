@@ -66,8 +66,6 @@ export default function LoginPage() {
         } else {
           window.location.href = "/docs";
         }
-          }
-        }, 1500);
       } else {
         setError(result.message || 'Login xatosi');
         setLoading(false);
