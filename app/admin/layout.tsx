@@ -13,13 +13,32 @@ export default function AdminLayout({
   const router = useRouter();
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  // Client-side mounting
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Login sahifasida layout'ni ko'rsatmaslik
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Yuklanmoqda...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (pathname === "/admin/login") {
     return <>{children}</>;
   }
 
   useEffect(() => {
+    if (!mounted) return;
+    
     // Admin auth tekshirish
     const adminAuth = localStorage.getItem("adminAuth");
     if (!adminAuth) {
@@ -27,7 +46,7 @@ export default function AdminLayout({
       return;
     }
     setLoading(false);
-  }, [router]);
+  }, [router, mounted]);
 
   if (loading) {
     return (
