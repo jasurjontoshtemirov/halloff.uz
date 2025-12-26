@@ -5,10 +5,11 @@ export async function POST(request: NextRequest) {
     const { name, title, message, page } = await request.json();
 
     if (!name || !title || !message) {
-      return NextResponse.json(
+      return NextResponse.vjson(
         { success: false, message: "Barcha maydonlarni to'ldiring" },
         { status: 400 }
       );
+      
     }
 
     const botToken = process.env.TELEGRAM_BOT_TOKEN;

@@ -142,17 +142,11 @@ export default function DocsLayout({
   const [jsOpen, setJsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [userIsAdmin, setUserIsAdmin] = useState(false);
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [reportName, setReportName] = useState("");
   const [reportTitle, setReportTitle] = useState("");
   const [reportMessage, setReportMessage] = useState("");
   const [reportSending, setReportSending] = useState(false);
-
-  // Check if user is admin
-  useEffect(() => {
-    setUserIsAdmin(true); // Admin sifatida ko'rsatish
-  }, []);
 
   // Basic user check (access key expiration removed)
   useEffect(() => {
@@ -201,15 +195,6 @@ export default function DocsLayout({
                 <span className="hidden sm:inline">Search</span>
                 <kbd className="hidden sm:inline px-1.5 py-0.5 text-xs bg-gray-800 rounded">K</kbd>
               </button>
-              {userIsAdmin && (
-                <Link
-                  href="/admin"
-                  className="px-3 py-1.5 text-sm text-purple-400 hover:text-purple-300 border border-purple-700/50 rounded-md hover:border-purple-600 transition flex items-center gap-2"
-                >
-                  <span className="hidden sm:inline">Admin</span>
-                  <span className="sm:hidden">👑</span>
-                </Link>
-              )}
             </div>
           </div>
         </div>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Shield, Home, Users, FileText, Settings } from "lucide-react";
+import { Shield, Home, Users, FileText, Settings, LogOut } from "lucide-react";
 
 export default function AdminLayout({
   children,
@@ -14,7 +14,12 @@ export default function AdminLayout({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Auth olib tashlandi - to'g'ridan-to'g'ri ruxsat
+    // Admin auth tekshirish
+    const adminAuth = localStorage.getItem("adminAuth");
+    if (!adminAuth) {
+      router.push("/admin/login");
+      return;
+    }
     setLoading(false);
   }, [router]);
 
@@ -66,6 +71,19 @@ export default function AdminLayout({
                 <Home className="w-4 h-4" />
                 <span className="hidden sm:inline">Dokumentatsiya</span>
               </Link>
+
+              {/* Logout */}
+              <button
+                onClick={() => {
+                  localStorage.removeItem("adminAuth");
+                  localStorage.removeItem("adminPhone");
+                  router.push("/admin/login");
+                }}
+                className="px-4 py-2 text-sm text-red-400 hover:text-red-300 border border-red-700/50 hover:border-red-600 rounded-lg transition flex items-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">Chiqish</span>
+              </button>
             </div>
           </div>
         </div>
