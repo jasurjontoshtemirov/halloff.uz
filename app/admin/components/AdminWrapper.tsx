@@ -1,45 +1,26 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Shield, Home, Users, FileText, Settings, LogOut } from "lucide-react";
 
-export default function AdminLayout({
-  children,
-}: {
+interface AdminWrapperProps {
   children: React.ReactNode;
-}) {
+}
+
+export default function AdminWrapper({ children }: AdminWrapperProps) {
   const router = useRouter();
-  const pathname = usePathname();
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
 
-  // Client-side mounting
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Login sahifasida layout'ni ko'rsatmaslik
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Yuklanmoqda...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (pathname === "/admin/login") {
-    return <>{children}</>;
-  }
-
   useEffect(() => {
     if (!mounted) return;
     
-    // Admin auth tekshirish
     const adminAuth = localStorage.getItem("adminAuth");
     if (!adminAuth) {
       router.push("/admin/login");
@@ -48,7 +29,7 @@ export default function AdminLayout({
     setLoading(false);
   }, [router, mounted]);
 
-  if (loading) {
+  if (!mounted || loading) {
     return (
       <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center">
         <div className="text-center">
@@ -133,15 +114,6 @@ export default function AdminLayout({
               <span>Foydalanuvchilar</span>
             </Link>
             <Link
-              href="/admin/access-codes"
-              className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-[#0f0f0f] rounded-lg transition"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-              </svg>
-              <span>Kirish Kodlari</span>
-            </Link>
-            <Link
               href="/admin/content"
               className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-[#0f0f0f] rounded-lg transition"
             >
@@ -158,24 +130,6 @@ export default function AdminLayout({
               <span>Video Darslar</span>
             </Link>
             <Link
-              href="/admin/comments"
-              className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-[#0f0f0f] rounded-lg transition"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              <span>Izohlar</span>
-            </Link>
-            <Link
-              href="/admin/demo-edit"
-              className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-[#0f0f0f] rounded-lg transition"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-              <span>Inline Edit Demo</span>
-            </Link>
-            <Link
               href="/admin/settings"
               className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-[#0f0f0f] rounded-lg transition"
             >
@@ -183,31 +137,6 @@ export default function AdminLayout({
               <span>Sozlamalar</span>
             </Link>
           </nav>
-
-          {/* Stats in Sidebar */}
-          <div className="p-4 mt-4 border-t border-[#30363d]">
-            <h3 className="text-xs font-semibold text-gray-500 uppercase mb-3">Tezkor ma'lumot</h3>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-400">Foydalanuvchilar</span>
-                <span className="text-white font-semibold">
-                  {typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('halloff_users') || '[]').length : 0}
-                </span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-400">HTML darslari</span>
-                <span className="text-white font-semibold">7</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-400">CSS darslari</span>
-                <span className="text-white font-semibold">18</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-400">JS darslari</span>
-                <span className="text-white font-semibold">34+</span>
-              </div>
-            </div>
-          </div>
         </aside>
 
         {/* Main Content */}
