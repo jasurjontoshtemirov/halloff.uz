@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Shield, Home, Users, FileText, Settings, LogOut } from "lucide-react";
 
@@ -11,7 +11,13 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [loading, setLoading] = useState(true);
+
+  // Login sahifasida layout'ni ko'rsatmaslik
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
 
   useEffect(() => {
     // Admin auth tekshirish
