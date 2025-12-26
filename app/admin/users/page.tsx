@@ -1,5 +1,6 @@
 "use client";
 
+import AdminWrapper from "../components/AdminWrapper";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -126,17 +127,18 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <Users className="w-8 h-8 text-blue-400" />
-            <div>
-              <h1 className="text-3xl font-bold text-white">Foydalanuvchilar</h1>
-              <p className="text-gray-400">Barcha ro'yxatdan o'tgan foydalanuvchilar</p>
+    <AdminWrapper>
+      <div className="p-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <Users className="w-8 h-8 text-blue-400" />
+              <div>
+                <h1 className="text-3xl font-bold text-white">Foydalanuvchilar</h1>
+                <p className="text-gray-400">Barcha ro'yxatdan o'tgan foydalanuvchilar</p>
+              </div>
             </div>
-          </div>
           
           <Link 
             href="/admin"
@@ -275,7 +277,8 @@ export default function UsersPage() {
             </div>
           )}
         </div>
+        </div>
       </div>
-    </div>
+    </AdminWrapper>
   );
 }

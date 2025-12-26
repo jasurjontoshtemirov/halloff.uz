@@ -1,5 +1,6 @@
 "use client";
 
+import AdminWrapper from "../components/AdminWrapper";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { generateSyncCode, importFromSyncCode } from "@/lib/sync";
@@ -52,8 +53,9 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
+    <AdminWrapper>
+      <div className="p-8">
+        <div className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">Sozlamalar</h1>
         <p className="text-gray-400">Sayt sozlamalarini boshqarish</p>
       </div>
@@ -229,5 +231,6 @@ export default function AdminSettingsPage() {
         </div>
       </div>
     </div>
+    </AdminWrapper>
   );
 }

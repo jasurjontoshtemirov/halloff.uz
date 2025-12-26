@@ -1,5 +1,6 @@
 "use client";
 
+import AdminWrapper from "../components/AdminWrapper";
 import { useState, useEffect } from 'react';
 import { Play, Edit, Trash2, Plus, Save, X, ExternalLink, Search, Filter } from 'lucide-react';
 
@@ -146,11 +147,12 @@ export default function AdminVideosPage() {
   }
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-100 mb-2">Video Darslar Boshqaruvi</h1>
-        <p className="text-gray-400">Har bir dars uchun YouTube videolarini boshqaring</p>
-      </div>
+    <AdminWrapper>
+      <div className="p-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-100 mb-2">Video Darslar Boshqaruvi</h1>
+          <p className="text-gray-400">Har bir dars uchun YouTube videolarini boshqaring</p>
+        </div>
 
       {/* Filters */}
       <div className="mb-6 flex flex-col sm:flex-row gap-4">
@@ -438,6 +440,7 @@ export default function AdminVideosPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </AdminWrapper>
   );
 }
