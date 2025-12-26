@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
     const { name, title, message, page } = await request.json();
 
     if (!name || !title || !message) {
-      return NextResponse.vjson(
+      return NextResponse.json(
         { success: false, message: "Barcha maydonlarni to'ldiring" },
         { status: 400 }
       );
