@@ -3,6 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactCompiler: true,
   
+  // Server external packages (yangilangan)
+  serverExternalPackages: ['mysql2'],
+  
+  // Turbopack konfiguratsiyasi
+  turbopack: {},
+  
   // Security headers (Maximum Security)
   async headers() {
     return [
@@ -116,34 +122,24 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // Webpack security
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-        crypto: false,
-      };
-    }
-    return config;
-  },
-
-  // Image security
+  // Image security (yangilangan format)
   images: {
-    domains: ['localhost', 'halloff.uz'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'halloff.uz',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      }
+    ],
     dangerouslyAllowSVG: false,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
   // Disable powered by header
   poweredByHeader: false,
-
-  // Experimental features
-  experimental: {
-    serverComponentsExternalPackages: ['mysql2'],
-  },
 };
 
 export default nextConfig;
