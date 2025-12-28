@@ -130,6 +130,13 @@ export default function AdminWrapper({ children }: AdminWrapperProps) {
               <span>Video Darslar</span>
             </Link>
             <Link
+              href="/admin/security"
+              className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-[#0f0f0f] rounded-lg transition"
+            >
+              <Shield className="w-5 h-5" />
+              <span>Xavfsizlik</span>
+            </Link>
+            <Link
               href="/admin/settings"
               className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-[#0f0f0f] rounded-lg transition"
             >
