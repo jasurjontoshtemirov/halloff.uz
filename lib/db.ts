@@ -70,48 +70,26 @@ export async function initDatabase() {
       )
     `);
 
-    // Create table for storing plain passwords (only for admin view)
-    await pool.execute(`
-      CREATE TABLE IF NOT EXISTS user_plain_passwords (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        user_id INT NOT NULL,
-        plain_password VARCHAR(255) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-        UNIQUE KEY unique_user_password (user_id)
-      )
-    `);
+    // Create admin user from environment variables if provided
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@halloff.uz';
+    const adminPassword = process.env.ADMIN_PASSWORD;
 
-    // Create admin user if not exists
-    const [rows] = await pool.execute(
-      'SELECT * FROM users WHERE email = ?',
-      ['admin@halloff.uz']
-    );
-
-    if ((rows as any[]).length === 0) {
-      const bcrypt = require('bcryptjs');
-      const hashedPassword = await bcrypt.hash('admin123', 10);
-
-      await pool.execute(
-        'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
-        ['Admin', 'admin@halloff.uz', hashedPassword, 'admin']
+    if (adminPassword) {
+      const [rows] = await pool.execute(
+        'SELECT * FROM users WHERE email = ?',
+        [adminEmail]
       );
-    }
 
-    // Create main admin if not exists
-    const [mainAdminRows] = await pool.execute(
-      'SELECT * FROM users WHERE email = ?',
-      ['k6yd2007@gmail.com']
-    );
+      if ((rows as any[]).length === 0) {
+        const bcrypt = require('bcryptjs');
+        const hashedPassword = await bcrypt.hash(adminPassword, 10);
 
-    if ((mainAdminRows as any[]).length === 0) {
-      const bcrypt = require('bcryptjs');
-      const hashedPassword = await bcrypt.hash('@Qwer1234', 10);
-
-      await pool.execute(
-        'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
-        ['Main Admin', 'k6yd2007@gmail.com', hashedPassword, 'admin']
-      );
+        await pool.execute(
+          'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
+          ['Admin', adminEmail, hashedPassword, 'admin']
+        );
+        console.log('Admin user initialized from environment variables');
+      }
     }
 
     console.log('Database initialized successfully');

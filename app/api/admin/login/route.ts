@@ -1,27 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getPool } from "@/lib/db";
+import bcrypt from "bcryptjs";
+import { RowDataPacket } from "mysql2";
 
 export async function POST(request: NextRequest) {
   try {
-    const { phone, password } = await request.json();
+    const { email, password } = await request.json();
 
-    // Admin ma'lumotlari (serverda)
-    const ADMIN_PHONE = "+998990022701";
-    const ADMIN_PASSWORD = "@Qwer1234";
+    if (!email || !password) {
+      return NextResponse.json({
+        success: false,
+        message: "Email va parol kiritilishi shart!"
+      }, { status: 400 });
+    }
 
-    // Ma'lumotlarni tekshirish
-    if (phone === ADMIN_PHONE && password === ADMIN_PASSWORD) {
+    const pool = getPool();
+    const [rows] = await pool.execute<RowDataPacket[]>(
+      'SELECT * FROM users WHERE email = ? AND role = ?',
+      [email, 'admin']
+    );
+
+    const user = rows[0];
+
+    if (!user) {
+      return NextResponse.json({
+        success: false,
+        message: "Email yoki parol noto'g'ri!"
+      }, { status: 401 });
+    }
+
+    const isValid = await bcrypt.compare(password, user.password);
+
+    if (isValid) {
+      // Remove password from response
+      const { password: _, ...userWithoutPassword } = user;
+
       return NextResponse.json({
         success: true,
         message: "Muvaffaqiyatli kirish",
-        admin: {
-          phone: ADMIN_PHONE,
-          role: "admin"
-        }
+        admin: userWithoutPassword
       });
     } else {
       return NextResponse.json({
         success: false,
-        message: "Telefon raqam yoki parol noto'g'ri!"
+        message: "Email yoki parol noto'g'ri!"
       }, { status: 401 });
     }
 
