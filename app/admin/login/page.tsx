@@ -17,6 +17,27 @@ export default function AdminLogin() {
     setLoading(true);
     setError("");
 
+    // Client-side validation
+    if (!phone.trim()) {
+      setError("Telefon raqamni kiriting!");
+      setLoading(false);
+      return;
+    }
+
+    if (!password.trim()) {
+      setError("Parolni kiriting!");
+      setLoading(false);
+      return;
+    }
+
+    // Phone format validation
+    const phoneRegex = /^\+998[0-9]{9}$/;
+    if (!phoneRegex.test(phone)) {
+      setError("Telefon raqam formati: +998901234567");
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch("/api/admin/login", {
         method: "POST",
@@ -24,8 +45,8 @@ export default function AdminLogin() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          phone,
-          password,
+          phone: phone.trim(),
+          password: password.trim(),
         }),
       });
 
@@ -35,9 +56,23 @@ export default function AdminLogin() {
         // Admin session yaratish
         localStorage.setItem("adminAuth", "true");
         localStorage.setItem("adminPhone", data.admin.phone);
+        localStorage.setItem("adminSessionId", data.admin.sessionId);
+        
+        // Redirect to admin dashboard
         router.push("/admin");
       } else {
         setError(data.message);
+        
+        // Show remaining attempts if provided
+        if (data.attemptsRemaining !== undefined) {
+          setError(`${data.message} (${data.attemptsRemaining} ta urinish qoldi)`);
+        }
+        
+        // Show lockout time if provided
+        if (data.lockoutTime) {
+          const minutes = Math.ceil(data.lockoutTime / (1000 * 60));
+          setError(`${data.message} ${minutes} daqiqadan keyin qayta urinib ko'ring.`);
+        }
       }
     } catch (error) {
       console.error("Login error:", error);
