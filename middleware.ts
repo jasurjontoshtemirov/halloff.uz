@@ -106,8 +106,8 @@ function isBlockedRequest(request: NextRequest): boolean {
 }
 
 function checkRateLimit(clientIP: string): boolean {
-  if (!global.rateLimiter) {
-    global.rateLimiter = new Map();
+  if (!globalThis.rateLimiter) {
+    globalThis.rateLimiter = new Map();
   }
   
   const now = Date.now();
@@ -115,19 +115,19 @@ function checkRateLimit(clientIP: string): boolean {
   const maxRequests = 100;
   
   const key = `${clientIP}:${Math.floor(now / windowSize)}`;
-  const current = global.rateLimiter.get(key) || 0;
+  const current = globalThis.rateLimiter.get(key) || 0;
   
   if (current >= maxRequests) {
     return false;
   }
   
-  global.rateLimiter.set(key, current + 1);
+  globalThis.rateLimiter.set(key, current + 1);
   
   // Cleanup old entries
-  for (const [k] of global.rateLimiter.entries()) {
+  for (const [k] of globalThis.rateLimiter.entries()) {
     const [, timestamp] = k.split(':');
     if (now - parseInt(timestamp) * windowSize > windowSize * 2) {
-      global.rateLimiter.delete(k);
+      globalThis.rateLimiter.delete(k);
     }
   }
   
