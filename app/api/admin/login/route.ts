@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import { logAuditEvent } from "../../../lib/security-audit";
 
 // Security configuration
 const SECURITY_CONFIG = {
@@ -83,6 +84,21 @@ export async function POST(request: NextRequest) {
 
       // Security logging
       console.log(`[ADMIN_LOGIN] Successful login for ${ADMIN_PHONE} from IP: ${clientIP}`);
+      
+      // Audit logging
+      logAuditEvent(
+        ADMIN_PHONE,
+        clientIP,
+        'ADMIN_LOGIN_SUCCESS',
+        '/api/admin/login',
+        {
+          userAgent: userAgent.substring(0, 100),
+          sessionId,
+          timestamp: new Date().toISOString()
+        },
+        true,
+        userAgent
+      );
 
       const response = NextResponse.json({
         success: true,
@@ -120,6 +136,21 @@ export async function POST(request: NextRequest) {
       
       // Security logging
       console.warn(`[SECURITY] Failed login attempt for ${phone} from IP: ${clientIP}`);
+      
+      // Audit logging
+      logAuditEvent(
+        phone,
+        clientIP,
+        'ADMIN_LOGIN_FAILED',
+        '/api/admin/login',
+        {
+          userAgent: userAgent.substring(0, 100),
+          reason: 'Invalid credentials',
+          attemptsRemaining: getRemainingAttempts(clientIP)
+        },
+        false,
+        userAgent
+      );
       
       // Generic error message to prevent user enumeration
       return NextResponse.json({

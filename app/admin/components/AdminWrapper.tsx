@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Shield, Home, Users, FileText, Settings, LogOut } from "lucide-react";
+import { Shield, Home, Users, FileText, Settings, LogOut, AlertTriangle } from "lucide-react";
 
 interface AdminWrapperProps {
   children: React.ReactNode;
@@ -135,6 +135,13 @@ export default function AdminWrapper({ children }: AdminWrapperProps) {
             >
               <Shield className="w-5 h-5" />
               <span>Xavfsizlik</span>
+            </Link>
+            <Link
+              href="/admin/security/intrusion"
+              className="flex items-center gap-3 px-4 py-3 ml-4 text-gray-400 hover:text-white hover:bg-[#0f0f0f] rounded-lg transition"
+            >
+              <AlertTriangle className="w-4 h-4" />
+              <span>IDS Monitoring</span>
             </Link>
             <Link
               href="/admin/settings"
