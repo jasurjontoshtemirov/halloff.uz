@@ -61,4 +61,33 @@ export class SecurityManager {
     if (attempt.count >= this.MAX_LOGIN_ATTEMPTS) {
       attempt.blocked = true;
       // Log security incident
-      console.warn(`🚨 SECURITY ALERT: IP ${ip} blocked after ${attempt.count} failed login attem
+      console.warn(`🚨 SECURITY ALERT: IP ${ip} blocked after ${attempt.count} failed login attempts`);
+    }
+    
+    loginAttempts.set(ip, attempt);
+  }
+  
+  // Clear successful login
+  static clearLoginAttempts(ip: string): void {
+    loginAttempts.delete(ip);
+  }
+  
+  // Get client IP from request
+  static getClientIP(request: any): string {
+    const forwarded = request.headers.get('x-forwarded-for');
+    const realIP = request.headers.get('x-real-ip');
+    const cfIP = request.headers.get('cf-connecting-ip');
+    
+    return cfIP || realIP || forwarded?.split(',')[0] || 'unknown';
+  }
+  
+  // Validate input to prevent injection
+  static sanitizeInput(input: string): string {
+    return input.replace(/[<>\"'&]/g, '');
+  }
+  
+  // Generate CSRF token
+  static generateCSRFToken(): string {
+    return crypto.randomBytes(32).toString('base64');
+  }
+}

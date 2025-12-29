@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Type declaration for global rate limiter
+declare global {
+  var rateLimiter: Map<string, number> | undefined;
+}
+
 // Security middleware with maximum protection (10/10)
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

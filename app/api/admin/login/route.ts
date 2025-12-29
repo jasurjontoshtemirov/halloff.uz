@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import { logAuditEvent } from "../../../lib/security-audit";
+import { logAuditEvent } from "../../../../lib/security-audit";
 
 // Security configuration
 const SECURITY_CONFIG = {
