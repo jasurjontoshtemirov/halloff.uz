@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "../../../../../lib/db";
+import { getPool } from "../../../../../lib/db";
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const { lesson_title, youtube_video_id, video_title, description, is_active } = await request.json();
-    const id = params.id;
 
     // YouTube URL'dan video ID'ni ajratib olish
     let videoId = youtube_video_id;
@@ -13,7 +13,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       videoId = match ? match[1] : videoId;
     }
 
-    await db.query(`
+    const pool = getPool();
+    await pool.execute(`
       UPDATE videos 
       SET lesson_title = ?, youtube_video_id = ?, video_title = ?, description = ?, is_active = ?, updated_at = NOW()
       WHERE id = ?
@@ -32,11 +33,12 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id;
+    const { id } = await params;
 
-    await db.query(`DELETE FROM videos WHERE id = ?`, [id]);
+    const pool = getPool();
+    await pool.execute(`DELETE FROM videos WHERE id = ?`, [id]);
 
     return NextResponse.json({
       success: true,

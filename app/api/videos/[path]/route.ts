@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "../../../../lib/db";
+import { getPool } from "../../../../lib/db";
 
-export async function GET(request: NextRequest, { params }: { params: { path: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string }> }) {
   try {
-    const lessonPath = decodeURIComponent(params.path);
+    const { path } = await params;
+    const lessonPath = decodeURIComponent(path);
 
-    const videos = await db.query(`
+    const pool = getPool();
+    const [videos] = await pool.execute(`
       SELECT 
         id,
         lesson_path,
@@ -19,7 +21,7 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
       LIMIT 1
     `, [lessonPath]);
 
-    if (videos.length === 0) {
+    if ((videos as any[]).length === 0) {
       return NextResponse.json({
         success: false,
         message: "Bu dars uchun video topilmadi"
@@ -28,7 +30,7 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
 
     return NextResponse.json({
       success: true,
-      video: videos[0]
+      video: (videos as any[])[0]
     });
   } catch (error) {
     console.error("Video fetch error:", error);

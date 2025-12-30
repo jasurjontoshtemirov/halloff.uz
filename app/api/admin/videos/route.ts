@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "../../../../lib/db";
+import { getPool } from "../../../../lib/db";
 
 export async function GET() {
   try {
-    const videos = await db.query(`
+    const pool = getPool();
+    const [videos] = await pool.execute(`
       SELECT 
         id,
         lesson_path,
@@ -49,7 +50,8 @@ export async function POST(request: NextRequest) {
       videoId = match ? match[1] : videoId;
     }
 
-    const result = await db.query(`
+    const pool = getPool();
+    const [result] = await pool.execute(`
       INSERT INTO videos (lesson_path, lesson_title, youtube_video_id, video_title, description, is_active)
       VALUES (?, ?, ?, ?, ?, ?)
     `, [lesson_path, lesson_title, videoId, video_title || '', description || null, is_active || true]);
@@ -57,7 +59,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: "Video muvaffaqiyatli qo'shildi",
-      id: result.insertId
+      id: (result as any).insertId
     });
   } catch (error) {
     console.error("Video create error:", error);

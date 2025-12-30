@@ -70,6 +70,24 @@ export async function initDatabase() {
       )
     `);
 
+    // Create videos table
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS videos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        lesson_path VARCHAR(255) NOT NULL,
+        lesson_title VARCHAR(255) NOT NULL,
+        youtube_video_id VARCHAR(255) NULL,
+        video_title VARCHAR(255) NOT NULL DEFAULT '',
+        description TEXT NULL,
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_lesson_path (lesson_path),
+        INDEX idx_lesson_path (lesson_path),
+        INDEX idx_active (is_active)
+      )
+    `);
+
     // Create admin user from environment variables if provided
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@halloff.uz';
     const adminPassword = process.env.ADMIN_PASSWORD;
