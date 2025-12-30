@@ -23,6 +23,18 @@ export default function RootLayout({
       </head>
       <body className="font-sans">
         <Providers>{children}</Providers>
+        
+        {/* AdSense Auto Ads */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (adsbygoogle = window.adsbygoogle || []).push({
+                google_ad_client: "ca-pub-3997503509642711",
+                enable_page_level_ads: true
+              });
+            `,
+          }}
+        />
       </body>
     </html>
   );
