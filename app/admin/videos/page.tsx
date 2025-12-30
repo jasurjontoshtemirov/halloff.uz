@@ -45,12 +45,24 @@ export default function AdminVideosPage() {
 
   const handleSave = async (video: Video) => {
     try {
-      const response = await fetch(`/api/admin/videos/${video.id}`, {
-        method: 'PUT',
+      const isNew = video.id === 0;
+      const url = isNew ? '/api/admin/videos' : `/api/admin/videos/${video.id}`;
+      const method = isNew ? 'POST' : 'PUT';
+
+      // YouTube URL'dan video ID'ni ajratib olish
+      let videoId = video.youtube_video_id;
+      if (videoId && videoId.includes('youtube.com')) {
+        const match = videoId.match(/[?&]v=([^&]+)/);
+        videoId = match ? match[1] : videoId;
+      }
+
+      const response = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          lesson_path: video.lesson_path,
           lesson_title: video.lesson_title,
-          youtube_video_id: video.youtube_video_id,
+          youtube_video_id: videoId,
           video_title: video.video_title,
           description: video.description,
           is_active: video.is_active
@@ -62,7 +74,7 @@ export default function AdminVideosPage() {
       if (data.success) {
         await fetchVideos();
         setEditingVideo(null);
-        alert('Video muvaffaqiyatli yangilandi!');
+        alert(isNew ? 'Video muvaffaqiyatli qo\'shildi!' : 'Video muvaffaqiyatli yangilandi!');
       } else {
         alert('Xatolik: ' + data.message);
       }
@@ -149,10 +161,31 @@ export default function AdminVideosPage() {
   return (
     <AdminWrapper>
       <div className="p-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-100 mb-2">Video Darslar Boshqaruvi</h1>
-          <p className="text-gray-400">Har bir dars uchun YouTube videolarini boshqaring</p>
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-100 mb-2">Video Darslar Boshqaruvi</h1>
+            <p className="text-gray-400">Har bir dars uchun YouTube videolarini boshqaring</p>
+          </div>
+          <button
+            onClick={() => setEditingVideo({
+              id: 0,
+              lesson_path: '',
+              lesson_title: '',
+              youtube_video_id: '',
+              video_title: '',
+              description: '',
+              is_active: true,
+              created_at: '',
+              updated_at: ''
+            })}
+            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Yangi Video Qo'shish
+          </button>
         </div>
+      </div>
 
       {/* Filters */}
       <div className="mb-6 flex flex-col sm:flex-row gap-4">
@@ -323,6 +356,22 @@ export default function AdminVideosPage() {
             </div>
 
             <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Dars yo'li (masalan: html/intro, css/selectors)
+                </label>
+                <input
+                  type="text"
+                  value={editingVideo.lesson_path}
+                  onChange={(e) => setEditingVideo({
+                    ...editingVideo,
+                    lesson_path: e.target.value
+                  })}
+                  placeholder="html/intro"
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Dars nomi

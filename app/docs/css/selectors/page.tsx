@@ -1,6 +1,7 @@
 "use client";
 
 import CodeBlock from "@/components/CodeBlock";
+import VideoPlayer from "@/components/VideoPlayer";
 import Link from "next/link";
 import { Target, Sparkles, Code2, Play, MousePointer, Layers } from "lucide-react";
 
@@ -25,23 +26,7 @@ export default function CSSSelectorsPage() {
       </div>
 
       {/* Video Section */}
-      <div className="mb-12 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-8 hover:border-green-500/40 transition-all">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl">
-            <Play className="w-6 h-6 text-white" />
-          </div>
-          <h2 className="text-3xl font-semibold text-gray-100">Video Dars</h2>
-        </div>
-        <div className="bg-gray-900/50 rounded-xl p-8 text-center hover:bg-gray-900/70 transition-all">
-          <p className="text-gray-400 mb-4">CSS Selectors - Video dars</p>
-          <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl flex items-center justify-center border border-gray-700 hover:border-green-500/50 transition-all">
-            <div className="text-center">
-              <Play className="w-16 h-16 text-green-500 mx-auto mb-3" />
-              <span className="text-gray-400 text-lg">Video joylashuvi</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <VideoPlayer lessonPath="css/selectors" fallbackTitle="CSS Selectors - Video dars" />
 
       {/* Selector nima */}
       <div className="mb-12">

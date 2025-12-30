@@ -1,17 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getPool } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "../../../../lib/db";
 
-// GET - Bitta dars uchun video olish
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ path: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: { path: string } }) {
   try {
-    const resolvedParams = await params;
-    const lessonPath = decodeURIComponent(resolvedParams.path);
-    const pool = getPool();
-    
-    const [videos]: any = await pool.execute(`
+    const lessonPath = decodeURIComponent(params.path);
+
+    const videos = await db.query(`
       SELECT 
         id,
         lesson_path,
@@ -20,14 +14,15 @@ export async function GET(
         video_title,
         description,
         is_active
-      FROM lesson_videos 
-      WHERE lesson_path = ? AND is_active = TRUE
+      FROM videos 
+      WHERE lesson_path = ? AND is_active = 1
+      LIMIT 1
     `, [lessonPath]);
 
     if (videos.length === 0) {
       return NextResponse.json({
         success: false,
-        message: 'Video topilmadi'
+        message: "Bu dars uchun video topilmadi"
       }, { status: 404 });
     }
 
@@ -36,10 +31,10 @@ export async function GET(
       video: videos[0]
     });
   } catch (error) {
-    console.error('Video fetch error:', error);
-    return NextResponse.json(
-      { success: false, message: 'Video olishda xatolik' },
-      { status: 500 }
-    );
+    console.error("Video fetch error:", error);
+    return NextResponse.json({
+      success: false,
+      message: "Video yuklashda xatolik"
+    }, { status: 500 });
   }
 }
