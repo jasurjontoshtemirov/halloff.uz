@@ -24,27 +24,6 @@ export default function HTMLListsTablesPage() {
         </div>
       </div>
 
-      {/* Video Section */}
-      <div className="mb-12 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-2xl p-8 hover:border-indigo-500/40 transition-all">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl">
-            <Play className="w-6 h-6 text-white" />
-          </div>
-          <h2 className="text-3xl font-semibold text-gray-100">Video Dars</h2>
-        </div>
-        <div className="aspect-video rounded-xl overflow-hidden border border-gray-700 hover:border-indigo-500/50 transition-all">
-          <iframe 
-            width="100%" 
-            height="100%" 
-            src="https://www.youtube.com/embed/l-GaRkk5t2Y?si=Obr_bKief63PlVP0" 
-            title="Ro'yxat va Jadvallar - Video dars"
-            frameBorder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-          ></iframe>
-        </div>
-      </div>
-
       {/* Tartibsiz ro'yxat */}
       <div className="mb-12">
         <h2 className="text-3xl font-semibold text-gray-100 mb-6">Tartibsiz Ro'yxat (ul)</h2>

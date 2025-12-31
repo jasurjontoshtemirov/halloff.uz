@@ -2,7 +2,7 @@
 
 import CodeBlock from "@/components/CodeBlock";
 import Link from "next/link";
-import { Code, Sparkles, FileCode, Play, Layers } from "lucide-react";
+import { Code, Sparkles, FileCode, Layers } from "lucide-react";
 
 export default function HTMLIntroPage() {
   return (
@@ -21,27 +21,6 @@ export default function HTMLIntroPage() {
           <p className="text-2xl text-gray-300">
             Web dasturlashning birinchi qadami
           </p>
-        </div>
-      </div>
-
-      {/* Video Section */}
-      <div className="mb-12 bg-gradient-to-br from-orange-500/10 to-red-500/10 border border-orange-500/20 rounded-2xl p-8 hover:border-orange-500/40 transition-all">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 bg-gradient-to-br from-orange-600 to-red-600 rounded-xl">
-            <Play className="w-6 h-6 text-white" />
-          </div>
-          <h2 className="text-3xl font-semibold text-gray-100">Video Dars</h2>
-        </div>
-        <div className="aspect-video rounded-xl overflow-hidden border border-gray-700 hover:border-orange-500/50 transition-all">
-          <iframe 
-            width="100%" 
-            height="100%" 
-            src="https://www.youtube.com/embed/ReVu2YGweVQ?si=p835n0ltSapudRNq" 
-            title="HTML ga Kirish - Video dars"
-            frameBorder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-          ></iframe>
         </div>
       </div>
 

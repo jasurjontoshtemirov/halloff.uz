@@ -51,7 +51,7 @@ export default function DocsPage() {
 
             <div className="flex flex-col sm:flex-row gap-4">
               <a 
-                href="/docs/html/intro" 
+                href="/docs/html" 
                 className="group inline-flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all transform hover:scale-105 hover:shadow-2xl"
               >
                 <Play className="w-5 h-5 group-hover:animate-pulse" />
@@ -80,7 +80,7 @@ export default function DocsPage() {
         </h2>
         
         <div className="grid md:grid-cols-3 gap-6">
-          <a href="/docs/html/intro" className="group block p-6 bg-gradient-to-br from-red-500/10 to-pink-500/10 border border-red-500/20 rounded-xl hover:border-red-500/40 hover:from-red-500/20 hover:to-pink-500/20 transition-all transform hover:scale-105 hover:shadow-xl">
+          <a href="/docs/html" className="group block p-6 bg-gradient-to-br from-red-500/10 to-pink-500/10 border border-red-500/20 rounded-xl hover:border-red-500/40 hover:from-red-500/20 hover:to-pink-500/20 transition-all transform hover:scale-105 hover:shadow-xl">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-red-500/30 transition group-hover:rotate-6">
                 <Code className="w-6 h-6 text-red-400" />
@@ -89,7 +89,7 @@ export default function DocsPage() {
                 <h3 className="text-xl font-bold text-white mb-2 group-hover:text-red-300 transition">HTML</h3>
                 <p className="text-gray-400 mb-3">Veb sahifalar yaratishning asoslari</p>
                 <div className="flex items-center gap-2 text-sm text-red-400">
-                  <span>7 ta dars</span>
+                  <span>6 ta dars</span>
                   <div className="w-1 h-1 bg-red-400 rounded-full"></div>
                   <span>Boshlang'ich</span>
                 </div>

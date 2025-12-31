@@ -1,28 +1,85 @@
 "use client";
 
 import CodeBlock from "@/components/CodeBlock";
-import VideoPlaceholder from "@/components/VideoPlaceholder";
 import Link from "next/link";
+import { Zap, Sparkles, Code2, Play, RotateCw, ArrowRight, CheckCircle, Layers } from "lucide-react";
 
 export default function CSSAnimationsPage() {
   return (
     <div className="max-w-none">
-      <div className="mb-12">
-        <h1 className="text-5xl font-bold text-gray-100 mb-4">CSS Animations</h1>
-        <p className="text-xl text-gray-400">Animatsiyalar va harakatli effektlar yaratish</p>
+      {/* Hero Section */}
+      <div className="mb-12 relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-red-500/10 rounded-3xl blur-3xl"></div>
+        <div className="relative">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-full text-sm mb-6">
+            <Zap className="w-4 h-4 text-purple-400" />
+            <span className="text-purple-300 font-semibold">CSS ANIMATIONS</span>
+          </div>
+          <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 mb-4">
+            CSS Animations
+          </h1>
+          <p className="text-2xl text-gray-300">
+            Animatsiyalar va harakatli effektlar yaratish
+          </p>
+        </div>
       </div>
 
-      <VideoPlaceholder title="CSS Animations" />
-
+      {/* CSS Animations nima? */}
       <div className="mb-12">
-        <h2 className="text-3xl font-semibold text-gray-100 mb-6">CSS Transitions</h2>
-        <p className="text-gray-300 mb-6">
-          Transition xususiyati elementning bir holatdan ikkinchi holatga silliq otishini taminlaydi. Bu eng oddiy animatsiya turi.
-        </p>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-3 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl">
+            <Play className="w-6 h-6 text-white" />
+          </div>
+          <h2 className="text-4xl font-semibold text-gray-100">CSS Animations nima?</h2>
+        </div>
+        
+        <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-xl p-6 mb-6">
+          <p className="text-gray-300 text-lg leading-relaxed">
+            <span className="text-purple-400 font-semibold">CSS Animations</span> - bu web sahifalarni jonli va interaktiv qilish uchun ishlatiladi. Elementlarni harakatlantirish, o'zgartirish va chiroyli effektlar yaratish mumkin.
+          </p>
+        </div>
+
+        <div className="bg-gradient-to-br from-pink-500/10 to-red-500/10 rounded-xl p-8 border border-pink-500/20">
+          <div className="flex items-center gap-3 mb-6">
+            <Sparkles className="w-6 h-6 text-pink-400" />
+            <h3 className="text-2xl font-semibold text-gray-100">Animatsiyalar nima beradi?</h3>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            {[
+              "Sahifani jonli va qiziqarli qiladi",
+              "Foydalanuvchi e'tiborini jalb qiladi",
+              "Loading jarayonlarini ko'rsatadi",
+              "Hover va click effektlari",
+              "Smooth o'tishlar (transitions)",
+              "Professional ko'rinish beradi"
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-start gap-3 bg-gray-900/50 rounded-lg p-4 hover:bg-gray-900/70 transition-all">
+                <CheckCircle className="w-5 h-5 text-pink-400 flex-shrink-0 mt-0.5" />
+                <span className="text-gray-300">{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* CSS Transitions */}
+      <div className="mb-12">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-3 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl">
+            <RotateCw className="w-6 h-6 text-white" />
+          </div>
+          <h2 className="text-4xl font-semibold text-gray-100">CSS Transitions</h2>
+        </div>
+        
+        <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl p-6 mb-6">
+          <p className="text-gray-300 text-lg leading-relaxed">
+            <span className="text-blue-400 font-semibold">Transition</span> xususiyati elementning bir holatdan ikkinchi holatga silliq o'tishini ta'minlaydi. Bu eng oddiy animatsiya turi.
+          </p>
+        </div>
         
         <h3 className="text-2xl font-semibold text-gray-100 mb-4">Asosiy Sintaksis</h3>
         <CodeBlock 
-          language="css"
+          language="CSS"
           code={`/* Qisqa yozuv */
 div {
     transition: all 0.3s ease;
@@ -49,7 +106,7 @@ div {
           Timing function animatsiya tezligini boshqaradi.
         </p>
         <CodeBlock 
-          language="css"
+          language="CSS"
           code={`/* Linear - bir xil tezlikda */
 .linear {
     transition: all 0.3s linear;
@@ -83,7 +140,7 @@ div {
 
         <h3 className="text-2xl font-semibold text-gray-100 mb-4 mt-8">Amaliy Misollar</h3>
         <CodeBlock 
-          language="css"
+          language="CSS"
           code={`/* Button hover effekti */
 .button {
     background-color: #3498db;
@@ -151,6 +208,7 @@ div {
         />
       </div>
 
+      {/* Keyframes Animations */}
       <div className="mb-12">
         <h2 className="text-3xl font-semibold text-gray-100 mb-6">Keyframes Animations</h2>
         <p className="text-gray-300 mb-6">
@@ -159,7 +217,7 @@ div {
         
         <h3 className="text-2xl font-semibold text-gray-100 mb-4">Asosiy Sintaksis</h3>
         <CodeBlock 
-          language="css"
+          language="CSS"
           code={`/* Keyframes yaratish */
 @keyframes slide {
     0% {
@@ -175,12 +233,12 @@ div {
     }
 }
 
-/* Animatsiyani qollash */
+/* Animatsiyani qo'llash */
 div {
     animation: slide 2s ease-in-out infinite;
 }
 
-/* Toliq yozuv */
+/* To'liq yozuv */
 div {
     animation-name: slide;
     animation-duration: 2s;
@@ -195,7 +253,7 @@ div {
 
         <h3 className="text-2xl font-semibold text-gray-100 mb-4 mt-8">Animation Properties</h3>
         <CodeBlock 
-          language="css"
+          language="CSS"
           code={`/* animation-direction */
 .normal { animation-direction: normal; }        /* Oddiy */
 .reverse { animation-direction: reverse; }      /* Teskari */
@@ -214,17 +272,18 @@ div {
 
 /* animation-play-state */
 .running { animation-play-state: running; }    /* Ishlayapti */
-.paused { animation-play-state: paused; }      /* Toxtatilgan */
+.paused { animation-play-state: paused; }      /* To'xtatilgan */
 .paused:hover { animation-play-state: running; } /* Hover qilganda ishlaydi */`}
         />
       </div>
 
+      {/* Keng Tarqalgan Animatsiyalar */}
       <div className="mb-12">
         <h2 className="text-3xl font-semibold text-gray-100 mb-6">Keng Tarqalgan Animatsiyalar</h2>
         
-        <h3 className="text-2xl font-semibold text-gray-100 mb-4">Fade In (Paydo bolish)</h3>
+        <h3 className="text-2xl font-semibold text-gray-100 mb-4">Fade In (Paydo bo'lish)</h3>
         <CodeBlock 
-          language="css"
+          language="CSS"
           code={`@keyframes fadeIn {
     from {
         opacity: 0;
@@ -257,7 +316,7 @@ div {
 
         <h3 className="text-2xl font-semibold text-gray-100 mb-4 mt-8">Slide (Siljish)</h3>
         <CodeBlock 
-          language="css"
+          language="CSS"
           code={`/* Slide In Left */
 @keyframes slideInLeft {
     from {
@@ -293,7 +352,7 @@ div {
 
         <h3 className="text-2xl font-semibold text-gray-100 mb-4 mt-8">Bounce (Sakrash)</h3>
         <CodeBlock 
-          language="css"
+          language="CSS"
           code={`@keyframes bounce {
     0%, 20%, 50%, 80%, 100% {
         transform: translateY(0);
@@ -332,448 +391,9 @@ div {
     animation: bounceIn 0.8s ease-out;
 }`}
         />
-
-        <h3 className="text-2xl font-semibold text-gray-100 mb-4 mt-8">Pulse (Pulsatsiya)</h3>
-        <CodeBlock 
-          language="css"
-          code={`@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-.pulse {
-    animation: pulse 1s ease-in-out infinite;
-}
-
-/* Heartbeat */
-@keyframes heartbeat {
-    0%, 100% {
-        transform: scale(1);
-    }
-    10%, 30% {
-        transform: scale(0.9);
-    }
-    20%, 40% {
-        transform: scale(1.1);
-    }
-}
-
-.heartbeat {
-    animation: heartbeat 1.3s ease-in-out infinite;
-}`}
-        />
-
-        <h3 className="text-2xl font-semibold text-gray-100 mb-4 mt-8">Shake (Silkinish)</h3>
-        <CodeBlock 
-          language="css"
-          code={`@keyframes shake {
-    0%, 100% {
-        transform: translateX(0);
-    }
-    10%, 30%, 50%, 70%, 90% {
-        transform: translateX(-10px);
-    }
-    20%, 40%, 60%, 80% {
-        transform: translateX(10px);
-    }
-}
-
-.shake {
-    animation: shake 0.5s ease-in-out;
-}
-
-/* Shake Vertical */
-@keyframes shakeVertical {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    10%, 30%, 50%, 70%, 90% {
-        transform: translateY(-8px);
-    }
-    20%, 40%, 60%, 80% {
-        transform: translateY(8px);
-    }
-}
-
-.shake-vertical {
-    animation: shakeVertical 0.5s ease-in-out;
-}`}
-        />
-
-        <h3 className="text-2xl font-semibold text-gray-100 mb-4 mt-8">Rotate (Aylantirish)</h3>
-        <CodeBlock 
-          language="css"
-          code={`@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.rotate {
-    animation: rotate 2s linear infinite;
-}
-
-/* Rotate In */
-@keyframes rotateIn {
-    from {
-        transform: rotate(-200deg);
-        opacity: 0;
-    }
-    to {
-        transform: rotate(0);
-        opacity: 1;
-    }
-}
-
-.rotate-in {
-    animation: rotateIn 0.6s ease-out;
-}`}
-        />
-
-        <h3 className="text-2xl font-semibold text-gray-100 mb-4 mt-8">Flip (Aylantirish)</h3>
-        <CodeBlock 
-          language="css"
-          code={`@keyframes flip {
-    from {
-        transform: perspective(400px) rotateY(0);
-    }
-    to {
-        transform: perspective(400px) rotateY(360deg);
-    }
-}
-
-.flip {
-    animation: flip 1s ease-in-out;
-}
-
-/* Flip In X */
-@keyframes flipInX {
-    from {
-        transform: perspective(400px) rotateX(90deg);
-        opacity: 0;
-    }
-    to {
-        transform: perspective(400px) rotateX(0);
-        opacity: 1;
-    }
-}
-
-.flip-in-x {
-    animation: flipInX 0.6s ease-out;
-}`}
-        />
       </div>
 
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold text-gray-100 mb-6">Loading Animatsiyalari</h2>
-        <p className="text-gray-300 mb-6">
-          Loading animatsiyalari foydalanuvchiga jarayon davom etayotganini korsatadi.
-        </p>
-        
-        <h3 className="text-2xl font-semibold text-gray-100 mb-4">Spinner</h3>
-        <CodeBlock 
-          language="css"
-          code={`@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #3498db;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-/* Dual Ring Spinner */
-.dual-ring {
-    width: 64px;
-    height: 64px;
-}
-
-.dual-ring::after {
-    content: " ";
-    display: block;
-    width: 46px;
-    height: 46px;
-    margin: 1px;
-    border-radius: 50%;
-    border: 5px solid #3498db;
-    border-color: #3498db transparent #3498db transparent;
-    animation: spin 1.2s linear infinite;
-}`}
-        />
-
-        <h3 className="text-2xl font-semibold text-gray-100 mb-4 mt-8">Dots (Nuqtalar)</h3>
-        <CodeBlock 
-          language="css"
-          code={`@keyframes bounceDots {
-    0%, 80%, 100% {
-        transform: scale(0);
-        opacity: 0.5;
-    }
-    40% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-.loading-dots {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-}
-
-.dot {
-    width: 15px;
-    height: 15px;
-    background: #3498db;
-    border-radius: 50%;
-    animation: bounceDots 1.4s infinite ease-in-out both;
-}
-
-.dot:nth-child(1) {
-    animation-delay: -0.32s;
-}
-
-.dot:nth-child(2) {
-    animation-delay: -0.16s;
-}
-
-.dot:nth-child(3) {
-    animation-delay: 0s;
-}`}
-        />
-
-        <h3 className="text-2xl font-semibold text-gray-100 mb-4 mt-8">Progress Bar</h3>
-        <CodeBlock 
-          language="css"
-          code={`@keyframes progress {
-    0% {
-        width: 0%;
-    }
-    100% {
-        width: 100%;
-    }
-}
-
-.progress-bar {
-    width: 100%;
-    height: 4px;
-    background: #f3f3f3;
-    overflow: hidden;
-    border-radius: 2px;
-}
-
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #3498db, #2ecc71);
-    animation: progress 2s ease-in-out infinite;
-}
-
-/* Indeterminate Progress */
-@keyframes indeterminate {
-    0% {
-        left: -35%;
-        right: 100%;
-    }
-    60% {
-        left: 100%;
-        right: -90%;
-    }
-    100% {
-        left: 100%;
-        right: -90%;
-    }
-}
-
-.progress-indeterminate {
-    position: relative;
-    width: 100%;
-    height: 4px;
-    background: #f3f3f3;
-    overflow: hidden;
-}
-
-.progress-indeterminate::before {
-    content: '';
-    position: absolute;
-    height: 100%;
-    background: #3498db;
-    animation: indeterminate 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
-}`}
-        />
-
-        <h3 className="text-2xl font-semibold text-gray-100 mb-4 mt-8">Skeleton Loading</h3>
-        <CodeBlock 
-          language="css"
-          code={`@keyframes shimmer {
-    0% {
-        background-position: -1000px 0;
-    }
-    100% {
-        background-position: 1000px 0;
-    }
-}
-
-.skeleton {
-    background: linear-gradient(
-        90deg,
-        #f0f0f0 0px,
-        #e0e0e0 40px,
-        #f0f0f0 80px
-    );
-    background-size: 1000px 100%;
-    animation: shimmer 2s infinite;
-}
-
-.skeleton-text {
-    height: 16px;
-    margin-bottom: 8px;
-    border-radius: 4px;
-}
-
-.skeleton-title {
-    height: 24px;
-    width: 60%;
-    margin-bottom: 16px;
-    border-radius: 4px;
-}`}
-        />
-      </div>
-
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold text-gray-100 mb-6">Murakkab Animatsiyalar</h2>
-        
-        <h3 className="text-2xl font-semibold text-gray-100 mb-4">Floating (Suzish)</h3>
-        <CodeBlock 
-          language="css"
-          code={`@keyframes float {
-    0%, 100% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-20px);
-    }
-}
-
-.floating {
-    animation: float 3s ease-in-out infinite;
-}
-
-/* Floating with rotation */
-@keyframes floatRotate {
-    0%, 100% {
-        transform: translateY(0px) rotate(0deg);
-    }
-    50% {
-        transform: translateY(-20px) rotate(5deg);
-    }
-}
-
-.float-rotate {
-    animation: floatRotate 4s ease-in-out infinite;
-}`}
-        />
-
-        <h3 className="text-2xl font-semibold text-gray-100 mb-4 mt-8">Typing Effect</h3>
-        <CodeBlock 
-          language="css"
-          code={`@keyframes typing {
-    from {
-        width: 0;
-    }
-    to {
-        width: 100%;
-    }
-}
-
-@keyframes blink {
-    50% {
-        border-color: transparent;
-    }
-}
-
-.typing-text {
-    width: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    border-right: 2px solid;
-    animation: typing 3.5s steps(40) 1s forwards,
-               blink 0.75s step-end infinite;
-}`}
-        />
-
-        <h3 className="text-2xl font-semibold text-gray-100 mb-4 mt-8">Gradient Animation</h3>
-        <CodeBlock 
-          language="css"
-          code={`@keyframes gradient {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-.gradient-bg {
-    background: linear-gradient(
-        -45deg,
-        #ee7752,
-        #e73c7e,
-        #23a6d5,
-        #23d5ab
-    );
-    background-size: 400% 400%;
-    animation: gradient 15s ease infinite;
-}`}
-        />
-
-        <h3 className="text-2xl font-semibold text-gray-100 mb-4 mt-8">Wave Animation</h3>
-        <CodeBlock 
-          language="css"
-          code={`@keyframes wave {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-15px);
-    }
-}
-
-.wave {
-    display: inline-block;
-}
-
-.wave span {
-    display: inline-block;
-    animation: wave 1.2s ease-in-out infinite;
-}
-
-.wave span:nth-child(1) { animation-delay: 0s; }
-.wave span:nth-child(2) { animation-delay: 0.1s; }
-.wave span:nth-child(3) { animation-delay: 0.2s; }
-.wave span:nth-child(4) { animation-delay: 0.3s; }
-.wave span:nth-child(5) { animation-delay: 0.4s; }`}
-        />
-      </div>
-
+      {/* Performance Maslahatlar */}
       <div className="mb-12 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-xl p-8 border border-yellow-500/20">
         <div className="flex items-center gap-3 mb-6">
           <span className="text-4xl">⚡</span>
@@ -787,7 +407,7 @@ div {
               <strong className="text-gray-200">Transform va Opacity ishlatish:</strong>
               <p className="mt-1">Bu xususiyatlar GPU tomonidan qayta ishlanadi va eng tez ishlaydi.</p>
               <CodeBlock 
-                language="css"
+                language="CSS"
                 code={`/* Yaxshi */
 .element {
     transform: translateX(100px);
@@ -802,7 +422,7 @@ div {
               <strong className="text-gray-200">Width, Height, Top, Left animatsiya qilmaslik:</strong>
               <p className="mt-1">Bu xususiyatlar layout qayta hisoblanishiga olib keladi va sekin ishlaydi.</p>
               <CodeBlock 
-                language="css"
+                language="CSS"
                 code={`/* Yomon */
 .element {
     width: 200px; /* Sekin */
@@ -820,9 +440,9 @@ div {
             <span className="text-green-400 mt-1 text-xl">✓</span>
             <div>
               <strong className="text-gray-200">will-change ishlatish:</strong>
-              <p className="mt-1">Brauzerga qaysi xususiyat ozgarishini oldindan bildiradi.</p>
+              <p className="mt-1">Brauzerga qaysi xususiyat o'zgarishini oldindan bildiradi.</p>
               <CodeBlock 
-                language="css"
+                language="CSS"
                 code={`.animated {
     will-change: transform, opacity;
 }
@@ -840,7 +460,7 @@ div {
               <strong className="text-gray-200">Hardware acceleration:</strong>
               <p className="mt-1">3D transform ishlatish GPU ni faollashtiradi.</p>
               <CodeBlock 
-                language="css"
+                language="CSS"
                 code={`.accelerated {
     transform: translateZ(0);
     /* yoki */
@@ -853,12 +473,13 @@ div {
             <span className="text-yellow-400 mt-1 text-xl">⚠</span>
             <div>
               <strong className="text-gray-200">Haddan tashqari animatsiya qilmaslik:</strong>
-              <p className="mt-1">Bir vaqtning ozida juda kop animatsiya performance ga zarar beradi.</p>
+              <p className="mt-1">Bir vaqtning o'zida juda ko'p animatsiya performance ga zarar beradi.</p>
             </div>
           </li>
         </ul>
       </div>
 
+      {/* Amaliy Mashq */}
       <div className="mb-12 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-xl p-8 border border-blue-500/20">
         <div className="flex items-center gap-3 mb-6">
           <span className="text-4xl">💻</span>
@@ -872,18 +493,18 @@ div {
               Quyidagi animatsiyalarga ega button yarating:
             </p>
             <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
-              <li>Hover: yuqoriga kotariladi va soya paydo boladi</li>
+              <li>Hover: yuqoriga ko'tariladi va soya paydo bo'ladi</li>
               <li>Active: pastga bosiladi</li>
               <li>Loading holati: spinner animatsiyasi</li>
-              <li>Success: yashil rangga otadi va galochka paydo boladi</li>
-              <li>Error: qizil rangga otadi va silkinadi</li>
+              <li>Success: yashil rangga o'tadi va galochka paydo bo'ladi</li>
+              <li>Error: qizil rangga o'tadi va silkinadi</li>
             </ul>
           </div>
 
           <div>
             <h3 className="text-xl font-semibold text-gray-200 mb-3">Mashq 2: Card Animations</h3>
             <p className="text-gray-300 mb-4">
-              Sahifaga kirganda ketma-ket paydo boladigan cardlar yarating (stagger effect). Har bir card fadeIn va slideUp animatsiyasi bilan paydo bolsin.
+              Sahifaga kirganda ketma-ket paydo bo'ladigan cardlar yarating (stagger effect). Har bir card fadeIn va slideUp animatsiyasi bilan paydo bo'lsin.
             </p>
           </div>
 
@@ -902,12 +523,13 @@ div {
           <div>
             <h3 className="text-xl font-semibold text-gray-200 mb-3">Mashq 4: Menu Animations</h3>
             <p className="text-gray-300 mb-4">
-              Animatsiyali dropdown menu yarating. Menu ochilganda har bir item ketma-ket paydo bolsin.
+              Animatsiyali dropdown menu yarating. Menu ochilganda har bir item ketma-ket paydo bo'lsin.
             </p>
           </div>
         </div>
       </div>
 
+      {/* Topshiriq */}
       <div className="mb-12 bg-gradient-to-br from-orange-500/10 to-red-500/10 rounded-xl p-8 border border-orange-500/20">
         <div className="flex items-center gap-3 mb-6">
           <span className="text-4xl">📝</span>
@@ -922,12 +544,12 @@ div {
             </p>
             <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4 mb-4">
               <li><strong>Hero section:</strong> Fade in va slide up animatsiyasi</li>
-              <li><strong>Features section:</strong> Cardlar ketma-ket paydo boladi (stagger)</li>
+              <li><strong>Features section:</strong> Cardlar ketma-ket paydo bo'ladi (stagger)</li>
               <li><strong>Animated background:</strong> Gradient yoki particles animatsiyasi</li>
-              <li><strong>Scroll animations:</strong> Scroll qilganda elementlar paydo boladi</li>
+              <li><strong>Scroll animations:</strong> Scroll qilganda elementlar paydo bo'ladi</li>
               <li><strong>Interactive buttons:</strong> Hover, click va loading animatsiyalari</li>
-              <li><strong>Loading screen:</strong> Sahifa yuklanayotganda korsatiladi</li>
-              <li><strong>Smooth scrolling:</strong> Bolimlar orasida silliq scroll</li>
+              <li><strong>Loading screen:</strong> Sahifa yuklanayotganda ko'rsatiladi</li>
+              <li><strong>Smooth scrolling:</strong> Bo'limlar orasida silliq scroll</li>
               <li><strong>Counter animation:</strong> Raqamlar animatsiya bilan ortadi</li>
             </ul>
           </div>
@@ -957,6 +579,7 @@ div {
         </div>
       </div>
 
+      {/* Uyga Vazifa */}
       <div className="mb-12 bg-gradient-to-br from-red-500/10 to-orange-500/10 rounded-2xl p-8 border border-red-500/20 hover:border-red-500/40 transition-all">
         <div className="flex items-center gap-3 mb-6">
           <span className="text-4xl">🏠</span>
@@ -964,63 +587,79 @@ div {
         </div>
         
         <div className="space-y-6">
-          <div>
-            <h3 className="text-xl font-semibold text-gray-200 mb-3">1. Animation Library</h3>
-            <p className="text-gray-300 mb-3">
-              Ozingizning animation library yarating. Kamida 20 ta turli animatsiya bolsin:
-            </p>
-            <ul className="list-disc list-inside text-gray-300 space-y-1 ml-4">
-              <li>Fade variations (fadeIn, fadeOut, fadeInUp, fadeInDown)</li>
-              <li>Slide variations (slideInLeft, slideInRight, slideInUp, slideInDown)</li>
-              <li>Zoom variations (zoomIn, zoomOut)</li>
-              <li>Rotate variations (rotateIn, rotateOut)</li>
-              <li>Bounce variations</li>
-              <li>Flip variations</li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-xl font-semibold text-gray-200 mb-3">2. Interactive Game</h3>
-            <p className="text-gray-300 mb-3">
-              CSS animatsiyalar yordamida oddiy oyin yarating:
-            </p>
-            <ul className="list-disc list-inside text-gray-300 space-y-1 ml-4">
-              <li>Catch the ball game</li>
-              <li>Memory card game</li>
-              <li>Whack-a-mole game</li>
-            </ul>
-            <p className="text-gray-400 text-sm mt-2">
-              Maslahat: CSS animatsiyalar + checkbox/radio input triklar ishlatish mumkin
-            </p>
-          </div>
-
-          <div>
-            <h3 className="text-xl font-semibold text-gray-200 mb-3">3. Animated Infographic</h3>
-            <p className="text-gray-300 mb-3">
-              Malumotlarni korsatuvchi animatsiyali infografika yarating:
-            </p>
-            <ul className="list-disc list-inside text-gray-300 space-y-1 ml-4">
-              <li>Animated charts (bar, pie, line)</li>
-              <li>Progress circles</li>
-              <li>Counter animations</li>
-              <li>Timeline animations</li>
-              <li>Icon animations</li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-xl font-semibold text-gray-200 mb-3">4. Portfolio Showcase</h3>
-            <p className="text-gray-300">
-              Ozingizning portfolio sahifangizni animatsiyalar bilan bezating. Har bir section uchun alohida animatsiya bolsin.
-            </p>
-          </div>
+          {[
+            {
+              num: "1",
+              title: "Animation Library",
+              desc: "O'zingizning animation library yarating. Kamida 20 ta turli animatsiya bo'lsin:",
+              items: [
+                "Fade variations (fadeIn, fadeOut, fadeInUp, fadeInDown)",
+                "Slide variations (slideInLeft, slideInRight, slideInUp, slideInDown)",
+                "Zoom variations (zoomIn, zoomOut)",
+                "Rotate variations (rotateIn, rotateOut)",
+                "Bounce variations",
+                "Flip variations"
+              ]
+            },
+            {
+              num: "2",
+              title: "Interactive Game",
+              desc: "CSS animatsiyalar yordamida oddiy o'yin yarating:",
+              items: [
+                "Catch the ball game",
+                "Memory card game",
+                "Whack-a-mole game"
+              ],
+              note: "Maslahat: CSS animatsiyalar + checkbox/radio input triklar ishlatish mumkin"
+            },
+            {
+              num: "3",
+              title: "Animated Infographic",
+              desc: "Ma'lumotlarni ko'rsatuvchi animatsiyali infografika yarating:",
+              items: [
+                "Animated charts (bar, pie, line)",
+                "Progress circles",
+                "Counter animations",
+                "Timeline animations",
+                "Icon animations"
+              ]
+            },
+            {
+              num: "4",
+              title: "Portfolio Showcase",
+              desc: "O'zingizning portfolio sahifangizni animatsiyalar bilan bezating. Har bir section uchun alohida animatsiya bo'lsin."
+            }
+          ].map((item, idx) => (
+            <div key={idx} className="bg-gray-900/50 rounded-xl p-6 hover:bg-gray-900/70 transition-all border border-gray-800 hover:border-red-500/30">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-red-600 to-orange-600 rounded-lg flex items-center justify-center font-bold text-white">
+                  {item.num}
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-gray-200 mb-2">{item.title}</h3>
+                  <p className="text-gray-300 mb-2">{item.desc}</p>
+                  {item.items && (
+                    <ul className="list-disc list-inside text-gray-300 space-y-1 ml-4 mt-2 text-sm">
+                      {item.items.map((listItem, i) => (
+                        <li key={i}>{listItem}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {item.note && (
+                    <p className="text-gray-400 text-sm mt-2">{item.note}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
+      {/* Qo'shimcha Manbalar */}
       <div className="mb-12 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl p-8 border border-purple-500/20">
         <div className="flex items-center gap-3 mb-6">
           <span className="text-4xl">📚</span>
-          <h2 className="text-3xl font-semibold text-gray-100">Qoshimcha Manbalar</h2>
+          <h2 className="text-3xl font-semibold text-gray-100">Qo'shimcha Manbalar</h2>
         </div>
         
         <ul className="space-y-3 text-gray-300">
@@ -1028,14 +667,14 @@ div {
             <span className="text-blue-400 mt-1">→</span>
             <div>
               <strong className="text-gray-200">Animate.css:</strong>
-              <p className="text-sm mt-1">Tayyor animatsiyalar kutubxonasi - danishish va orgatish uchun</p>
+              <p className="text-sm mt-1">Tayyor animatsiyalar kutubxonasi - o'rganish va o'rgatish uchun</p>
             </div>
           </li>
           <li className="flex items-start gap-3">
             <span className="text-blue-400 mt-1">→</span>
             <div>
               <strong className="text-gray-200">Animista:</strong>
-              <p className="text-sm mt-1">CSS animatsiyalar generatori - kod yaratish va ozgartirish</p>
+              <p className="text-sm mt-1">CSS animatsiyalar generatori - kod yaratish va o'zgartirish</p>
             </div>
           </li>
           <li className="flex items-start gap-3">
@@ -1049,21 +688,21 @@ div {
             <span className="text-blue-400 mt-1">→</span>
             <div>
               <strong className="text-gray-200">CodePen:</strong>
-              <p className="text-sm mt-1">Animation misollar toplami - ilhom olish uchun</p>
+              <p className="text-sm mt-1">Animation misollar to'plami - ilhom olish uchun</p>
             </div>
           </li>
           <li className="flex items-start gap-3">
             <span className="text-blue-400 mt-1">→</span>
             <div>
               <strong className="text-gray-200">MDN Web Docs:</strong>
-              <p className="text-sm mt-1">CSS Animations toliq qollanma</p>
+              <p className="text-sm mt-1">CSS Animations to'liq qo'llanma</p>
             </div>
           </li>
           <li className="flex items-start gap-3">
             <span className="text-blue-400 mt-1">→</span>
             <div>
               <strong className="text-gray-200">Can I Use:</strong>
-              <p className="text-sm mt-1">Brauzer qollab-quvvatlash malumotlari</p>
+              <p className="text-sm mt-1">Brauzer qo'llab-quvvatlash ma'lumotlari</p>
             </div>
           </li>
         </ul>

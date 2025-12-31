@@ -24,25 +24,6 @@ export default function CSSIconsPage() {
         </div>
       </div>
 
-      {/* Video Section */}
-      <div className="mb-12 bg-gradient-to-br from-fuchsia-500/10 to-purple-500/10 border border-fuchsia-500/20 rounded-2xl p-8 hover:border-fuchsia-500/40 transition-all">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 bg-gradient-to-br from-fuchsia-600 to-purple-600 rounded-xl">
-            <Play className="w-6 h-6 text-white" />
-          </div>
-          <h2 className="text-3xl font-semibold text-gray-100">Video Dars</h2>
-        </div>
-        <div className="bg-gray-900/50 rounded-xl p-8 text-center hover:bg-gray-900/70 transition-all">
-          <p className="text-gray-400 mb-4">CSS Icons - Video dars</p>
-          <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl flex items-center justify-center border border-gray-700 hover:border-fuchsia-500/50 transition-all">
-            <div className="text-center">
-              <Play className="w-16 h-16 text-fuchsia-500 mx-auto mb-3" />
-              <span className="text-gray-400 text-lg">Video joylashuvi</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Font Awesome */}
       <div className="mb-12">
         <h2 className="text-3xl font-semibold text-gray-100 mb-6">Font Awesome</h2>

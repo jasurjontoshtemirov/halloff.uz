@@ -22,9 +22,25 @@ import {
   Sparkles, 
   Database,
   Zap,
-  Wind
+  Wind,
+  Play
 } from "lucide-react";
 import { Html5Icon } from "@/components/icons/Html5Icon";
+
+// Simple and clean HTML syntax highlighting
+function highlightHTML(code: string): string {
+  return code
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    // HTML tags in blue
+    .replace(/&lt;([^&\s]+)/g, '<span style="color:#569cd6">&lt;$1</span>')
+    .replace(/&gt;/g, '<span style="color:#569cd6">&gt;</span>')
+    // Attributes in light blue  
+    .replace(/(\w+)=/g, '<span style="color:#9cdcfe">$1</span>=')
+    // Strings in orange
+    .replace(/="([^"]*)"/g, '="<span style="color:#ce9178">$1</span>"');
+}
 
 const navigation = {
   intro: [
@@ -33,17 +49,17 @@ const navigation = {
   frontend: [
     { 
       name: "HTML", 
+      href: "/docs/html",
       icon: FileText, 
       color: "text-orange-500",
       hasSubmenu: true,
       submenu: [
-        { name: "Kirish", href: "/docs/html/intro" },
-        { name: "Elementlar", href: "/docs/html/elements" },
-
-        { name: "Ro'yxat va Jadvallar", href: "/docs/html/lists-tables" },
-        { name: "Formalar", href: "/docs/html/forms" },
-        { name: "Media", href: "/docs/html/media" },
-        { name: "Semantic HTML", href: "/docs/html/semantic" },
+        { name: "HTML ga kirish", href: "/docs/html/intro" },
+        { name: "HTML Elementlar", href: "/docs/html/elements" },
+        { name: "Ro'yxatlar va Jadvallar", href: "/docs/html/lists-tables" },
+        { name: "Rasm va Media", href: "/docs/html/media" },
+        { name: "HTML Formalar", href: "/docs/html/forms" },
+        { name: "Semantik HTML", href: "/docs/html/semantic" },
       ]
     },
     { 
@@ -147,6 +163,23 @@ export default function DocsLayout({
   const [reportTitle, setReportTitle] = useState("");
   const [reportMessage, setReportMessage] = useState("");
   const [reportSending, setReportSending] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Client-side da render qilish uchun
+  useEffect(() => {
+    setIsClient(true);
+    
+    // Initialize syntax highlighting when component mounts
+    setTimeout(() => {
+      const editor = document.getElementById('editor-textarea') as HTMLTextAreaElement;
+      const highlightLayer = document.getElementById('syntax-highlight-layer');
+      
+      if (editor && highlightLayer) {
+        const code = editor.value;
+        highlightLayer.innerHTML = highlightHTML(code);
+      }
+    }, 100);
+  }, []);
 
   // Basic user check (access key expiration removed)
   useEffect(() => {
@@ -279,7 +312,8 @@ export default function DocsLayout({
                           
                           return (
                             <div key={item.name}>
-                              <button
+                              <Link
+                                href={item.href || "#"}
                                 onClick={() => setOpen(!isOpen)}
                                 className="w-full flex items-center justify-between px-2 py-1.5 rounded text-sm transition text-gray-400 hover:bg-[#161b22] hover:text-white"
                               >
@@ -291,12 +325,21 @@ export default function DocsLayout({
                                   )}
                                   <span>{item.name}</span>
                                 </div>
-                                {isOpen ? (
-                                  <ChevronDown className="w-3 h-3" />
-                                ) : (
-                                  <ChevronRight className="w-3 h-3" />
-                                )}
-                              </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setOpen(!isOpen);
+                                  }}
+                                  className="p-1 hover:bg-gray-600 rounded"
+                                >
+                                  {isOpen ? (
+                                    <ChevronDown className="w-3 h-3" />
+                                  ) : (
+                                    <ChevronRight className="w-3 h-3" />
+                                  )}
+                                </button>
+                              </Link>
                               {isOpen && (
                                 <div className={`ml-6 mt-1 space-y-0.5 relative before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 ${borderColor} pl-3`}>
                                   {item.submenu?.map((subItem) => {
@@ -393,29 +436,7 @@ export default function DocsLayout({
                 {children}
               </article>
 
-              {/* Pagination */}
-              <div className="mt-16 pt-8 border-t border-[#30363d] flex justify-between items-center">
-                <div>
-                  {pathname !== "/docs" && (
-                    <Link
-                      href="/docs"
-                      className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition"
-                    >
-                      <span>←</span>
-                      <span>Oldingi</span>
-                    </Link>
-                  )}
-                </div>
-                <div>
-                  <Link
-                    href="/docs/getting-started"
-                    className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition"
-                  >
-                    <span>Keyingi</span>
-                    <span>→</span>
-                  </Link>
-                </div>
-              </div>
+              {/* Pagination - olib tashlandi */}
             </div>
           </main>
 
@@ -459,6 +480,64 @@ export default function DocsLayout({
                   Amaliyot
                 </a>
               </nav>
+
+              {/* Interactive Code Editor */}
+              <div className="mt-6 pt-6 border-t border-[#30363d]">
+                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                  Code Editor
+                </h4>
+                <button
+                  onClick={() => {
+                    // Toggle full-screen editor
+                    const editorModal = document.getElementById('fullscreen-editor');
+                    if (editorModal) {
+                      editorModal.classList.toggle('hidden');
+                      document.body.style.overflow = editorModal.classList.contains('hidden') ? 'auto' : 'hidden';
+                      
+                      // Auto-run when editor opens
+                      if (!editorModal.classList.contains('hidden')) {
+                        setTimeout(() => {
+                          const editor = document.getElementById('editor-textarea') as HTMLTextAreaElement;
+                          const highlightLayer = document.getElementById('syntax-highlight-layer');
+                          const preview = document.getElementById('preview-frame') as HTMLIFrameElement;
+                          const loading = document.getElementById('preview-loading');
+                          
+                          if (editor && highlightLayer) {
+                            const code = editor.value;
+                            highlightLayer.innerHTML = highlightHTML(code);
+                          }
+                          
+                          if (editor && preview) {
+                            const code = editor.value;
+                            
+                            // Hide loading
+                            if (loading) {
+                              loading.style.display = 'none';
+                            }
+                            
+                            // Write directly to iframe document
+                            const iframeDoc = preview.contentDocument || preview.contentWindow?.document;
+                            if (iframeDoc) {
+                              iframeDoc.open();
+                              iframeDoc.write(code);
+                              iframeDoc.close();
+                            }
+                          }
+                        }, 200);
+                      }
+                    }
+                  }}
+                  className="w-full flex items-center gap-3 text-gray-400 hover:text-white transition group p-3 rounded-lg hover:bg-[#161b22] border border-[#30363d] hover:border-blue-500/50"
+                >
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Code2 className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-sm font-medium">Interactive Editor</div>
+                    <div className="text-xs text-gray-500">Chap: kod, O'ng: natija</div>
+                  </div>
+                </button>
+              </div>
 
               {/* Quick Links */}
               <div className="mt-8 pt-8 border-t border-[#30363d]">
@@ -738,6 +817,181 @@ export default function DocsLayout({
           </div>
         </div>
       )}
+      
+      {/* Full-Screen Interactive Code Editor */}
+      <div id="fullscreen-editor" className="hidden fixed inset-0 bg-black z-50">
+        <div className="h-full flex flex-col">
+          {/* Editor Header */}
+          <div className="bg-[#1e1e1e] border-b border-gray-700 px-6 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              </div>
+              <h3 className="text-white font-semibold flex items-center gap-2">
+                <Code2 className="w-5 h-5 text-blue-400" />
+                Interactive HTML Editor
+              </h3>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-green-400 text-sm">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span>Auto Save</span>
+              </div>
+              <button
+                onClick={() => {
+                  const editorModal = document.getElementById('fullscreen-editor');
+                  if (editorModal) {
+                    editorModal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                  }
+                }}
+                className="text-gray-400 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2"
+              >
+                <BookOpen className="w-4 h-4" />
+                <span className="text-sm">Dokumentatsiyaga qaytish</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Editor Body */}
+          <div className="flex-1 flex">
+            {/* Code Editor */}
+            <div className="w-1/2 bg-[#1e1e1e] border-r border-gray-700 flex flex-col">
+              <div className="bg-[#2d2d30] px-4 py-2 border-b border-gray-700 flex items-center gap-2">
+                <div className="w-4 h-4 bg-orange-500 rounded flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">H</span>
+                </div>
+                <span className="text-gray-300 text-sm">index.html</span>
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse ml-2"></div>
+              </div>
+              <div className="flex-1 flex">
+                {/* Line Numbers */}
+                <div className="bg-[#1e1e1e] w-12 border-r border-gray-700 flex flex-col text-xs text-gray-500 font-mono relative overflow-hidden">
+                  <div 
+                    id="line-numbers-container"
+                    className="absolute inset-0 pt-4 overflow-hidden"
+                    style={{ 
+                      lineHeight: '24px',
+                      fontFamily: "'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace",
+                      scrollbarWidth: 'none',
+                      msOverflowStyle: 'none',
+                      padding: '16px 0'
+                    }}
+                  >
+                    {Array.from({length: 200}, (_, i) => (
+                      <div 
+                        key={i} 
+                        className="h-6 flex items-center justify-end pr-2 hover:bg-gray-800/50 transition-colors flex-shrink-0"
+                      >
+                        {i + 1}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* Code Area */}
+                <div className="flex-1 relative overflow-hidden bg-[#1e1e1e]">
+                  {isClient ? (
+                    <>
+                      {/* Simple Textarea - No Syntax Highlighting */}
+                      <textarea
+                        id="editor-textarea"
+                        className="absolute inset-0 w-full h-full bg-[#1e1e1e] border-0 outline-0 resize-none text-white"
+                        style={{
+                          fontFamily: "'Fira Code', 'Consolas', 'Monaco', monospace",
+                          fontSize: '14px',
+                          lineHeight: '24px',
+                          padding: '16px',
+                          whiteSpace: 'pre-wrap',
+                          wordWrap: 'break-word'
+                        }}
+                        defaultValue={`<h1>Sarlavha</h1>
+<p>Matn yozing...</p>`}
+                        onChange={(e) => {
+                          // Auto-run preview
+                          const preview = document.getElementById('preview-frame') as HTMLIFrameElement;
+                          const loading = document.getElementById('preview-loading');
+                          
+                          if (preview) {
+                            const code = e.target.value;
+                            
+                            if (loading) {
+                              (loading as HTMLElement).style.display = 'none';
+                            }
+                            
+                            const iframeDoc = preview.contentDocument || preview.contentWindow?.document;
+                            if (iframeDoc) {
+                              iframeDoc.open();
+                              iframeDoc.write(code);
+                              iframeDoc.close();
+                            }
+                          }
+                        }}
+                        onScroll={(e) => {
+                          // Sync line numbers scroll
+                          const lineNumbers = document.getElementById('line-numbers-container');
+                          const scrollTop = (e.target as HTMLTextAreaElement).scrollTop;
+                          
+                          if (lineNumbers) {
+                            lineNumbers.scrollTop = scrollTop;
+                          }
+                        }}
+                      />
+                    </>
+                  ) : (
+                    <div className="absolute inset-0 w-full h-full bg-[#1e1e1e] flex items-center justify-center">
+                      <div className="text-gray-400">Loading editor...</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Preview */}
+            <div className="w-1/2 bg-white flex flex-col">
+              <div className="bg-gray-100 px-4 py-2 border-b border-gray-300 flex items-center gap-2">
+                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <div className="flex-1 bg-white rounded px-3 py-1 text-sm text-gray-600 border ml-2">
+                  localhost:3000/preview
+                </div>
+                <div className="text-xs text-gray-500 bg-green-100 px-2 py-1 rounded">
+                  Live Preview
+                </div>
+              </div>
+              <div className="flex-1 relative overflow-hidden">
+                <iframe
+                  id="preview-frame"
+                  className="w-full h-full border-0"
+                  title="Preview"
+                  style={{ backgroundColor: 'white' }}
+                />
+                <div id="preview-loading" className="absolute inset-0 bg-gray-50 flex items-center justify-center text-gray-500 text-sm">
+                  <div className="text-center">
+                    <div className="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-2"></div>
+                    <p>Kod yozing, natija avtomatik ko'rinadi</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Editor Footer */}
+          <div className="bg-[#2d2d30] px-6 py-2 border-t border-gray-700 flex items-center justify-between text-xs text-gray-400">
+            <div className="flex items-center gap-4">
+              <span>HTML</span>
+              <span>UTF-8</span>
+              <span>Ln 1, Col 1</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>Ready</span>
+            </div>
+          </div>
+        </div>
+      </div>
       </div>
   );
 }

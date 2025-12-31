@@ -9,6 +9,7 @@ interface Video {
   lesson_path: string;
   lesson_title: string;
   youtube_video_id: string | null;
+  video_url: string | null;
   video_title: string;
   description: string | null;
   is_active: boolean;
@@ -63,6 +64,7 @@ export default function AdminVideosPage() {
           lesson_path: video.lesson_path,
           lesson_title: video.lesson_title,
           youtube_video_id: videoId,
+          video_url: video.video_url,
           video_title: video.video_title,
           description: video.description,
           is_active: video.is_active
@@ -94,6 +96,7 @@ export default function AdminVideosPage() {
         body: JSON.stringify({
           lesson_title: video.lesson_title,
           youtube_video_id: null, // Videoni o'chirish
+          video_url: null, // Custom videoni ham o'chirish
           video_title: '',
           description: null,
           is_active: video.is_active
@@ -173,6 +176,7 @@ export default function AdminVideosPage() {
               lesson_path: '',
               lesson_title: '',
               youtube_video_id: '',
+              video_url: '',
               video_title: '',
               description: '',
               is_active: true,
@@ -221,13 +225,13 @@ export default function AdminVideosPage() {
         </div>
         <div className="bg-gray-800 rounded-lg p-4">
           <div className="text-2xl font-bold text-green-400">
-            {videos.filter(v => v.youtube_video_id).length}
+            {videos.filter(v => v.youtube_video_id || v.video_url).length}
           </div>
           <div className="text-gray-400 text-sm">Video bor</div>
         </div>
         <div className="bg-gray-800 rounded-lg p-4">
           <div className="text-2xl font-bold text-red-400">
-            {videos.filter(v => !v.youtube_video_id).length}
+            {videos.filter(v => !v.youtube_video_id && !v.video_url).length}
           </div>
           <div className="text-gray-400 text-sm">Video yo'q</div>
         </div>
@@ -273,26 +277,35 @@ export default function AdminVideosPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    {video.youtube_video_id ? (
+                    {video.youtube_video_id || video.video_url ? (
                       <div className="flex items-center gap-2">
-                        <div className="w-16 h-12 bg-gray-900 rounded overflow-hidden">
-                          <img
-                            src={`https://img.youtube.com/vi/${video.youtube_video_id}/mqdefault.jpg`}
-                            alt="Video thumbnail"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div>
-                          <div className="text-sm text-gray-100">{video.video_title}</div>
-                          <a
-                            href={getYouTubeUrl(video.youtube_video_id)!}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
-                          >
-                            YouTube'da ko'rish <ExternalLink className="w-3 h-3" />
-                          </a>
-                        </div>
+                        {video.youtube_video_id ? (
+                          <>
+                            <div className="w-16 h-12 bg-gray-900 rounded overflow-hidden">
+                              <img
+                                src={`https://img.youtube.com/vi/${video.youtube_video_id}/mqdefault.jpg`}
+                                alt="Video thumbnail"
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <div>
+                              <div className="text-sm text-gray-100">{video.video_title}</div>
+                              <a
+                                href={getYouTubeUrl(video.youtube_video_id)!}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                              >
+                                YouTube'da ko'rish <ExternalLink className="w-3 h-3" />
+                              </a>
+                            </div>
+                          </>
+                        ) : (
+                          <div>
+                            <div className="text-sm text-gray-100">{video.video_title}</div>
+                            <div className="text-xs text-green-400">Custom Video: {video.video_url}</div>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <div className="text-sm text-gray-500">Video yo'q</div>
@@ -316,7 +329,7 @@ export default function AdminVideosPage() {
                       >
                         <Edit className="w-4 h-4" />
                       </button>
-                      {video.youtube_video_id && (
+                      {(video.youtube_video_id || video.video_url) && (
                         <button
                           onClick={() => handleClearVideo(video)}
                           className="p-2 text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10 rounded-lg transition-all"
@@ -406,6 +419,29 @@ export default function AdminVideosPage() {
                 </p>
               </div>
 
+              <div className="text-center text-gray-400 text-sm">
+                - YOKI -
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Custom Video URL (MP4, WebM, OGV)
+                </label>
+                <input
+                  type="text"
+                  value={editingVideo.video_url || ''}
+                  onChange={(e) => setEditingVideo({
+                    ...editingVideo,
+                    video_url: e.target.value
+                  })}
+                  placeholder="/videos/html-intro.mp4 yoki https://example.com/video.mp4"
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:border-blue-500 focus:outline-none"
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                  O'z video faylingiz URL'ini kiriting. /public/videos/ papkasidagi fayllar uchun: /videos/fayl-nomi.mp4
+                </p>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Video sarlavhasi
@@ -453,19 +489,30 @@ export default function AdminVideosPage() {
               </div>
 
               {/* Preview */}
-              {editingVideo.youtube_video_id && (
+              {(editingVideo.youtube_video_id || editingVideo.video_url) && (
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Oldin ko'rish
                   </label>
                   <div className="aspect-video bg-gray-900 rounded-lg overflow-hidden">
-                    <iframe
-                      src={`https://www.youtube.com/embed/${editingVideo.youtube_video_id.replace(/.*[?&]v=([^&]+).*/, '$1')}?rel=0&modestbranding=1`}
-                      className="w-full h-full"
-                      title="Video preview"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
+                    {editingVideo.youtube_video_id ? (
+                      <iframe
+                        src={`https://www.youtube.com/embed/${editingVideo.youtube_video_id.replace(/.*[?&]v=([^&]+).*/, '$1')}?rel=0&modestbranding=1`}
+                        className="w-full h-full"
+                        title="Video preview"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : editingVideo.video_url ? (
+                      <video
+                        src={editingVideo.video_url}
+                        className="w-full h-full object-cover"
+                        controls
+                        preload="metadata"
+                      >
+                        Brauzeringiz video formatini qo'llab-quvvatlamaydi.
+                      </video>
+                    ) : null}
                   </div>
                 </div>
               )}

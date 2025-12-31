@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS lesson_videos (
     lesson_path VARCHAR(255) NOT NULL UNIQUE,
     lesson_title VARCHAR(255) NOT NULL,
     youtube_video_id VARCHAR(50) DEFAULT NULL,
+    video_url VARCHAR(500) DEFAULT NULL, -- Custom video URL
     video_title VARCHAR(255) DEFAULT NULL,
     description TEXT DEFAULT NULL,
     is_active BOOLEAN DEFAULT TRUE,

@@ -1,9 +1,8 @@
 "use client";
 
 import CodeBlock from "@/components/CodeBlock";
-import VideoPlayer from "@/components/VideoPlayer";
 import Link from "next/link";
-import { Target, Sparkles, Code2, Play, MousePointer, Layers } from "lucide-react";
+import { Target, Sparkles, Code2, MousePointer, Layers } from "lucide-react";
 
 export default function CSSSelectorsPage() {
   return (
@@ -24,9 +23,6 @@ export default function CSSSelectorsPage() {
           </p>
         </div>
       </div>
-
-      {/* Video Section */}
-      <VideoPlayer lessonPath="css/selectors" fallbackTitle="CSS Selectors - Video dars" />
 
       {/* Selector nima */}
       <div className="mb-12">

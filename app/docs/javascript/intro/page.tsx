@@ -1,9 +1,8 @@
 "use client";
 
 import CodeBlock from "@/components/CodeBlock";
-import VideoPlayer from "@/components/VideoPlayer";
 import Link from "next/link";
-import { Sparkles, Code2, Zap, Rocket, Play, BookOpen, Lightbulb, CheckCircle } from "lucide-react";
+import { Sparkles, Code2, Zap, Rocket, BookOpen, Lightbulb, CheckCircle } from "lucide-react";
 
 export default function JavaScriptIntroPage() {
   return (
@@ -24,11 +23,6 @@ export default function JavaScriptIntroPage() {
           </p>
         </div>
       </div>
-
-      <VideoPlayer 
-        lessonPath="/docs/javascript/intro" 
-        fallbackTitle="JavaScript nima? - Video dars" 
-      />
 
       {/* JavaScript nima? */}
       <div className="mb-12">
